@@ -49,6 +49,16 @@
         button:hover {
             background-color: #45a049;
         }
+        a {
+            display: none;
+            font-size: 1.3em;
+            color: #007bff;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -64,14 +74,18 @@
         <!-- رسالة التفعيل -->
         <p>تم تفعيل حسابك بنجاح!</p>
 
-        <!-- الزر الذي يوجه العميل إلى صفحة البيع -->
-        <button onclick="redirectToSale()">الذهاب إلى صفحة البيع</button>
+        <!-- زر التفعيل -->
+        <button id="activateButton" onclick="showLink()">الذهاب إلى صفحة البيع</button>
+
+        <!-- الرابط الذي يظهر بعد التفعيل -->
+        <a id="saleLink" href="https://abouhousseme.github.io/Text-to-speech/how-to-pay.html">انتقل إلى صفحة البيع</a>
     </div>
 
     <script>
-        // دالة لإعادة توجيه العميل إلى صفحة البيع بعد التفعيل
-        function redirectToSale() {
-            window.location.href = "/how-to-pay.html"; // إعادة التوجيه إلى صفحة البيع
+        // دالة لإظهار الرابط بعد التفعيل
+        function showLink() {
+            document.getElementById('saleLink').style.display = 'block';
+            document.getElementById('activateButton').style.display = 'none';
         }
     </script>
 
