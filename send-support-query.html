@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدعم الفني</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        h1 {
+            color: #4CAF50;
+            font-size: 2.4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            text-align: right;
+        }
+        label {
+            display: block;
+            margin: 12px 0 5px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            color: #d9534f;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .success {
+            color: #5bc0de;
+        }
+        .alert {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>الدعم الفني</h1>
+        <p>إذا كانت لديك أي استفسارات أو تحتاج إلى مساعدة، يمكنك إرسال استفسارك عبر النموذج أدناه:</p>
+
+        <!-- رسالة إشعار -->
+        <div id="alertMessage" class="alert"></div>
+
+        <form id="supportForm" action="/send-support-query" method="POST">
+            <input type="hidden" name="csrf_token" value="your_csrf_token_here">
+
+            <label for="name">اسمك:</label>
+            <input type="text" id="name" name="name" placeholder="أدخل اسمك" required>
+
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" required>
+
+            <label for="message">رسالتك:</label>
+            <textarea id="message" name="message" rows="5" placeholder="اكتب استفسارك هنا" required></textarea>
+
+            <button type="submit">إرسال</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('supportForm').addEventListener('submit', function(event) {
+            // منع الإرسال إذا كانت المدخلات غير صحيحة
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            const alertMessage = document.getElementById('alertMessage');
+
+            // مسح أي رسائل سابقة
+            alertMessage.innerHTML = "";
+
+            // التحقق من صحة البريد الإلكتروني
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailRegex.test(email)) {
+                alertMessage.innerHTML = '<div class="message">البريد الإلكتروني غير صالح.</div>';
+                return false;
+            }
+            
+            // التحقق من أن الرسالة ليست فارغة
+            if (message.trim() === '') {
+                alertMessage.innerHTML = '<div class="message">الرجاء كتابة رسالتك.</div>';
+                return false;
+            }
+
+            // إذا كانت جميع المدخلات صحيحة، نقوم بإرسال النموذج
+            alertMessage.innerHTML = '<div class="success">تم إرسال استفسارك بنجاح. سنقوم بالرد عليك في أقرب وقت.</div>';
+            document.getElementById('supportForm').submit();  // إرسال النموذج بعد التحقق
+        });
+    </script>
+
+</body>
+</html>

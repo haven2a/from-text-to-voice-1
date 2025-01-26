@@ -1,0 +1,45 @@
+<!-- زر الاشتراك الشهري -->
+<div id="paypal-button-container-monthly"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AdFwbMvT_dsNlH3Tds89w0QtXWFs-u3lnOFIKsN9ZaD3wlmAoizEXoCypHaQU5xYuUoduWRZZvNSLRhJ&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'paypal'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription (Monthly Plan) */
+          plan_id: 'P-19T080680R883335UM6CZ6CA'  // معرف الخطة الشهرية
+        });
+      },
+      onApprove: function(data, actions) {
+        alert('تم الاشتراك الشهري بنجاح! اشتراك ID: ' + data.subscriptionID);
+      }
+  }).render('#paypal-button-container-monthly'); // رندر زر الاشتراك الشهري
+</script>
+
+<!-- زر الاشتراك السنوي -->
+<div id="paypal-button-container-yearly"></div>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription (Yearly Plan) */
+          plan_id: 'P-01H48866T6848222HM6CZQ4Y',  // معرف الخطة السنوية
+          quantity: 1 // تحديد الكمية (عدد الاشتراكات)
+        });
+      },
+      onApprove: function(data, actions) {
+        alert('تم الاشتراك السنوي بنجاح! اشتراك ID: ' + data.subscriptionID);
+      }
+  }).render('#paypal-button-container-yearly'); // رندر زر الاشتراك السنوي
+</script>

@@ -1,0 +1,22 @@
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    // تحميل قائمة المستخدمين
+    const users = JSON.parse(fs.readFileSync('users.json', 'utf8'));
+
+    // البحث عن المستخدم
+    const user = users.find(user => user.email === email);
+
+    if (!user) {
+        return res.status(400).json({ message: '❌ البريد الإلكتروني غير مسجل!' });
+    }
+
+    // التحقق من كلمة المرور
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+        return res.status(400).json({ message: '❌ كلمة المرور غير صحيحة!' });
+    }
+
+    res.json({ message: '✅ تسجيل الدخول ناجح!' });
+});

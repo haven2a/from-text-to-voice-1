@@ -1,0 +1,219 @@
+<<<<<<< HEAD:public/Nodemailer.html
+const mailOptions = {
+    from: process.env.EMAIL_USER, // استخدم المتغير البيئي للبريد الإلكتروني
+    to: email,  // البريد الإلكتروني المستلم
+    subject: 'مرحبًا بك في منصتنا!',
+    html: `
+    <!DOCTYPE html>
+    <html lang="ar">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>مرحبًا بك في منصتنا!</title>
+        <style>
+            body {
+                font-family: 'Cairo', sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 0;
+                direction: rtl;
+            }
+            .email-container {
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .logo {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .logo img {
+                width: 150px;
+            }
+            .content {
+                text-align: center;
+            }
+            .welcome-message {
+                font-size: 24px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            .info {
+                font-size: 18px;
+                margin-top: 15px;
+                color: #34495e;
+            }
+            .info a {
+                color: #3498db;
+                text-decoration: none;
+                font-weight: bold;
+            }
+            .cta-button {
+                display: inline-block;
+                background-color: #3498db;
+                color: #fff;
+                padding: 10px 20px;
+                font-size: 18px;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="logo">
+                <img src="cid:logo" alt="Logo">
+            </div>
+            <div class="content">
+                <p class="welcome-message">مرحبًا بك في منصتنا!</p>
+                <p class="info">
+                    أهلاً وسهلاً بك! لقد تم إنشاء حسابك بنجاح. يمكنك الآن الوصول إلى حسابك باستخدام التفاصيل التالية:
+                </p>
+                <p class="info">
+                    <strong>اسم المستخدم:</strong> ${username}<br>
+                    <strong>البريد الإلكتروني:</strong> ${email}<br>
+                    <strong>كلمة المرور:</strong> ${password}
+                </p>
+                <p class="info">
+                    للوصول إلى حسابك، يمكنك تسجيل الدخول من خلال الرابط التالي:
+                </p>
+                <a href="http://localhost:3000/login.html" class="cta-button">تسجيل الدخول</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    `,
+    attachments: [
+        {
+            filename: 'logo.png',
+            path: path.join(__dirname, 'public', 'logo.png'),
+            cid: 'logo'
+        }
+    ]
+};
+=======
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل حساب جديد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 10px;
+            display: block;
+        }
+        input {
+            padding: 10px;
+            width: 100%;
+            font-size: 1.2em;
+            margin-top: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.3em;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>التسجيل في التطبيق</h1>
+
+        <!-- نموذج التسجيل -->
+        <form id="signupForm">
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">تسجيل</button>
+        </form>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // التعامل مع نموذج التسجيل
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // منع إرسال النموذج بشكل عادي
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // إرسال البيانات إلى الخادم عبر AJAX
+            fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('message').textContent = 'تم إرسال كود التفعيل إلى بريدك الإلكتروني.';
+                } else {
+                    document.getElementById('message').textContent = 'حدث خطأ أثناء التسجيل. حاول مجددًا.';
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').textContent = 'خطأ في الاتصال بالخادم.';
+            });
+        });
+    </script>
+
+</body>
+</html>
+>>>>>>> 73c1c95ad9f4791aeb26e837b1fa771285bfc832:Nodemailer.html

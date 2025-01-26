@@ -1,0 +1,14 @@
+app.post('/verify-license', (req, res) => {
+    const { licenseKey, deviceId, ipAddress } = req.body;
+
+    if (licenses[licenseKey] && licenses[licenseKey].valid) {
+        // تحقق من IP
+        if (licenses[licenseKey].ipAddress === ipAddress) {
+            res.status(200).json({ status: "success", message: "License valid!" });
+        } else {
+            res.status(400).json({ status: "error", message: "This license is bound to a different IP." });
+        }
+    } else {
+        res.status(400).json({ status: "error", message: "Invalid license key!" });
+    }
+});
