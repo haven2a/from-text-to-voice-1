@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل الحساب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        p {
+            font-size: 1.2em;
+            color: #333;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.3em;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>تفعيل الحساب</h1>
+
+        <!-- رسالة التفعيل -->
+        <p>تم تفعيل حسابك بنجاح!</p>
+
+        <!-- الزر الذي يوجه العميل إلى صفحة البيع -->
+        <button onclick="redirectToSale()">الذهاب إلى صفحة البيع</button>
+    </div>
+
+    <script>
+        // دالة لإعادة توجيه العميل إلى صفحة البيع بعد التفعيل
+        function redirectToSale() {
+            window.location.href = "/how-to-pay.html"; // إعادة التوجيه إلى صفحة البيع
+        }
+    </script>
+
+</body>
+</html>
