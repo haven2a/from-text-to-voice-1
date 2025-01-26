@@ -1,149 +1,130 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدفع عبر CCP</title>
+    <title>الدفع</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
-            direction: rtl;
-            text-align: right;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
             color: #333;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            color: #4CAF50;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .account-info {
-            margin-bottom: 20px;
-        }
-
-        .account-info span {
-            font-size: 1.5em;
-            color: #007bff;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-
-        table th {
-            background-color: #4CAF50;
-            color: white;
+        p {
             font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
         }
-
-        table td {
-            font-size: 1.1em;
-        }
-
-        .form-container {
-            margin-top: 30px;
-        }
-
-        .form-container label {
-            display: block;
-            font-size: 1.2em;
-            margin-bottom: 8px;
-        }
-
-        .form-container input, .form-container button {
+        input[type="text"], input[type="email"], input[type="file"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-            border: 1px solid #ddd;
+            margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 1em;
         }
-
-        .form-container button {
+        button {
+            padding: 12px 25px;
+            font-size: 1.3em;
+            margin-top: 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        .form-container button:hover {
+        button:hover {
             background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>الدفع عبر CCP</h1>
-    </header>
 
     <div class="container">
-        <!-- معلومات الحساب -->
-        <div class="account-info">
-            <p>ادفع إلى الحساب التالي:</p>
-            <p><span>4264232/64</span> باسم <span>عاتق حسان</span></p>
-        </div>
+        <h1>الدفع</h1>
 
-        <!-- جدول الاشتراكات -->
-        <table>
-            <thead>
-                <tr>
-                    <th>نوع الاشتراك</th>
-                    <th>السعر (دج)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>اشتراك شهري</td>
-                    <td>2500</td>
-                </tr>
-                <tr>
-                    <td>اشتراك سنوي</td>
-                    <td>25000</td>
-                </tr>
-            </tbody>
-        </table>
+        <p>ادفع إلى الحساب التالي: 4264232/64</p>
 
-        <!-- نموذج البيانات -->
-        <div class="form-container">
-            <form action="#" method="post" enctype="multipart/form-data">
-                <label for="name">الاسم الكامل:</label>
-                <input type="text" id="name" name="name" placeholder="أدخل اسمك الكامل" required>
+        <h2>الاشتراك الشهري: 2500 دج</h2>
+        <h2>الاشتراك السنوي: 25000 دج</h2>
 
-                <label for="email">البريد الإلكتروني:</label>
-                <input type="email" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" required>
+        <!-- نموذج الإدخال -->
+        <input type="text" id="name" placeholder="الاسم الكامل" required>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="file" id="paymentFile" accept="image/*,.pdf" required>
 
-                <label for="payment-slip">رفع وصل الدفع:</label>
-                <input type="file" id="payment-slip" name="payment-slip" accept="image/*,application/pdf" required>
-
-                <button type="submit">إرسال المعلومات</button>
-            </form>
-        </div>
+        <!-- زر الإرسال -->
+        <button onclick="sendPaymentData()">إرسال البيانات</button>
     </div>
+
+    <script>
+        async function sendPaymentData() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const fileInput = document.getElementById('paymentFile');
+            const file = fileInput.files[0];
+
+            // تحقق من الحقول المطلوبة
+            if (!name || !email || !file) {
+                alert('يرجى ملء جميع الحقول!');
+                return;
+            }
+
+            // قراءة ملف الدفع وتحويله إلى Base64
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64File = reader.result.split(',')[1]; // استخراج بيانات الملف
+
+                // إعداد البيانات لإرسالها إلى الخادم
+                const paymentData = {
+                    name: name,
+                    email: email,
+                    paymentFile: base64File,
+                };
+
+                try {
+                    const response = await fetch('/api/save-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(paymentData),
+                    });
+
+                    if (response.ok) {
+                        alert('تم إرسال البيانات بنجاح!');
+                    } else {
+                        alert('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+                    }
+                } catch (error) {
+                    console.error('خطأ في الاتصال بالخادم:', error);
+                    alert('تعذر الاتصال بالخادم.');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+
 </body>
 </html>
