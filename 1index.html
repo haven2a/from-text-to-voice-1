@@ -78,20 +78,14 @@
             pointer-events: none;
             opacity: 0.5;
         }
-        header {
-            margin-bottom: 20px;
-        }
-        #languageContainer {
-            margin-top: 20px;
-        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
 </head>
 <body>
     
-    <!-- Header (اللوجو) -->
+    <!-- Header (اللوغو) -->
     <header>
-        <img src="logo.png" alt="Logo" id="logo" style="max-width: 200px;"/>
+        <img src="logo.png" alt="Logo" id="logo">
     </header>
 
     <div id="lockScreen" class="popup show">
@@ -101,31 +95,27 @@
     </div>
 
     <div id="appContent" class="disabled">
-        <!-- نافذة تغيير اللغة -->
-        <div id="languageContainer">
-            <label for="language">اختر اللغة:</label>
-            <select id="language" name="language">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-
-        <!-- تمت إزالة الـ form لتجنب إرسال البيانات إلى الخادم -->
+        <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى فيديو</h1>
         <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
 
         <div class="button-container">
-            <label for="gender">اختر الجنس:</label>
+            <label for="gender" id="genderLabel">اختر الجنس:</label>
             <select id="gender" name="gender">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
             </select>
 
-            <label for="speed">سرعة الصوت:</label>
+            <label for="speed" id="speedLabel">سرعة الصوت:</label>
             <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
         </div>
 
-        <!-- زر تحويل النص إلى صوت -->
-        <button type="button" onclick="convertTextToVoice()">تحويل النص إلى صوت</button>
+        <label for="language">اختر اللغة:</label>
+        <select id="language" name="language" onchange="changeLanguage()">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+
+        <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
 
         <h2>تسجيل الصوت</h2>
         <div class="button-container">
@@ -185,6 +175,21 @@
 
             // تحويل النص إلى صوت باستخدام مكتبة ResponsiveVoice
             responsiveVoice.speak(text, voice, { rate: speed, lang: language });
+        }
+
+        function changeLanguage() {
+            let language = document.getElementById('language').value;
+            if (language === "en") {
+                document.getElementById("greeting").textContent = "Welcome to the Text to Voice App";
+                document.getElementById("genderLabel").textContent = "Select Gender:";
+                document.getElementById("speedLabel").textContent = "Speed:";
+                document.getElementById("convertButton").textContent = "Convert Text to Speech";
+            } else {
+                document.getElementById("greeting").textContent = "مرحبًا بك في تطبيق تحويل النص إلى صوت";
+                document.getElementById("genderLabel").textContent = "اختر الجنس:";
+                document.getElementById("speedLabel").textContent = "سرعة الصوت:";
+                document.getElementById("convertButton").textContent = "تحويل النص إلى صوت";
+            }
         }
     </script>
 </body>
