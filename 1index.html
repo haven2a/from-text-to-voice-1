@@ -82,8 +82,7 @@
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
 </head>
 <body>
-    
-    <!-- Header (اللوغو) -->
+
     <header>
         <img src="logo.png" alt="Logo" id="logo">
     </header>
@@ -96,7 +95,7 @@
 
     <div id="appContent" class="disabled">
         <h1>مرحبًا بك في تطبيق تحويل النص إلى فيديو</h1>
-        <!-- تمت إزالة الـ form لتجنب إرسال البيانات إلى الخادم -->
+
         <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
 
         <div class="button-container">
@@ -116,7 +115,6 @@
             <option value="en">English</option>
         </select>
 
-        <!-- زر تحويل النص إلى صوت -->
         <button type="button" onclick="convertTextToVoice()">تحويل النص إلى صوت</button>
 
         <h2>تسجيل الصوت</h2>
@@ -128,9 +126,20 @@
     </div>
 
     <script>
+        let users = [];
+
+        // تحميل بيانات المستخدمين من users.json
+        fetch('users.json')
+            .then(response => response.json())
+            .then(data => {
+                users = data.users;
+            });
+
         function unlockApp() {
             let code = document.getElementById('accessCode').value;
-            if (code === "1234") {
+            let user = users.find(u => u.password === code);
+            
+            if (user) {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
             } else {
@@ -165,20 +174,15 @@
             }
         }
 
-        // دالة لتحويل النص إلى صوت باستخدام ResponsiveVoice
         function convertTextToVoice() {
             let text = document.getElementById('textToConvert').value;
             let gender = document.getElementById('gender').value;
             let speed = document.getElementById('speed').value;
             let language = document.getElementById('language').value;
 
-            // اختيار الصوت حسب الجنس
             let voice = gender === "female" ? "Arabic Female" : "Arabic Male";
-
-            // تحويل النص إلى صوت باستخدام مكتبة ResponsiveVoice
             responsiveVoice.speak(text, voice, { rate: speed, lang: language });
         }
     </script>
 </body>
-</html>
 </html>
