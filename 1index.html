@@ -274,13 +274,3 @@
                 })
                 .catch(error => {
                     console.error("حدث خطأ أثناء محاولة الوصول إلى الميكروفون:", error);
-                    alert("تعذر الوصول إلى الميكروفون. يرجى التحقق من الأذونات.");
-                });
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
-                alert("تم إيقاف التسجيل.");
-            } else {
-                alert("لا يوجد
