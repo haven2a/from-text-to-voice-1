@@ -28,8 +28,8 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             animation: fadeIn 1.5s ease-in-out;
         }
         h1 {
@@ -131,6 +131,7 @@
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
                 <button type="button" onclick="downloadWord()" id="downloadWordButton">تحميل ملف Word</button>
+                <input type="file" id="uploadWordFile" accept=".doc,.docx" onchange="uploadWordFile()">
             </div>
         </form>
         <h2 id="recordingTitle">تسجيل الصوت</h2>
@@ -203,11 +204,11 @@
 
         function unlockApp() {
             let code = document.getElementById('accessCode').value;
-            if (code.trim() === "1234") {
+            if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
             } else {
-                alert("رمز الدخول غير صحيح! حاول مجددًا.");
+                alert("رمز الدخول غير صحيح!");
             }
         }
 
@@ -267,18 +268,33 @@
             link.click();
         }
 
+        function uploadWordFile() {
+            const fileInput = document.getElementById('uploadWordFile');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('textInput').value = event.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                alert("يرجى اختيار ملف Word للتحميل!");
+            }
+        }
+
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const gender = document.getElementById("gender").value;
             const speed = parseFloat(document.getElementById("speed").value);
 
             if (!text) {
-                alert("يرجى إدخال نص لتشغيل الصوت!");
+                alert("يرجى إدخال النص لتشغيل الصوت!");
                 return;
             }
 
-            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
-            responsiveVoice.speak(text, voiceName, { rate: speed });
+            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voice, { rate: speed });
         }
     </script>
 </body>
