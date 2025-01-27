@@ -78,14 +78,22 @@
             pointer-events: none;
             opacity: 0.5;
         }
+        #logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
 </head>
 <body>
+    <!-- شعار التطبيق -->
+    <img id="logo" src="logo.png" alt="Logo">
+
     <div id="lockScreen" class="popup show">
         <h2 id="lockScreenTitle">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
-        <button onclick="unlockApp()">{{unlockButton}}</button>
+        <button onclick="unlockApp()" id="unlockButton">دخول</button>
     </div>
 
     <div id="appContent" class="disabled">
