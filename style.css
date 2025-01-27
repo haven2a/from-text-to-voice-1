@@ -1,164 +1,154 @@
-<<<<<<< HEAD
-/* استيراد خط "كايرو" */
 body {
-  font-family: 'Cairo', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
-  color: #333;
-  direction: rtl; /* جعل النص من اليمين لليسار */
-  text-align: right; /* محاذاة النص إلى اليمين */
-  font-size: 20px; /* تكبير حجم النص الافتراضي */
-}
-
-header {
-  background-color: #343a40;
-  padding: 30px;
-  text-align: center;
-}
-
-#logo {
-  width: 180px;
-}
-
-main {
-  text-align: right;
-  padding: 50px;
-  line-height: 1.8;
-}
-
-h1 {
-  font-size: 55px;
-  color: #e74c3c; /* اللون الأحمر للعناوين */
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 36px;
-  color: #3498db; /* اللون الأزرق للعناوين الثانوية */
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-ul li {
-  font-size: 24px;
-  color: #6c757d;
-}
-
-footer {
-  background-color: #343a40;
-  padding: 20px;
-  text-align: center;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-.footer-links a {
-  margin: 0 20px;
-  text-decoration: none;
-  color: #e74c3c; /* اللون الأحمر للروابط */
-  font-size: 22px;
-}
-
-.footer-links a:hover {
-  color: #ffc107;
-=======
-/* تطبيق الخطوط والتنسيقات الأساسية */
-body {
-    font-family: 'Cairo', sans-serif; /* استخدام خط كايرو */
-    background-color: #f0f4f8;
+    font-family: 'Cairo', sans-serif;
+    background-color: #f4f4f4;
     color: #333;
-    text-align: center;
     margin: 0;
     padding: 20px;
-    direction: rtl; /* الكتابة من اليمين لليسار */
-    border: 2px solid #ccc; /* إطار حول الصفحة */
-    border-radius: 8px;
-    font-size: 18px; /* تكبير حجم الخط */
+    direction: rtl;
+    text-align: center;
 }
-
-/* تنسيق الحاوية */
 .container {
-    max-width: 600px;
+    max-width: 900px;
     margin: 20px auto;
     background: #fff;
-    padding: 30px; /* زيادة المسافة داخل الحاوية */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #4CAF50;
+    box-sizing: border-box;
 }
-
-/* إضافة الشعار في أعلى الحاوية */
-.container img {
-    width: 100px; /* ضبط حجم الشعار */
-    margin-bottom: 20px; /* مسافة بين الشعار والعنوان */
+h1, h2 {
+    color: #4CAF50;
+    font-weight: 700;
 }
-
-/* تنسيق العنوان */
-h1 {
-    color: #007bff; /* اللون الأزرق للعناوين */
-    font-size: 2.5em; /* تكبير حجم الخط */
-    margin-bottom: 20px;
+.logo img {
+    max-width: 250px;
+    transition: transform 0.3s;
 }
-
-/* تنسيق النص المهم */
-.important-info {
-    font-weight: bold;
-    font-size: 1.5em; /* تكبير حجم النص */
-    margin-bottom: 20px;
-    color: #000;
+.logo img:hover {
+    transform: scale(1.1);
 }
-
-/* تنسيق المبلغ المعروض */
-.amount {
-    font-size: 2em; /* تكبير حجم المبلغ */
-    color: #007bff; /* اللون الأزرق للمبلغ */
+.video-section {
+    margin: 20px 0;
 }
-
-/* تنسيق النصوص والملاحظات */
-.info {
-    color: #f44336; /* اللون الأحمر للملاحظات */
-    font-size: 1.2em; /* تكبير حجم النص */
-    margin-top: 10px;
-}
-
-/* تنسيق الروابط */
-a {
-    color: red; /* اللون الأحمر للروابط */
-    text-decoration: none;
-}
-
-/* تنسيق الزر */
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    padding: 15px; /* زيادة حجم الزر */
-    border-radius: 8px;
-    font-size: 1.2em; /* تكبير حجم الخط في الزر */
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-/* تنسيق الشعار في الأعلى */
-header a {
+.app-link {
     display: block;
-    margin-bottom: 20px; /* المسافة بين الشعار والمحتوى */
+    margin: 30px auto;
+    padding: 15px 25px;
+    background-color: #FF5722;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+}
+.app-link:hover {
+    background-color: #E64A19;
+    transform: scale(1.1);
+}
+.arrow-link {
+    margin-top: 20px;
+    display: block;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #FF5722;
+    text-decoration: none;
+    transition: transform 0.3s;
+}
+.arrow-link:hover {
+    transform: scale(1.1);
+    color: #E64A19;
+}
+.arrow {
+    font-size: 2em;
+    display: inline-block;
+    margin: 0 5px;
+    animation: moveArrow 1s infinite alternate;
+}
+.subscribe-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #FF9800;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    font-size: 1.5em;
+    position: relative;
+    display: inline-block;
+}
+.subscribe-section::before, .subscribe-section::after {
+    content: "→";
+    font-size: 2em;
+    color: red;
+    position: absolute;
+    animation: moveArrow 1s infinite alternate;
+}
+.subscribe-section::before {
+    left: -30px;
+}
+.subscribe-section::after {
+    right: -30px;
 }
 
-header img.logo {
-    width: 250px; /* تحديد عرض الشعار إلى 200 بكسل */
-    height: 250px; /* تحديد ارتفاع الشعار إلى 200 بكسل */
-    margin: 0 auto; /* مركز الشعار */
->>>>>>> ccd0338 (رسالة التغيير)
+/* إضافة تأثير ظهور عند الإشارة */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1s forwards;
+}
+
+.fade-in-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* تحريك السهم */
+@keyframes moveArrow {
+    from { transform: translateX(-5px); }
+    to { transform: translateX(5px); }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* إضافة تأثيرات على الفقرات */
+.container p {
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #fff;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    font-size: 1.2em;
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+
+.container p:hover {
+    transform: scale(1.05);
+    background-color: #e0f7fa;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    margin-top: 30px;
+}
+footer a {
+    color: #4CAF50;
+    text-decoration: none;
+    margin: 10px;
+}
+footer a:hover {
+    text-decoration: underline;
 }
