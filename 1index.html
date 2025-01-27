@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحويل النص إلى صوت</title>
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
@@ -16,169 +15,135 @@
             width: 90%;
             margin: auto;
             border-radius: 10px;
-            background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
             direction: rtl;
         }
         h1 {
             color: blue;
             font-size: 28px;
         }
-        textarea {
-            width: 90%;
-            padding: 15px;
+        textarea, select, button, input {
+            width: 80%;
+            padding: 10px;
             margin: 10px 0;
             border: 2px solid #333;
             border-radius: 10px;
-            font-size: 20px;
-            text-align: right;
-            display: block;
-            margin-right: auto;
-            margin-left: auto;
+            font-size: 18px;
         }
-        select, button, input {
-            width: 45%;
-            padding: 15px;
-            margin: 10px;
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+        }
+        .section {
             border: 2px solid #333;
             border-radius: 10px;
+            padding: 20px;
+            background-color: #fff;
+            width: 100%;
+        }
+        .text-animation {
             font-size: 20px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            height: 40px;
         }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            font-size: 22px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .moving-box {
+        .text-animation span {
             position: absolute;
-            top: 80px;
-            left: 0;
-            width: 150px;
-            height: 50px;
-            background-color: #ff6347;
-            color: white;
-            line-height: 50px;
-            text-align: center;
-            border-radius: 10px;
-            font-size: 18px;
-            display: none;
+            display: inline-block;
+            white-space: nowrap;
+            animation: scrollText 5s linear infinite;
         }
-        #downloadContainer {
-            display: none;
-            margin-top: 20px;
-        }
-        #downloadLink {
-            background-color: #28a745;
-            color: white;
-            padding: 15px;
-            text-decoration: none;
-            border-radius: 10px;
-            font-size: 20px;
-        }
-        #downloadLink:hover {
-            background-color: #218838;
+        @keyframes scrollText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
     </style>
 </head>
 <body>
-    <!-- شعار التطبيق -->
-    <img id="logo" src="logo.png" alt="Logo">
+    <h1>تطبيق تحويل النص إلى صوت</h1>
 
-    <div id="appContent">
-        <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى صوت</h1>
-        <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
-
-        <div class="button-container">
-            <label for="gender" id="genderLabel">اختر الجنس:</label>
-            <select id="gender" name="gender">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
+    <div class="container">
+        <!-- نافذة النصوص والصوت -->
+        <div class="section">
+            <h2>إدخال النصوص</h2>
+            <textarea id="textInput" rows="5" placeholder="أدخل النص هنا..."></textarea>
+            <label for="languageSelect">اختر اللغة:</label>
+            <select id="languageSelect">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
             </select>
-
-            <label for="speed" id="speedLabel">سرعة الصوت:</label>
-            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+            <button onclick="convertTextToSpeech()">تحويل إلى صوت</button>
         </div>
 
-        <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
-    </div>
+        <!-- نافذة تحميل الصوت -->
+        <div class="section">
+            <h2>تحميل الصوت الناتج</h2>
+            <button onclick="downloadAudio()">تحميل الصوت</button>
+            <audio id="audioOutput" controls></audio>
+        </div>
 
-    <!-- نافذة متحركة -->
-    <div id="movingBox" class="moving-box">جاري التشغيل...</div>
+        <!-- نافذة تحميل الملفات -->
+        <div class="section">
+            <h2>تحميل ملفات نصية</h2>
+            <input type="file" id="fileInput" accept=".txt" onchange="handleFileUpload()">
+            <p id="fileContent"></p>
+        </div>
 
-    <!-- رابط تحميل الصوت -->
-    <div id="downloadContainer">
-        <a id="downloadLink" href="#" download>تحميل الصوت</a>
+        <!-- نافذة النص المتحرك -->
+        <div class="section">
+            <h2>النص المتزامن مع الصوت</h2>
+            <div class="text-animation">
+                <span id="animatedText">سيتم عرض النص المتزامن هنا...</span>
+            </div>
+        </div>
     </div>
 
     <script>
-        function convertTextToVoice() {
-            const text = document.getElementById('textToConvert').value;
-            const gender = document.getElementById('gender').value;
-            const speed = document.getElementById('speed').value;
-            const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
+        function convertTextToSpeech() {
+            const text = document.getElementById('textInput').value;
+            const language = document.getElementById('languageSelect').value;
 
-            if (!text.trim()) {
-                alert('الرجاء إدخال النص للتحويل.');
+            // مثال بسيط لمحاكاة تحويل النص إلى صوت
+            const audio = document.getElementById('audioOutput');
+            const animatedText = document.getElementById('animatedText');
+
+            if (text.trim() === "") {
+                alert("الرجاء إدخال نص!");
                 return;
             }
 
-            // تقدير مدة الصوت بناءً على طول النص وسرعة الصوت
-            const estimatedDuration = text.length / (speed * 10); // تقدير بسيط
-            const movingBox = document.getElementById('movingBox');
-
-            // تشغيل النص كصوت
-            responsiveVoice.speak(text, voice, {
-                rate: speed,
-                onend: () => {
-                    // عرض رابط التحميل عند انتهاء الصوت
-                    generateAudioFile(text, voice, speed);
-                }
-            });
-
-            // عرض النافذة المتحركة
-            movingBox.style.display = 'block';
-            movingBox.style.left = '0px'; // بدء الحركة من اليسار
-
-            // حركة النافذة
-            let startTime = null;
-            const animationDuration = estimatedDuration * 1000; // تحويل المدة إلى مللي ثانية
-
-            function animateBox(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const elapsed = timestamp - startTime;
-
-                // حساب الموضع الجديد بناءً على الوقت
-                const progress = Math.min(elapsed / animationDuration, 1);
-                const windowWidth = window.innerWidth - 150; // عرض الشاشة - عرض النافذة المتحركة
-                movingBox.style.left = progress * windowWidth + 'px';
-
-                if (progress < 1) {
-                    requestAnimationFrame(animateBox);
-                } else {
-                    movingBox.style.display = 'none'; // إخفاء النافذة بعد انتهاء الحركة
-                }
-            }
-
-            requestAnimationFrame(animateBox);
+            animatedText.textContent = text;
+            audio.src = "https://via.placeholder.com/150"; // استبدل بالرابط الناتج من التحويل الفعلي
+            alert(`تم تحويل النص إلى صوت (${language})!`);
         }
 
-        function generateAudioFile(text, voice, speed) {
-            const blob = new Blob([text], { type: 'text/plain' }); // محاكاة ملف الصوت كنص فقط
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.getElementById('downloadLink');
-            const downloadContainer = document.getElementById('downloadContainer');
+        function downloadAudio() {
+            const audio = document.getElementById('audioOutput');
+            if (!audio.src) {
+                alert("لا يوجد صوت للتحميل!");
+                return;
+            }
+            const link = document.createElement('a');
+            link.href = audio.src;
+            link.download = 'output.wav';
+            link.click();
+        }
 
-            downloadLink.href = url;
-            downloadLink.download = 'converted-audio.txt'; // اسم الملف الصوتي (محاكاة)
-            downloadContainer.style.display = 'block';
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const content = event.target.result;
+                    document.getElementById('textInput').value = content;
+                };
+                reader.readAsText(file);
+            }
         }
     </script>
 </body>
