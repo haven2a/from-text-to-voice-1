@@ -1,47 +1,133 @@
-<script>
-    async function sendPaymentData() {
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const fileInput = document.getElementById('paymentFile');
-        const file = fileInput.files[0];
-
-        // تحقق من الحقول المطلوبة
-        if (!name || !email || !file) {
-            alert('يرجى ملء جميع الحقول!');
-            return;
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدفع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        p {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        input[type="text"], input[type="email"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.3em;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<!-- Header (اللوغو) -->
+    <header>
+        <img src="logo.png" alt="Logo" id="logo" style="width: 150px;">
+    </header>
+    <div class="container">
+        <h1>الدفع</h1>
 
-        // قراءة ملف الدفع وتحويله إلى Base64
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64File = reader.result.split(',')[1]; // استخراج بيانات الملف
+        <p>ادفع إلى الحساب التالي: 4264232/64</p>
 
-            // إعداد البيانات لإرسالها إلى الخادم
-            const paymentData = {
-                name: name,
-                email: email,
-                paymentFile: base64File,
+        <h2>الاشتراك الشهري: 2500 دج</h2>
+        <h2>الاشتراك السنوي: 25000 دج</h2>
+
+        <!-- نموذج الإدخال -->
+        <input type="text" id="name" placeholder="الاسم الكامل" required>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="file" id="paymentFile" accept="image/*,.pdf" required>
+
+        <!-- زر الإرسال -->
+        <button onclick="sendPaymentData()">إرسال البيانات</button>
+    </div>
+
+    <script>
+        async function sendPaymentData() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const fileInput = document.getElementById('paymentFile');
+            const file = fileInput.files[0];
+
+            // تحقق من الحقول المطلوبة
+            if (!name || !email || !file) {
+                alert('يرجى ملء جميع الحقول!');
+                return;
+            }
+
+            // قراءة ملف الدفع وتحويله إلى Base64
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64File = reader.result.split(',')[1]; // استخراج بيانات الملف
+
+                // إعداد البيانات لإرسالها إلى الخادم
+                const paymentData = {
+                    name: name,
+                    email: email,
+                    paymentFile: base64File,
+                };
+
+                try {
+                    const response = await fetch('/api/save-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(paymentData),
+                    });
+
+                    if (response.ok) {
+                        window.location.href = "thank-you.html"; // بعد النجاح في الدفع، انتقل إلى صفحة "شكرًا"
+                    } else {
+                        alert('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+                    }
+                } catch (error) {
+                    console.error('خطأ في الاتصال بالخادم:', error);
+                    alert('تعذر الاتصال بالخادم.');
+                }
             };
 
-            try {
-                const response = await fetch('/api/save-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(paymentData),
-                });
+            reader.readAsDataURL(file);
+        }
+    </script>
 
-                if (response.ok) {
-                    // إعادة التوجيه إلى صفحة الشكر بعد النجاح
-                    window.location.href = "thank-you.html";
-                } else {
-                    alert('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
-                }
-            } catch (error) {
-                console.error('خطأ في الاتصال بالخادم:', error);
-                alert('تعذر الاتصال بالخادم.');
-            }
-        };
-
-        reader.readAsDataURL(file);
-    }
-</script>
+</body>
+</html>
