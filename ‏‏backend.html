@@ -1,0 +1,163 @@
+<<<<<<< HEAD
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const app = express();
+const port = 3000;
+
+// استخدام middleware لتحويل البيانات إلى JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// تقديم صفحة HTML للتسجيل
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'register.html'));
+});
+
+// مسار تسجيل المستخدم
+app.post('/register', (req, res) => {
+    const { username, email, password } = req.body;
+
+    // التحقق من إدخال جميع الحقول
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: 'جميع الحقول مطلوبة!' });
+    }
+
+    const usersFilePath = path.join(__dirname, 'data', 'users.json');
+
+    // التأكد من وجود الملف وإنشاؤه إذا لم يكن موجودًا
+    if (!fs.existsSync(usersFilePath)) {
+        fs.writeFileSync(usersFilePath, '[]');
+    }
+
+    fs.readFile(usersFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('❌ خطأ في قراءة ملف المستخدمين:', err);
+            return res.status(500).json({ success: false, message: 'حدث خطأ في النظام.' });
+        }
+
+        let users;
+        try {
+            users = JSON.parse(data);
+        } catch (e) {
+            console.error('❌ خطأ في تحليل ملف المستخدمين:', e);
+            return res.status(500).json({ success: false, message: 'خطأ في تنسيق ملف المستخدمين.' });
+        }
+
+        // التحقق من أن البريد الإلكتروني غير مستخدم مسبقًا
+        if (users.find(u => u.email === email)) {
+            return res.status(400).json({ success: false, message: 'البريد الإلكتروني مسجل مسبقًا' });
+        }
+
+        // تشفير كلمة المرور
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('❌ خطأ أثناء تشفير كلمة المرور:', err);
+                return res.status(500).json({ success: false, message: 'حدث خطأ أثناء معالجة البيانات.' });
+            }
+
+            // إنشاء مستخدم جديد
+            const newUser = { username, email, password: hashedPassword };
+            users.push(newUser);
+
+            // حفظ البيانات المحدثة في الملف
+            fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
+                if (err) {
+                    console.error('❌ خطأ أثناء حفظ المستخدم:', err);
+                    return res.status(500).json({ success: false, message: 'حدث خطأ أثناء حفظ البيانات.' });
+                }
+
+                console.log('✅ مستخدم جديد مسجل:', email);
+                res.status(200).json({ success: true, message: 'تم التسجيل بنجاح!' });
+            });
+        });
+    });
+});
+
+// تشغيل الخادم
+app.listen(port, () => {
+    console.log(`خادم Express يعمل على http://localhost:${port}`);
+});
+=======
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const app = express();
+const port = 3000;
+
+// استخدام middleware لتحويل البيانات إلى JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// تقديم صفحة HTML للتسجيل
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'register.html'));
+});
+
+// مسار تسجيل المستخدم
+app.post('/register', (req, res) => {
+    const { username, email, password } = req.body;
+
+    // التحقق من إدخال جميع الحقول
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: 'جميع الحقول مطلوبة!' });
+    }
+
+    const usersFilePath = path.join(__dirname, 'data', 'users.json');
+
+    // التأكد من وجود الملف وإنشاؤه إذا لم يكن موجودًا
+    if (!fs.existsSync(usersFilePath)) {
+        fs.writeFileSync(usersFilePath, '[]');
+    }
+
+    fs.readFile(usersFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('❌ خطأ في قراءة ملف المستخدمين:', err);
+            return res.status(500).json({ success: false, message: 'حدث خطأ في النظام.' });
+        }
+
+        let users;
+        try {
+            users = JSON.parse(data);
+        } catch (e) {
+            console.error('❌ خطأ في تحليل ملف المستخدمين:', e);
+            return res.status(500).json({ success: false, message: 'خطأ في تنسيق ملف المستخدمين.' });
+        }
+
+        // التحقق من أن البريد الإلكتروني غير مستخدم مسبقًا
+        if (users.find(u => u.email === email)) {
+            return res.status(400).json({ success: false, message: 'البريد الإلكتروني مسجل مسبقًا' });
+        }
+
+        // تشفير كلمة المرور
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('❌ خطأ أثناء تشفير كلمة المرور:', err);
+                return res.status(500).json({ success: false, message: 'حدث خطأ أثناء معالجة البيانات.' });
+            }
+
+            // إنشاء مستخدم جديد
+            const newUser = { username, email, password: hashedPassword };
+            users.push(newUser);
+
+            // حفظ البيانات المحدثة في الملف
+            fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
+                if (err) {
+                    console.error('❌ خطأ أثناء حفظ المستخدم:', err);
+                    return res.status(500).json({ success: false, message: 'حدث خطأ أثناء حفظ البيانات.' });
+                }
+
+                console.log('✅ مستخدم جديد مسجل:', email);
+                res.status(200).json({ success: true, message: 'تم التسجيل بنجاح!' });
+            });
+        });
+    });
+});
+
+// تشغيل الخادم
+app.listen(port, () => {
+    console.log(`خادم Express يعمل على http://localhost:${port}`);
+});
+>>>>>>> ccd0338 (رسالة التغيير)
