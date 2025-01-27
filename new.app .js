@@ -21,6 +21,13 @@ app.use(express.static(path.join(__dirname, 'support')));
 app.set('views', path.join(__dirname, 'public', 'templates')); // المسار هنا يشير إلى مجلد templates داخل public
 app.set('view engine', 'html');
 
+// إعداد مجلد الملفات الصوتية
+const audioFolder = path.join(__dirname, 'audio_files');
+if (!fs.existsSync(audioFolder)) {
+    fs.mkdirSync(audioFolder);
+    console.log('✅ تم إنشاء مجلد الملفات الصوتية: audio_files');
+}
+
 // مسار قاعدة البيانات
 const dbPath = path.join(__dirname, 'support_messages.db');
 
@@ -97,6 +104,49 @@ const sendWelcomeEmail = (to, username) => {
         console.log('✅ تم إرسال البريد الإلكتروني بنجاح:', info.response);
     });
 };
+
+// نقطة لتحويل النص إلى ملف صوتي (وهمية)
+app.post('/convert-to-audio', (req, res) => {
+    const { text, language } = req.body;
+
+    if (!text || !language) {
+        return res.status(400).json({ message: '⚠️ النص واللغة مطلوبان!' });
+    }
+
+    // توليد اسم ملف عشوائي
+    const fileName = `audio_${Date.now()}.mp3`;
+    const filePath = path.join(audioFolder, fileName);
+
+    // محاكاة إنشاء ملف صوتي (استبدل هذا الجزء بالتكامل مع مكتبة تحويل النص إلى صوت مثل gTTS أو أي أداة أخرى)
+    fs.writeFile(filePath, `Audio content for: ${text}`, (err) => {
+        if (err) {
+            console.error('❌ خطأ أثناء إنشاء الملف الصوتي:', err.message);
+            return res.status(500).json({ message: '❌ حدث خطأ أثناء إنشاء الملف الصوتي.' });
+        }
+
+        console.log('✅ تم إنشاء الملف الصوتي بنجاح:', filePath);
+        res.status(201).json({ message: '✅ تم إنشاء الملف الصوتي بنجاح!', fileName });
+    });
+});
+
+// نقطة لتحميل الملفات الصوتية
+app.get('/download-audio/:fileName', (req, res) => {
+    const fileName = req.params.fileName;
+    const filePath = path.join(audioFolder, fileName);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: '⚠️ الملف الصوتي غير موجود!' });
+    }
+
+    res.download(filePath, fileName, (err) => {
+        if (err) {
+            console.error('❌ خطأ أثناء تحميل الملف الصوتي:', err.message);
+            return res.status(500).json({ message: '❌ حدث خطأ أثناء تحميل الملف الصوتي.' });
+        }
+
+        console.log('✅ تم تحميل الملف الصوتي بنجاح:', fileName);
+    });
+});
 
 // نقطة لتسجيل العميل الجديد
 app.post('/subscribe', (req, res) => {
