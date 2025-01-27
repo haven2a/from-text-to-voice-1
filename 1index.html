@@ -75,15 +75,13 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease-in-out;
+            transition: all 0.5s ease-in-out;
             z-index: 1000;
         }
         .popup.show {
             display: block;
             transform: translate(-50%, -50%) scale(1);
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+            opacity: 1;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -102,7 +100,7 @@
         <h1 id="appTitle">تحويل النص إلى فيديو</h1>
     </header>
 
-    <div id="lockScreen" class="popup show fade-in">
+    <div id="lockScreen" class="popup show">
         <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
@@ -225,8 +223,60 @@
             const text = document.getElementById('textInput').value;
             const gender = document.getElementById('gender').value;
             const speed = parseFloat(document.getElementById('speed').value);
-            responsiveVoice.speak(text, gender === 'male' ? 'Arabic Male' : 'Arabic Female', { rate: speed });
+            const voice = (gender === "male") ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voice, { rate: speed });
         }
+
+        function downloadWord() {
+            const text = document.getElementById('textInput').value;
+            const blob = new Blob([text], { type: "application/msword" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "converted_text.doc";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioElement = document.getElementById("audioPlayback");
+                    audioElement.src = audioUrl;
+
+                    const downloadButton = document.getElementById("downloadAudioButton");
+                    downloadButton.style.display = "inline";
+                    downloadButton.href = audioUrl;
+                    downloadButton.download = "recorded_audio.wav";
+                };
+
+                alert("تم بدء التسجيل.");
+            });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                alert("تم إيقاف التسجيل.");
+            }
+        }
+
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
+
     </script>
 </body>
 </html>
