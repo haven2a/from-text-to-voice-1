@@ -98,6 +98,16 @@
             pointer-events: none;
             opacity: 0.5;
         }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -108,16 +118,18 @@
     </div>
 
     <div id="appContent" class="disabled">
-        <img src="https://via.placeholder.com/150x50?text=Logo" alt="Logo" class="logo">
-        <h1>تطبيق تحويل النص إلى صوت</h1>
-
-        <div class="language-toggle">
-            <button onclick="setLanguage('ar')">العربية</button>
-            <button onclick="setLanguage('en')">English</button>
+        <div class="top-bar">
+            <div class="language-toggle">
+                <button onclick="setLanguage('ar')">العربية</button>
+                <button onclick="setLanguage('en')">English</button>
+            </div>
         </div>
 
+        <img src="logo.png" alt="Logo" class="logo">
+        <h1>تطبيق تحويل النص إلى صوت</h1>
+
         <div class="container">
-            <!-- نافذة النصوص والصوت -->
+            <!-- نافذة النصوص -->
             <div class="section">
                 <h2>إدخال النصوص</h2>
                 <textarea id="textInput" rows="8" placeholder="أدخل النص هنا..."></textarea>
@@ -182,13 +194,13 @@
             }
 
             animatedText.textContent = text;
+            animatedText.style.animationDuration = `${text.split(' ').length / 2}s`;
 
             // استخدام كود تحويل النص إلى صوت
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = language === 'ar' ? 'ar-SA' : 'en-US';
             speechSynthesis.speak(utterance);
 
-            // محاكاة تحميل الصوت
             utterance.onend = () => {
                 alert("تم تشغيل النص بنجاح!");
             };
