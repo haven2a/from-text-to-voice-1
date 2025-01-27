@@ -229,35 +229,4 @@
 
             if (text.trim() === "") {
                 alert("يرجى إدخال نص للتحويل إلى صوت.");
-                return;
-            }
-
-            responsiveVoice.speak(text, voice, { rate: speed });
-
-            const audioBlob = new Blob([text], { type: "text/plain" }); // Placeholder for generated audio
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const convertedButton = document.getElementById("convertedAudioButton");
-
-            convertedButton.href = audioUrl;
-            convertedButton.style.display = "inline-block";
-            convertedButton.download = "converted_audio.mp3";
-        }
-
-        let mediaRecorder;
-        let audioChunks = [];
-        let audioUrl = "";
-
-        function startRecording() {
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.start();
-
-                    mediaRecorder.ondataavailable = event => {
-                        audioChunks.push(event.data);
-                    };
-
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        audioUrl = URL.createObjectURL(audio
+                return
