@@ -1,17 +1,79 @@
-<script>
-    function unlockApp() {
-        let code = document.getElementById('accessCode').value; // قراءة الكود المُدخل
-        const correctCode = "1234"; // الكود الصحيح (يمكن تغييره)
-
-        if (code === correctCode) {
-            // إذا كان الكود صحيحًا
-            document.getElementById('lockScreen').classList.add('hidden'); // إخفاء نافذة القفل
-            document.getElementById('appContent').classList.remove('hidden'); // إظهار التطبيق
-            document.getElementById('appContent').classList.remove('disabled');
-        } else {
-            // إذا كان الكود خاطئًا
-            alert("❌ كود الدخول غير صحيح. الرجاء المحاولة مرة أخرى!");
-            document.getElementById('accessCode').value = ""; // إعادة تعيين حقل الإدخال
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل التطبيق</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-    }
-</script>
+
+        #lockScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #lockScreen .lock-box {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #appContent {
+            display: none;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- نافذة التفعيل -->
+    <div id="lockScreen">
+        <div class="lock-box">
+            <h2>أدخل كود التفعيل</h2>
+            <input type="text" id="accessCode" placeholder="أدخل الكود هنا" />
+            <button onclick="unlockApp()">تفعيل</button>
+        </div>
+    </div>
+
+    <!-- محتوى التطبيق -->
+    <div id="appContent">
+        <h1>مرحبًا بك في التطبيق</h1>
+        <p>تم تفعيل التطبيق بنجاح!</p>
+    </div>
+
+    <script>
+        function unlockApp() {
+            let code = document.getElementById('accessCode').value; // قراءة الكود المُدخل
+            const correctCode = "1234"; // الكود الصحيح (يمكن تغييره)
+
+            if (code === correctCode) {
+                // إذا كان الكود صحيحًا
+                document.getElementById('lockScreen').classList.add('hidden'); // إخفاء نافذة القفل
+                document.getElementById('appContent').style.display = "block"; // إظهار التطبيق
+            } else {
+                // إذا كان الكود خاطئًا
+                alert("❌ كود الدخول غير صحيح. الرجاء المحاولة مرة أخرى!");
+                document.getElementById('accessCode').value = ""; // إعادة تعيين حقل الإدخال
+            }
+        }
+    </script>
+</body>
+</html>
