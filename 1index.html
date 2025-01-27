@@ -8,18 +8,19 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0f8ff;
             text-align: center;
             padding: 20px;
-            border: 10px solid #333;
+            border: 5px solid #007bff;
             width: 90%;
             margin: auto;
-            border-radius: 10px;
+            border-radius: 15px;
             direction: rtl;
         }
         h1 {
-            color: blue;
-            font-size: 28px;
+            color: #007bff;
+            font-size: 32px;
+            margin-bottom: 20px;
         }
         textarea, select, button, input {
             width: 80%;
@@ -36,11 +37,12 @@
             justify-items: center;
         }
         .section {
-            border: 2px solid #333;
+            border: 2px solid #007bff;
             border-radius: 10px;
             padding: 20px;
-            background-color: #fff;
+            background-color: #ffffff;
             width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .text-animation {
             font-size: 20px;
@@ -60,10 +62,37 @@
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .language-toggle button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .language-toggle button:hover {
+            background-color: #0056b3;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <img src="https://via.placeholder.com/150x50?text=Logo" alt="Logo" class="logo">
     <h1>تطبيق تحويل النص إلى صوت</h1>
+
+    <div class="language-toggle">
+        <button onclick="setLanguage('ar')">العربية</button>
+        <button onclick="setLanguage('en')">English</button>
+    </div>
 
     <div class="container">
         <!-- نافذة النصوص والصوت -->
@@ -102,11 +131,15 @@
     </div>
 
     <script>
+        function setLanguage(language) {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+            alert(`تم تغيير اللغة إلى ${language === 'ar' ? 'العربية' : 'English'}`);
+        }
+
         function convertTextToSpeech() {
             const text = document.getElementById('textInput').value;
             const language = document.getElementById('languageSelect').value;
-
-            // مثال بسيط لمحاكاة تحويل النص إلى صوت
             const audio = document.getElementById('audioOutput');
             const animatedText = document.getElementById('animatedText');
 
@@ -116,8 +149,15 @@
             }
 
             animatedText.textContent = text;
-            audio.src = "https://via.placeholder.com/150"; // استبدل بالرابط الناتج من التحويل الفعلي
-            alert(`تم تحويل النص إلى صوت (${language})!`);
+
+            // محاكاة تحويل النص إلى صوت
+            fetch(`https://api.fake-tts.com/generate?text=${encodeURIComponent(text)}&lang=${language}`)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    audio.src = url;
+                })
+                .catch(() => alert("حدث خطأ أثناء تحويل النص إلى صوت"));
         }
 
         function downloadAudio() {
