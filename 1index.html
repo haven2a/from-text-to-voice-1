@@ -78,24 +78,17 @@
             pointer-events: none;
             opacity: 0.5;
         }
-        #logo {
-            width: 100px; /* اضبط حجم الشعار حسب الحاجة */
-            margin-bottom: 20px; /* المسافة بين الشعار والنص */
-        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
 </head>
 <body>
     <div id="lockScreen" class="popup show">
-        <h2>إدخال رمز الدخول</h2>
+        <h2 id="lockScreenTitle">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
-        <button onclick="unlockApp()">دخول</button>
+        <button onclick="unlockApp()">{{unlockButton}}</button>
     </div>
 
     <div id="appContent" class="disabled">
-        <!-- إضافة الشعار هنا مع الربط إلى الملف المحلي -->
-        <img id="logo" src="images/logo.png" alt="شعار التطبيق">
-        
         <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى صوت</h1>
         <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
 
@@ -116,17 +109,60 @@
             <option value="en">English</option>
         </select>
 
-        <button type="button" id="convertButton" onclick="convertTextToVoice()">تحويل النص إلى صوت</button>
+        <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
 
-        <h2>تسجيل الصوت</h2>
+        <h2 id="recordingTitle">تسجيل الصوت</h2>
         <div class="button-container">
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="startRecording()">{{startRecordingButton}}</button>
+            <button onclick="stopRecording()">{{stopRecordingButton}}</button>
         </div>
         <audio id="audioPlayback" controls></audio>
     </div>
 
     <script>
+        let translations = {
+            ar: {
+                lockScreenTitle: "إدخال رمز الدخول",
+                unlockButton: "دخول",
+                greeting: "مرحبًا بك في تطبيق تحويل النص إلى صوت",
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                languageLabel: "اختر اللغة:",
+                convertButton: "تحويل النص إلى صوت",
+                recordingTitle: "تسجيل الصوت",
+                startRecordingButton: "بدء التسجيل",
+                stopRecordingButton: "إيقاف التسجيل"
+            },
+            en: {
+                lockScreenTitle: "Enter Access Code",
+                unlockButton: "Enter",
+                greeting: "Welcome to the Text to Speech App",
+                genderLabel: "Select Gender:",
+                speedLabel: "Speed:",
+                languageLabel: "Select Language:",
+                convertButton: "Convert Text to Speech",
+                recordingTitle: "Record Audio",
+                startRecordingButton: "Start Recording",
+                stopRecordingButton: "Stop Recording"
+            }
+        };
+
+        function changeLanguage() {
+            let language = document.getElementById('language').value;
+            let translation = translations[language];
+
+            document.getElementById("lockScreenTitle").textContent = translation.lockScreenTitle;
+            document.getElementById("unlockButton").textContent = translation.unlockButton;
+            document.getElementById("greeting").textContent = translation.greeting;
+            document.getElementById("genderLabel").textContent = translation.genderLabel;
+            document.getElementById("speedLabel").textContent = translation.speedLabel;
+            document.getElementById("languageLabel").textContent = translation.languageLabel;
+            document.getElementById("convertButton").textContent = translation.convertButton;
+            document.getElementById("recordingTitle").textContent = translation.recordingTitle;
+            document.getElementById("startRecordingButton").textContent = translation.startRecordingButton;
+            document.getElementById("stopRecordingButton").textContent = translation.stopRecordingButton;
+        }
+
         function unlockApp() {
             let code = document.getElementById('accessCode').value;
             if (code === "1234") {
@@ -170,27 +206,9 @@
             let speed = document.getElementById('speed').value;
             let language = document.getElementById('language').value;
 
-            let voice = gender === "female" ? (language === "en" ? "UK English Female" : "Arabic Female") :
-                        (language === "en" ? "UK English Male" : "Arabic Male");
+            let voice = gender === "female" ? "Arabic Female" : "Arabic Male";
 
             responsiveVoice.speak(text, voice, { rate: speed, lang: language });
-        }
-
-        function changeLanguage() {
-            let language = document.getElementById('language').value;
-            if (language === "en") {
-                document.getElementById("greeting").textContent = "Welcome to the Text to Voice App";
-                document.getElementById("genderLabel").textContent = "Select Gender:";
-                document.getElementById("speedLabel").textContent = "Speed:";
-                document.getElementById("languageLabel").textContent = "Select Language:";
-                document.getElementById("convertButton").textContent = "Convert Text to Speech";
-            } else {
-                document.getElementById("greeting").textContent = "مرحبًا بك في تطبيق تحويل النص إلى صوت";
-                document.getElementById("genderLabel").textContent = "اختر الجنس:";
-                document.getElementById("speedLabel").textContent = "سرعة الصوت:";
-                document.getElementById("languageLabel").textContent = "اختر اللغة:";
-                document.getElementById("convertButton").textContent = "تحويل النص إلى صوت";
-            }
         }
     </script>
 </body>
