@@ -1,159 +1,147 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق تحويل النص إلى صوت</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            overflow: hidden;
-        }
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const sqlite3 = require('sqlite3').verbose();
 
-        #lockScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+const app = express();
 
-        #lockScreen .lock-box {
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+// ✅ تحديد المنفذ
+const PORT = process.env.PORT || 3000;
 
-        #appContent {
-            display: none;
-            padding: 20px;
-        }
+// جعل مجلد "public" يحتوي على الملفات الثابتة
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'audio')));
 
-        .hidden {
-            display: none !important;
-        }
+// إعدادات view engine
+app.set('views', path.join(__dirname, 'public', 'templates'));
+app.set('view engine', 'html');
 
-        .container {
-            margin: 20px;
-        }
+// مسار قاعدة البيانات
+const dbPath = path.join(__dirname, 'support_messages.db');
 
-        .section {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+// التأكد من وجود قاعدة البيانات وإنشاؤها إذا لم تكن موجودة
+if (!fs.existsSync(dbPath)) {
+    const db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('❌ خطأ في إنشاء قاعدة البيانات:', err.message);
+        } else {
+            db.run(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    password TEXT NOT NULL,
+                    registeredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
 
-        .section h3 {
-            margin-bottom: 15px;
+                CREATE TABLE IF NOT EXISTS messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    message TEXT NOT NULL,
+                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            `, (err) => {
+                if (err) console.error('❌ خطأ في إنشاء الجدول:', err.message);
+            });
         }
+    });
+}
 
-        .smooth-scroll {
-            scroll-behavior: smooth;
-        }
+// إعدادات middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+// إعدادات nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'hacenatek9@gmail.com',
+        pass: 'hmhi fvrk nghr gdxd',
+    }
+});
 
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body class="smooth-scroll">
-    <!-- نافذة التفعيل -->
-    <div id="lockScreen">
-        <div class="lock-box">
-            <h2>أدخل كود التفعيل</h2>
-            <input type="text" id="accessCode" placeholder="أدخل الكود هنا" />
-            <button onclick="unlockApp()">تفعيل</button>
+// دالة لإرسال البريد الإلكتروني الترحيبي
+const sendWelcomeEmail = (to, username) => {
+    const htmlContent = `
+        <div style="font-family: 'Cairo', sans-serif; text-align: center;">
+            <h2>مرحبًا ${username}!</h2>
+            <p>شكرًا لتسجيلك في تطبيقنا. نتمنى لك تجربة رائعة!</p>
         </div>
-    </div>
+    `;
 
-    <!-- محتوى التطبيق -->
-    <div id="appContent">
-        <div class="container">
-            <!-- نافذة اللغة -->
-            <div class="section" id="languageSection">
-                <h3>اختيار اللغة</h3>
-                <select id="languageSelect">
-                    <option value="ar">العربية</option>
-                    <option value="en">English</option>
-                </select>
-                <button onclick="changeLanguage()">تغيير اللغة</button>
-            </div>
+    const mailOptions = {
+        from: 'hacenatek9@gmail.com',
+        to,
+        subject: 'مرحبًا بك في تطبيقنا!',
+        html: htmlContent,
+    };
 
-            <!-- نافذة اختيار الجنس -->
-            <div class="section" id="genderSection">
-                <h3>اختيار جنس القارئ</h3>
-                <select id="genderSelect">
-                    <option value="male">ذكر</option>
-                    <option value="female">أنثى</option>
-                </select>
-                <button onclick="chooseGender()">اختيار</button>
-            </div>
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) console.error('❌ خطأ أثناء إرسال البريد الإلكتروني:', err.message);
+    });
+};
 
-            <!-- نافذة التحميل -->
-            <div class="section" id="downloadSection">
-                <h3>تحميل الصوت</h3>
-                <button onclick="downloadAudio()">تحميل</button>
-            </div>
+// نقطة لتسجيل المستخدمين
+app.post('/subscribe', (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
+    }
 
-            <!-- نافذة إضافية لتحسين التصميم -->
-            <div class="section" id="extraSection">
-                <h3>ميزة إضافية</h3>
-                <p>هنا يمكنك إضافة أي ميزة ترغب بها لاحقًا.</p>
-            </div>
-        </div>
-    </div>
+    const db = new sqlite3.Database(dbPath);
+    db.get('SELECT email FROM users WHERE email = ?', [email], (err, row) => {
+        if (row) {
+            return res.status(400).json({ message: '❌ هذا البريد الإلكتروني مسجل بالفعل!' });
+        }
 
-    <script>
-        function unlockApp() {
-            let code = document.getElementById('accessCode').value; // قراءة الكود المُدخل
-            const correctCode = "1234"; // الكود الصحيح (يمكن تغييره)
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            db.run('INSERT INTO users (username, email, password, registeredAt) VALUES (?, ?, ?, ?)',
+                [username, email, hashedPassword, new Date().toISOString()], (err) => {
+                    if (!err) {
+                        sendWelcomeEmail(email, username);
+                        res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
+                    }
+                });
+        });
+    });
+});
 
-            if (code === correctCode) {
-                // إذا كان الكود صحيحًا
-                document.getElementById('lockScreen').classList.add('hidden'); // إخفاء نافذة القفل
-                document.getElementById('appContent').style.display = "block"; // إظهار التطبيق
-                document.body.style.overflow = "auto"; // تمكين التمرير
-            } else {
-                // إذا كان الكود خاطئًا
-                alert("❌ كود الدخول غير صحيح. الرجاء المحاولة مرة أخرى!");
-                document.getElementById('accessCode').value = ""; // إعادة تعيين حقل الإدخال
+// نقطة الدعم الفني
+app.post('/support', (req, res) => {
+    const { name, email, message } = req.body;
+    if (!name || !email || !message) {
+        return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
+    }
+
+    const db = new sqlite3.Database(dbPath);
+    db.run('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)',
+        [name, email, message], (err) => {
+            if (!err) {
+                res.status(201).json({ message: '✅ تم إرسال الرسالة بنجاح!' });
             }
-        }
+        });
+});
 
-        function changeLanguage() {
-            const selectedLanguage = document.getElementById('languageSelect').value;
-            alert(`تم تغيير اللغة إلى: ${selectedLanguage}`);
-        }
+// نقطة فحص كود التفعيل
+app.post('/activate', (req, res) => {
+    const { code } = req.body;
+    if (code === '1234') {
+        res.status(200).json({ message: '✅ الكود صحيح!' });
+    } else {
+        res.status(400).json({ message: '❌ الكود غير صحيح!' });
+    }
+});
 
-        function chooseGender() {
-            const selectedGender = document.getElementById('genderSelect').value;
-            alert(`تم اختيار القارئ: ${selectedGender}`);
-        }
+// نقطة عرض الصفحة الرئيسية
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
-        function downloadAudio() {
-            alert("تم تفعيل عملية تحميل الصوت.");
-        }
-    </script>
-</body>
-</html>
+// تشغيل السيرفر
+app.listen(PORT, () => {
+    console.log(`🚀 السيرفر يعمل على http://localhost:${PORT}`);
+});
