@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفعيل التطبيق</title>
+    <title>تطبيق تحويل النص إلى صوت</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            overflow: hidden;
         }
 
         #lockScreen {
@@ -41,9 +42,42 @@
         .hidden {
             display: none !important;
         }
+
+        .container {
+            margin: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+        }
+
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
-<body>
+<body class="smooth-scroll">
     <!-- نافذة التفعيل -->
     <div id="lockScreen">
         <div class="lock-box">
@@ -55,8 +89,39 @@
 
     <!-- محتوى التطبيق -->
     <div id="appContent">
-        <h1>مرحبًا بك في التطبيق</h1>
-        <p>تم تفعيل التطبيق بنجاح!</p>
+        <div class="container">
+            <!-- نافذة اللغة -->
+            <div class="section" id="languageSection">
+                <h3>اختيار اللغة</h3>
+                <select id="languageSelect">
+                    <option value="ar">العربية</option>
+                    <option value="en">English</option>
+                </select>
+                <button onclick="changeLanguage()">تغيير اللغة</button>
+            </div>
+
+            <!-- نافذة اختيار الجنس -->
+            <div class="section" id="genderSection">
+                <h3>اختيار جنس القارئ</h3>
+                <select id="genderSelect">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+                <button onclick="chooseGender()">اختيار</button>
+            </div>
+
+            <!-- نافذة التحميل -->
+            <div class="section" id="downloadSection">
+                <h3>تحميل الصوت</h3>
+                <button onclick="downloadAudio()">تحميل</button>
+            </div>
+
+            <!-- نافذة إضافية لتحسين التصميم -->
+            <div class="section" id="extraSection">
+                <h3>ميزة إضافية</h3>
+                <p>هنا يمكنك إضافة أي ميزة ترغب بها لاحقًا.</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -68,11 +133,26 @@
                 // إذا كان الكود صحيحًا
                 document.getElementById('lockScreen').classList.add('hidden'); // إخفاء نافذة القفل
                 document.getElementById('appContent').style.display = "block"; // إظهار التطبيق
+                document.body.style.overflow = "auto"; // تمكين التمرير
             } else {
                 // إذا كان الكود خاطئًا
                 alert("❌ كود الدخول غير صحيح. الرجاء المحاولة مرة أخرى!");
                 document.getElementById('accessCode').value = ""; // إعادة تعيين حقل الإدخال
             }
+        }
+
+        function changeLanguage() {
+            const selectedLanguage = document.getElementById('languageSelect').value;
+            alert(`تم تغيير اللغة إلى: ${selectedLanguage}`);
+        }
+
+        function chooseGender() {
+            const selectedGender = document.getElementById('genderSelect').value;
+            alert(`تم اختيار القارئ: ${selectedGender}`);
+        }
+
+        function downloadAudio() {
+            alert("تم تفعيل عملية تحميل الصوت.");
         }
     </script>
 </body>
