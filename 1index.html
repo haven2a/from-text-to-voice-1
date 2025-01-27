@@ -1,147 +1,149 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
-const sqlite3 = require('sqlite3').verbose();
-
-const app = express();
-
-// ✅ تحديد المنفذ
-const PORT = process.env.PORT || 3000;
-
-// جعل مجلد "public" يحتوي على الملفات الثابتة
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public', 'audio')));
-
-// إعدادات view engine
-app.set('views', path.join(__dirname, 'public', 'templates'));
-app.set('view engine', 'html');
-
-// مسار قاعدة البيانات
-const dbPath = path.join(__dirname, 'support_messages.db');
-
-// التأكد من وجود قاعدة البيانات وإنشاؤها إذا لم تكن موجودة
-if (!fs.existsSync(dbPath)) {
-    const db = new sqlite3.Database(dbPath, (err) => {
-        if (err) {
-            console.error('❌ خطأ في إنشاء قاعدة البيانات:', err.message);
-        } else {
-            db.run(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT NOT NULL,
-                    email TEXT NOT NULL,
-                    password TEXT NOT NULL,
-                    registeredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                CREATE TABLE IF NOT EXISTS messages (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    email TEXT NOT NULL,
-                    message TEXT NOT NULL,
-                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            `, (err) => {
-                if (err) console.error('❌ خطأ في إنشاء الجدول:', err.message);
-            });
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل النص إلى فيديو</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+            direction: rtl;
         }
-    });
-}
-
-// إعدادات middlewares
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-// إعدادات nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'hacenatek9@gmail.com',
-        pass: 'hmhi fvrk nghr gdxd',
-    }
-});
-
-// دالة لإرسال البريد الإلكتروني الترحيبي
-const sendWelcomeEmail = (to, username) => {
-    const htmlContent = `
-        <div style="font-family: 'Cairo', sans-serif; text-align: center;">
-            <h2>مرحبًا ${username}!</h2>
-            <p>شكرًا لتسجيلك في تطبيقنا. نتمنى لك تجربة رائعة!</p>
-        </div>
-    `;
-
-    const mailOptions = {
-        from: 'hacenatek9@gmail.com',
-        to,
-        subject: 'مرحبًا بك في تطبيقنا!',
-        html: htmlContent,
-    };
-
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) console.error('❌ خطأ أثناء إرسال البريد الإلكتروني:', err.message);
-    });
-};
-
-// نقطة لتسجيل المستخدمين
-app.post('/subscribe', (req, res) => {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
-    }
-
-    const db = new sqlite3.Database(dbPath);
-    db.get('SELECT email FROM users WHERE email = ?', [email], (err, row) => {
-        if (row) {
-            return res.status(400).json({ message: '❌ هذا البريد الإلكتروني مسجل بالفعل!' });
+        #logo {
+            margin-bottom: 20px;
         }
-
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
-            db.run('INSERT INTO users (username, email, password, registeredAt) VALUES (?, ?, ?, ?)',
-                [username, email, hashedPassword, new Date().toISOString()], (err) => {
-                    if (!err) {
-                        sendWelcomeEmail(email, username);
-                        res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
-                    }
-                });
-        });
-    });
-});
-
-// نقطة الدعم الفني
-app.post('/support', (req, res) => {
-    const { name, email, message } = req.body;
-    if (!name || !email || !message) {
-        return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
-    }
-
-    const db = new sqlite3.Database(dbPath);
-    db.run('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)',
-        [name, email, message], (err) => {
-            if (!err) {
-                res.status(201).json({ message: '✅ تم إرسال الرسالة بنجاح!' });
+        h1 {
+            color: blue;
+            font-size: 28px;
+        }
+        textarea, select, button, input[type="range"] {
+            width: 90%;
+            margin: 10px 0;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .popup h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .popup input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .popup button {
+            background-color: #34d399;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .popup button:hover {
+            background-color: #059669;
+        }
+        .popup.show {
+            display: block;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
             }
-        });
-});
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الشعار -->
+    <div id="logo">
+        <img src="https://via.placeholder.com/150" alt="شعار التطبيق" style="width: 150px; border-radius: 50%;">
+    </div>
 
-// نقطة فحص كود التفعيل
-app.post('/activate', (req, res) => {
-    const { code } = req.body;
-    if (code === '1234') {
-        res.status(200).json({ message: '✅ الكود صحيح!' });
-    } else {
-        res.status(400).json({ message: '❌ الكود غير صحيح!' });
-    }
-});
+    <!-- نافذة إدخال كود التفعيل -->
+    <div id="lockScreen" class="popup show">
+        <h2>إدخال رمز الدخول</h2>
+        <input type="password" id="accessCode" placeholder="أدخل الكود">
+        <button onclick="unlockApp()">دخول</button>
+    </div>
 
-// نقطة عرض الصفحة الرئيسية
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+    <!-- محتوى التطبيق -->
+    <div id="appContent" class="disabled">
+        <h1>مرحبًا بك في تطبيق تحويل النص إلى فيديو</h1>
+        <form action="/generate-audio" method="post">
+            <textarea name="text" placeholder="أدخل النص هنا" rows="6"></textarea>
 
-// تشغيل السيرفر
-app.listen(PORT, () => {
-    console.log(`🚀 السيرفر يعمل على http://localhost:${PORT}`);
-});
+            <label for="gender">اختر الجنس:</label>
+            <select id="gender" name="gender">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+
+            <label for="speed">سرعة الصوت:</label>
+            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+
+            <label for="language">اختر اللغة:</label>
+            <select id="language" name="language">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+
+            <button type="submit">تحويل إلى صوت</button>
+        </form>
+    </div>
+
+    <script>
+        function unlockApp() {
+            let code = document.getElementById('accessCode').value;
+            if (code === "1234") {
+                document.getElementById('lockScreen').classList.remove('show');
+                document.getElementById('appContent').classList.remove('disabled');
+            } else {
+                alert("رمز الدخول غير صحيح!");
+            }
+        }
+    </script>
+</body>
+</html>
