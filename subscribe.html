@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -172,3 +173,174 @@
 
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل جديد</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .register-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 400px;
+            border: 5px solid #007bff;
+        }
+
+        .register-box h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .register-box input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            outline: none;
+        }
+
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-container input {
+            width: 100%;
+        }
+
+        .password-container span {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #007bff;
+        }
+
+        .terms {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .terms input {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .register-box button {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .register-box button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .register-box button:hover:not(:disabled) {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <h2>تسجيل جديد</h2>
+        <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
+        <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
+        
+        <div class="password-container">
+            <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
+            <span onclick="togglePassword()">👁️</span>
+        </div>
+
+        <div class="terms">
+            <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
+            <label for="termsCheckbox">أوافق على <a href="#">سياسة الخصوصية</a> و <a href="#">شروط الاستخدام</a></label>
+        </div>
+
+        <button id="registerButton" disabled onclick="registerUser()">تسجيل</button>
+    </div>
+
+    <script>
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
+        }
+
+        function toggleRegisterButton() {
+            var checkbox = document.getElementById("termsCheckbox");
+            var button = document.getElementById("registerButton");
+            button.disabled = !checkbox.checked;
+        }
+
+        async function registerUser() {
+            const username = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !email || !password) {
+                alert('الرجاء ملء جميع الحقول!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
+                    // توجيه المستخدم إلى صفحة "تم التسجيل بنجاح"
+                    window.location.href = '/activation-info.html'; // هذه الصفحة هي التي تشرح للمستخدم أنه يجب التحقق من بريده الإلكتروني
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('خطأ أثناء محاولة التسجيل:', error);
+                alert('حدث خطأ، يرجى المحاولة لاحقًا.');
+            }
+        }
+    </script>
+
+</body>
+</html>
+>>>>>>> ccd0338 (رسالة التغيير)

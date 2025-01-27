@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* استيراد خط "كايرو" */
 body {
   font-family: 'Cairo', sans-serif;
@@ -68,4 +69,96 @@ footer {
 
 .footer-links a:hover {
   color: #ffc107;
+=======
+/* تطبيق الخطوط والتنسيقات الأساسية */
+body {
+    font-family: 'Cairo', sans-serif; /* استخدام خط كايرو */
+    background-color: #f0f4f8;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    direction: rtl; /* الكتابة من اليمين لليسار */
+    border: 2px solid #ccc; /* إطار حول الصفحة */
+    border-radius: 8px;
+    font-size: 18px; /* تكبير حجم الخط */
+}
+
+/* تنسيق الحاوية */
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 30px; /* زيادة المسافة داخل الحاوية */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* إضافة الشعار في أعلى الحاوية */
+.container img {
+    width: 100px; /* ضبط حجم الشعار */
+    margin-bottom: 20px; /* مسافة بين الشعار والعنوان */
+}
+
+/* تنسيق العنوان */
+h1 {
+    color: #007bff; /* اللون الأزرق للعناوين */
+    font-size: 2.5em; /* تكبير حجم الخط */
+    margin-bottom: 20px;
+}
+
+/* تنسيق النص المهم */
+.important-info {
+    font-weight: bold;
+    font-size: 1.5em; /* تكبير حجم النص */
+    margin-bottom: 20px;
+    color: #000;
+}
+
+/* تنسيق المبلغ المعروض */
+.amount {
+    font-size: 2em; /* تكبير حجم المبلغ */
+    color: #007bff; /* اللون الأزرق للمبلغ */
+}
+
+/* تنسيق النصوص والملاحظات */
+.info {
+    color: #f44336; /* اللون الأحمر للملاحظات */
+    font-size: 1.2em; /* تكبير حجم النص */
+    margin-top: 10px;
+}
+
+/* تنسيق الروابط */
+a {
+    color: red; /* اللون الأحمر للروابط */
+    text-decoration: none;
+}
+
+/* تنسيق الزر */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: 15px; /* زيادة حجم الزر */
+    border-radius: 8px;
+    font-size: 1.2em; /* تكبير حجم الخط في الزر */
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* تنسيق الشعار في الأعلى */
+header a {
+    display: block;
+    margin-bottom: 20px; /* المسافة بين الشعار والمحتوى */
+}
+
+header img.logo {
+    width: 250px; /* تحديد عرض الشعار إلى 200 بكسل */
+    height: 250px; /* تحديد ارتفاع الشعار إلى 200 بكسل */
+    margin: 0 auto; /* مركز الشعار */
+>>>>>>> ccd0338 (رسالة التغيير)
 }

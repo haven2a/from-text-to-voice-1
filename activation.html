@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -91,4 +92,99 @@
         });
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل الحساب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 80%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input {
+            padding: 10px;
+            font-size: 1.2em;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>تفعيل الحساب</h1>
+        <form id="activation-form">
+            <input type="text" id="activation-code" placeholder="أدخل كود التفعيل" required />
+            <button type="submit">تفعيل الحساب</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('activation-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // جلب الكود المدخل
+            const activationCode = document.getElementById('activation-code').value;
+
+            // إرسال الكود إلى الخادم للتحقق من صحته
+            fetch('/activate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activationCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم تفعيل الحساب بنجاح!');
+                    window.location.href = '/app';  // تحويل العميل إلى التطبيق بعد التفعيل
+                } else {
+                    alert('الكود غير صحيح.');
+                }
+            })
+            .catch(error => alert('حدث خطأ: ' + error));
+        });
+    </script>
+</body>
+>>>>>>> ccd0338 (رسالة التغيير)
 </html>
