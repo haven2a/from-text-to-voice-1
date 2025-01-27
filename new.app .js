@@ -102,6 +102,8 @@ const sendWelcomeEmail = (to, username) => {
 app.post('/subscribe', (req, res) => {
     const { username, email, password } = req.body;
 
+    console.log('البيانات المستلمة للتسجيل:', { username, email, password });  // إضافة تتبع للبيانات المستلمة
+
     // التحقق من وجود كافة الحقول
     if (!username || !email || !password) {
         return res.status(400).json({ message: '⚠️ جميع الحقول (الاسم، البريد الإلكتروني، وكلمة المرور) مطلوبة!' });
@@ -110,6 +112,7 @@ app.post('/subscribe', (req, res) => {
     // قراءة البيانات من users.json
     fs.readFile(path.join(__dirname, 'users.json'), 'utf-8', (err, data) => {
         if (err) {
+            console.error('❌ خطأ في قراءة بيانات المستخدمين:', err.message);
             return res.status(500).json({ message: '❌ حدث خطأ في قراءة بيانات المستخدمين.' });
         }
 
@@ -127,6 +130,7 @@ app.post('/subscribe', (req, res) => {
         // تشفير كلمة المرور باستخدام bcrypt
         bcrypt.hash(password, 10, (err, hashedPassword) => {
             if (err) {
+                console.error('❌ خطأ في تشفير كلمة المرور:', err.message);
                 return res.status(500).json({ message: '❌ حدث خطأ أثناء تشفير كلمة المرور.' });
             }
 
@@ -142,11 +146,14 @@ app.post('/subscribe', (req, res) => {
             // حفظ البيانات المحدثة في ملف users.json
             fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2), (err) => {
                 if (err) {
+                    console.error('❌ خطأ في حفظ بيانات المستخدم:', err.message);
                     return res.status(500).json({ message: '❌ حدث خطأ في حفظ بيانات المستخدم.' });
                 }
 
                 // إرسال البريد الإلكتروني الترحيبي
                 sendWelcomeEmail(email, username);
+
+                console.log('✅ تم تسجيل العميل بنجاح:', { username, email });
 
                 res.status(201).json({ message: '✅ تم تسجيل العميل بنجاح!' });
             });
@@ -156,12 +163,15 @@ app.post('/subscribe', (req, res) => {
 
 // نقطة لعرض الصفحة الرئيسية
 app.get('/', (req, res) => {
+    console.log('تم الوصول إلى الصفحة الرئيسية');
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // نقطة إرسال رسائل الدعم الفني
 app.post('/support', (req, res) => {
     const { name, email, message } = req.body;
+
+    console.log('البيانات المستلمة من العميل للدعم الفني:', { name, email, message });  // إضافة تتبع للبيانات المستلمة
 
     if (!name || !email || !message) {
         return res.status(400).json({ message: '⚠️ الاسم، البريد الإلكتروني، والرسالة مطلوبة!' });
@@ -172,6 +182,7 @@ app.post('/support', (req, res) => {
     const stmt = db.prepare("INSERT INTO messages (name, email, message) VALUES (?, ?, ?)");
     stmt.run(name, email, message, function(err) {
         if (err) {
+            console.error('❌ خطأ أثناء إدخال البيانات في قاعدة البيانات:', err.message);
             return res.status(500).json({ message: '❌ حدث خطأ أثناء إرسال الرسالة.' });
         }
         res.status(201).json({ message: '✅ تم إرسال الرسالة بنجاح!' });
