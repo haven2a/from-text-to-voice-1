@@ -128,7 +128,6 @@
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                <button type="button" onclick="downloadWord()" id="downloadWordButton">تحميل ملف Word</button>
             </div>
         </form>
         <h2 id="recordingTitle">تسجيل الصوت</h2>
@@ -138,10 +137,6 @@
             <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
         </div>
         <audio id="audioPlayback" controls></audio>
-        <h2 id="downloadAudioTitle">تحميل الصوت الناتج</h2>
-        <div class="button-container">
-            <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
-        </div>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
@@ -158,12 +153,9 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
-                downloadWordButton: "تحميل ملف Word",
                 recordingTitle: "تسجيل الصوت",
                 startRecordButton: "بدء التسجيل",
                 stopRecordButton: "إيقاف التسجيل",
-                downloadAudioTitle: "تحميل الصوت",
-                downloadAudioButton: "تحميل الصوت الناتج",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
                 textInput: "أدخل النص هنا"
             },
@@ -175,12 +167,9 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
-                downloadWordButton: "Download Word File",
                 recordingTitle: "Audio Recording",
                 startRecordButton: "Start Recording",
                 stopRecordButton: "Stop Recording",
-                downloadAudioTitle: "Download Audio",
-                downloadAudioButton: "Download Generated Audio",
                 convertedAudioTitle: "Download Converted Audio",
                 textInput: "Enter text here"
             }
@@ -197,12 +186,9 @@
             document.getElementById('genderLabel').innerText = translation.genderLabel;
             document.getElementById('speedLabel').innerText = translation.speedLabel;
             document.getElementById('playButton').innerText = translation.playButton;
-            document.getElementById('downloadWordButton').innerText = translation.downloadWordButton;
             document.getElementById('recordingTitle').innerText = translation.recordingTitle;
             document.getElementById('startRecordButton').innerText = translation.startRecordButton;
             document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
-            document.getElementById('downloadAudioTitle').innerText = translation.downloadAudioTitle;
-            document.getElementById('downloadAudioButton').innerText = translation.downloadAudioButton;
             document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
             document.getElementById('textInput').placeholder = translation.textInput;
         }
@@ -227,17 +213,6 @@
             responsiveVoice.speak(text, voice, { rate: speed });
         }
 
-        function downloadWord() {
-            const text = document.getElementById('textInput').value;
-            const blob = new Blob([text], { type: "application/msword" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "converted_text.doc";
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
         let mediaRecorder;
         let audioChunks = [];
 
@@ -255,11 +230,6 @@
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audioElement = document.getElementById("audioPlayback");
                     audioElement.src = audioUrl;
-
-                    const downloadButton = document.getElementById("downloadAudioButton");
-                    downloadButton.style.display = "inline";
-                    downloadButton.href = audioUrl;
-                    downloadButton.download = "recorded_audio.wav";
                 };
 
                 alert("تم بدء التسجيل.");
