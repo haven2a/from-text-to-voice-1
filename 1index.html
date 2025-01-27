@@ -142,7 +142,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="downloadAudioTitle">تحميل الصوت الناتج</h2>
         <div class="button-container">
-            <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
+            <a id="downloadAudioButton" style="display: none;" download="output.mp3">تحميل الصوت الناتج</a>
         </div>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
@@ -273,4 +273,4 @@
                     alert("تم بدء التسجيل.");
                 })
                 .catch(error => {
-                    console.error("حدث خطأ أثناء محاولة الوصول إلى الميكروفون:", error);
+                    console.error("حدث خطأ أثناء محاولة الوصول إلى الميكروفون:
