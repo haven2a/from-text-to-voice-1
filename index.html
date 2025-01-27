@@ -14,6 +14,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -22,6 +23,7 @@
         .container {
             width: 80%;
             text-align: center;
+            margin-bottom: 50px; /* إضافة مسافة أسفل المحتوى قبل الفوتر */
         }
 
         .logo img {
@@ -31,7 +33,7 @@
 
         h1, h2, p {
             margin: 20px 0;
-            padding: 10px;
+            padding: 15px;
             background-color: #ffffe0; /* خلفية فاتحة */
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -39,17 +41,17 @@
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 4em; /* تكبير حجم الخط */
             color: #FF5733; /* لون نص عناوين كبير */
         }
 
         h2 {
-            font-size: 2em;
+            font-size: 2.5em; /* تكبير حجم الخط */
             color: #FF5733;
         }
 
         p {
-            font-size: 1.2em;
+            font-size: 1.5em; /* تكبير حجم الخط */
             color: #333;
         }
 
@@ -73,15 +75,15 @@
 
         .video-section iframe {
             width: 100%;
-            max-width: 560px;
-            height: 315px;
+            max-width: 700px; /* زيادة الحجم ليناسب التنسيق */
+            height: 400px; /* تكبير الفيديو */
             margin-top: 20px;
             border-radius: 10px;
         }
 
         .arrow-link {
             display: inline-block;
-            font-size: 1.2em;
+            font-size: 1.5em; /* تكبير حجم الخط */
             color: #4CAF50;
             margin-top: 20px;
             text-decoration: none;
@@ -89,36 +91,44 @@
         }
 
         .arrow {
-            font-size: 2em;
+            font-size: 2.5em;
             color: #FF5733;
         }
 
         .subscribe-section a {
             display: block;
             margin-top: 30px;
-            font-size: 1.5em;
+            font-size: 2em; /* تكبير حجم الخط */
             color: #0000FF;
             text-decoration: none;
-            padding: 10px;
+            padding: 15px;
             background-color: #ffffe0;
             border-radius: 10px;
         }
 
         footer {
-            margin-top: 30px;
+            margin-top: 50px;
             background-color: #333;
             color: white;
-            padding: 10px 0;
+            padding: 20px 0;
+            width: 100%;
+            text-align: center;
         }
 
         footer a {
             color: #FF5733;
             margin: 0 15px;
+            font-size: 1.3em;
             text-decoration: none;
         }
 
         footer p {
-            font-size: 1.2em;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        footer a:hover {
+            color: #FF0000;
         }
     </style>
 </head>
