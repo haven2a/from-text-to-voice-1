@@ -140,9 +140,13 @@
             <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
         </div>
         <audio id="audioPlayback" controls></audio>
-        <h2 id="downloadAudioTitle">تحميل الصوت</h2>
+        <h2 id="downloadAudioTitle">تحميل الصوت الناتج</h2>
         <div class="button-container">
             <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
+        </div>
+        <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
+        <div class="button-container">
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
         </div>
     </div>
 
@@ -162,6 +166,7 @@
                 stopRecordButton: "إيقاف التسجيل",
                 downloadAudioTitle: "تحميل الصوت",
                 downloadAudioButton: "تحميل الصوت الناتج",
+                convertedAudioTitle: "تحميل الصوت المحول من النص",
                 textInput: "أدخل النص هنا"
             },
             en: {
@@ -178,6 +183,7 @@
                 stopRecordButton: "Stop Recording",
                 downloadAudioTitle: "Download Audio",
                 downloadAudioButton: "Download Generated Audio",
+                convertedAudioTitle: "Download Converted Audio",
                 textInput: "Enter text here"
             }
         };
@@ -199,6 +205,7 @@
             document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
             document.getElementById('downloadAudioTitle').innerText = translation.downloadAudioTitle;
             document.getElementById('downloadAudioButton').innerText = translation.downloadAudioButton;
+            document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
             document.getElementById('textInput').placeholder = translation.textInput;
         }
 
@@ -263,36 +270,4 @@
                 audio.currentTime = 0;
                 alert("تم إيقاف الصوت.");
             } else {
-                alert("لا يوجد صوت نشط لإيقافه.");
-            }
-        }
-
-        function downloadWord() {
-            const textContent = document.getElementById("textInput").value;
-            if (!textContent) {
-                alert("يرجى إدخال نص قبل التحميل!");
-                return;
-            }
-            const blob = new Blob([textContent], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "output.docx";
-            link.click();
-        }
-
-        function playVoice() {
-            const text = document.getElementById("textInput").value;
-            const gender = document.getElementById("gender").value;
-            const speed = document.getElementById("speed").value;
-
-            if (!text) {
-                alert("يرجى إدخال نص لتشغيل الصوت!");
-                return;
-            }
-
-            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
-            responsiveVoice.speak(text, voice, { rate: speed });
-        }
-    </script>
-</body>
-</html>
+                alert("لا يوجد صوت نشط لإ
