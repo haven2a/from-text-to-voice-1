@@ -71,9 +71,39 @@
             font-size: 18px;
             display: none;
         }
+
+        /* نافذة تغيير اللغة */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 10px;
+        }
+        header select {
+            font-size: 18px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <!-- تغيير اللغة -->
+    <header>
+        <h1>تحويل النص إلى صوت</h1>
+        <select id="language-switch" onchange="switchLanguage()">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+    </header>
+
     <!-- شعار التطبيق -->
     <img id="logo" src="logo.png" alt="Logo">
 
@@ -93,10 +123,23 @@
         </div>
 
         <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
+
+        <!-- تحميل ملفات -->
+        <div class="button-container">
+            <button onclick="document.getElementById('word-upload').click()">تحميل ملف Word</button>
+            <input type="file" id="word-upload" accept=".doc,.docx" style="display: none;">
+
+            <button onclick="document.getElementById('audio-upload').click()">تحميل الصوت</button>
+            <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
+        </div>
     </div>
 
     <!-- نافذة متحركة -->
     <div id="movingBox" class="moving-box">جاري التشغيل...</div>
+
+    <footer>
+        <p>حقوق الطبع والنشر &copy; 2025 - جميع الحقوق محفوظة</p>
+    </footer>
 
     <script>
         function convertTextToVoice() {
@@ -105,38 +148,44 @@
             const speed = document.getElementById('speed').value;
             const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
 
-            // تقدير مدة الصوت بناءً على طول النص وسرعة الصوت
-            const estimatedDuration = text.length / (speed * 10); // تقدير بسيط
+            const estimatedDuration = text.length / (speed * 10); 
             const movingBox = document.getElementById('movingBox');
             
-            // تشغيل النص كصوت
             responsiveVoice.speak(text, voice, { rate: speed });
 
-            // عرض النافذة المتحركة
             movingBox.style.display = 'block';
-            movingBox.style.left = '0px'; // بدء الحركة من اليسار
+            movingBox.style.left = '0px';
 
-            // حركة النافذة
             let startTime = null;
-            const animationDuration = estimatedDuration * 1000; // تحويل المدة إلى مللي ثانية
+            const animationDuration = estimatedDuration * 1000; 
 
             function animateBox(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const elapsed = timestamp - startTime;
 
-                // حساب الموضع الجديد بناءً على الوقت
                 const progress = Math.min(elapsed / animationDuration, 1);
-                const windowWidth = window.innerWidth - 150; // عرض الشاشة - عرض النافذة المتحركة
+                const windowWidth = window.innerWidth - 150;
                 movingBox.style.left = progress * windowWidth + 'px';
 
                 if (progress < 1) {
                     requestAnimationFrame(animateBox);
                 } else {
-                    movingBox.style.display = 'none'; // إخفاء النافذة بعد انتهاء الحركة
+                    movingBox.style.display = 'none';
                 }
             }
 
             requestAnimationFrame(animateBox);
+        }
+
+        function switchLanguage() {
+            const lang = document.getElementById('language-switch').value;
+            if (lang === 'en') {
+                document.body.setAttribute('dir', 'ltr');
+                document.body.setAttribute('lang', 'en');
+            } else {
+                document.body.setAttribute('dir', 'rtl');
+                document.body.setAttribute('lang', 'ar');
+            }
         }
     </script>
 </body>
