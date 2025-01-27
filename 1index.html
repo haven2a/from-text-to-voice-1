@@ -141,7 +141,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="downloadAudioTitle">تحميل الصوت</h2>
         <div class="button-container">
-            <button onclick="downloadAudio()" id="downloadAudioButton">تحميل الصوت الناتج</button>
+            <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
         </div>
     </div>
 
@@ -211,30 +211,42 @@
             }
         }
 
-        function playVoice() {
-            const text = document.getElementById('textInput').value;
-            const gender = document.getElementById('gender').value;
-            const speed = document.getElementById('speed').value;
+        let mediaRecorder;
+        let audioChunks = [];
 
-            if (!text) {
-                alert("الرجاء إدخال النص لتشغيل الصوت!");
-                return;
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = document.getElementById("audioPlayback");
+                        audio.src = audioUrl;
+
+                        // إظهار زر التحميل
+                        const downloadButton = document.getElementById('downloadAudioButton');
+                        downloadButton.href = audioUrl;
+                        downloadButton.style.display = 'inline-block';
+                        downloadButton.download = 'output.mp3';
+                    };
+
+                    console.log("Recording started...");
+                })
+                .catch(error => console.error("Error accessing microphone:", error));
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                console.log("Recording stopped.");
             }
-
-            let voice = "Arabic Female";
-            if (gender === "male") {
-                voice = "Arabic Male";
-            }
-
-            responsiveVoice.speak(text, voice, {
-                rate: speed,
-                onstart: function() {
-                    console.log("بدأ تشغيل الصوت.");
-                },
-                onend: function() {
-                    console.log("تم الانتهاء من تشغيل الصوت.");
-                }
-            });
         }
     </script>
 </body>
