@@ -3,27 +3,37 @@ body {
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
-    padding: 20px;
-    direction: rtl;
+    padding: 0;
+    direction: rtl; /* اتجاه النص من اليمين إلى اليسار */
     text-align: center;
 }
 .container {
     max-width: 900px;
     margin: 20px auto;
     background: #fff;
-    padding: 30px;
+    padding: 40px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 2px solid #4CAF50;
     box-sizing: border-box;
+    text-align: right; /* محاذاة النص إلى اليمين */
 }
 h1, h2 {
     color: #4CAF50;
     font-weight: 700;
+    font-size: 2em; /* زيادة حجم النص */
+    margin-bottom: 20px;
+}
+h1 {
+    color: #FF5722; /* تغيير لون العنوان الأول */
+}
+h2 {
+    color: #009688; /* تغيير لون العنوان الثاني */
 }
 .logo img {
     max-width: 250px;
     transition: transform 0.3s;
+    margin-bottom: 30px;
 }
 .logo img:hover {
     transform: scale(1.1);
@@ -92,16 +102,41 @@ h1, h2 {
     right: -30px;
 }
 
-/* إضافة تأثير ظهور عند الإشارة */
-.fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 1s forwards;
+/* تأثيرات الفقرات */
+.container p {
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #fff;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    font-size: 1.3em; /* زيادة حجم النص */
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1);
+    transition: all 0.3s ease;
+    text-align: right;
 }
 
-.fade-in-visible {
-    opacity: 1;
-    transform: translateY(0);
+.container p:hover {
+    transform: scale(1.05);
+    background-color: #e0f7fa;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* إضافة تأثيرات الانزلاق */
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: slideIn 1s forwards;
 }
 
 /* تحريك السهم */
@@ -110,32 +145,6 @@ h1, h2 {
     to { transform: translateX(5px); }
 }
 
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* إضافة تأثيرات على الفقرات */
-.container p {
-    padding: 15px;
-    margin: 10px 0;
-    background-color: #fff;
-    border: 2px solid #3498db;
-    border-radius: 8px;
-    font-size: 1.2em;
-    color: #333;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transform: scale(1);
-    transition: all 0.3s ease;
-}
-
-.container p:hover {
-    transform: scale(1.05);
-    background-color: #e0f7fa;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
 footer {
     width: 100%;
     text-align: center;
