@@ -46,41 +46,30 @@
             max-width: 600px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .text-animation {
-            font-size: 20px;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            position: relative;
-            height: 40px;
-        }
-        .text-animation span {
-            position: absolute;
-            display: inline-block;
-            white-space: nowrap;
-            animation: scrollText linear infinite;
-        }
-        @keyframes scrollText {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
         .language-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 5px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 1000;
         }
         .language-toggle button {
-            background-color: #007bff;
+            background-color: #0056b3;
             color: white;
             border: none;
             border-radius: 5px;
-            padding: 10px 20px;
+            padding: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
         }
         .language-toggle button:hover {
-            background-color: #0056b3;
+            background-color: #003d80;
         }
         .logo {
             margin-bottom: 20px;
@@ -99,34 +88,35 @@
             pointer-events: none;
             opacity: 0.5;
         }
-        .top-bar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            z-index: 1000;
-        }
         .hidden {
             display: none;
+        }
+        #lockScreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 3px solid #007bff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="lockScreen" class="popup">
+    <div id="lockScreen">
         <h2>إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()">دخول</button>
     </div>
 
-    <div id="appContent" class="disabled hidden">
-        <div class="top-bar">
-            <div class="language-toggle">
-                <button onclick="setLanguage('ar')">العربية</button>
-                <button onclick="setLanguage('en')">English</button>
-            </div>
+    <div id="appContent" class="hidden">
+        <div class="language-toggle">
+            <button onclick="setLanguage('ar')">العربية</button>
+            <button onclick="setLanguage('en')">English</button>
         </div>
 
         <img src="logo.png" alt="Logo" class="logo">
@@ -145,12 +135,19 @@
                 <button onclick="convertTextToSpeech()">تحويل إلى صوت</button>
             </div>
 
-            <!-- نافذة النص المتزامن مع الصوت -->
+            <!-- نافذة تسريع الصوت -->
             <div class="section">
-                <h2>النص المتزامن مع الصوت</h2>
-                <div class="text-animation">
-                    <span id="animatedText">سيتم عرض النص المتزامن هنا...</span>
-                </div>
+                <h2>تسريع الصوت</h2>
+                <label for="speedControl">اختر سرعة الصوت:</label>
+                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+            </div>
+
+            <!-- نافذة تسجيل الصوت -->
+            <div class="section">
+                <h2>تسجيل صوت المتكلم</h2>
+                <button onclick="startRecording()">بدء التسجيل</button>
+                <button onclick="stopRecording()">إيقاف التسجيل</button>
+                <audio id="recordedAudio" controls></audio>
             </div>
 
             <!-- نافذة تحميل الصوت -->
@@ -158,13 +155,6 @@
                 <h2>تحميل الصوت الناتج</h2>
                 <button onclick="downloadAudio()">تحميل الصوت</button>
                 <audio id="audioOutput" controls></audio>
-            </div>
-
-            <!-- نافذة تحميل الملفات -->
-            <div class="section">
-                <h2>تحميل ملفات نصية</h2>
-                <input type="file" id="fileInput" accept=".txt" onchange="handleFileUpload()">
-                <p id="fileContent"></p>
             </div>
         </div>
     </div>
@@ -175,7 +165,6 @@
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.add('hidden');
                 document.getElementById('appContent').classList.remove('hidden');
-                document.getElementById('appContent').classList.remove('disabled');
             } else {
                 alert("رمز الدخول غير صحيح!");
             }
@@ -184,10 +173,6 @@
         function setLanguage(language) {
             document.documentElement.lang = language;
             document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-            const textElements = document.querySelectorAll('h1, h2, button, label');
-            textElements.forEach(el => {
-                el.textContent = language === 'ar' ? el.dataset.ar : el.dataset.en;
-            });
             alert(`تم تغيير اللغة إلى ${language === 'ar' ? 'العربية' : 'English'}`);
         }
 
@@ -195,42 +180,50 @@
             const text = document.getElementById('textInput').value;
             const language = document.getElementById('languageSelect').value;
             const audio = document.getElementById('audioOutput');
-            const animatedText = document.getElementById('animatedText');
+            const speed = document.getElementById('speedControl').value;
 
             if (text.trim() === "") {
                 alert("الرجاء إدخال نص!");
                 return;
             }
 
-            animatedText.textContent = text;
-            animatedText.style.animationDuration = `${text.split(' ').length / 2}s`;
-
-            // استخدام كود تحويل النص إلى صوت
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = language === 'ar' ? 'ar-SA' : 'en-US';
+            utterance.rate = parseFloat(speed);
             speechSynthesis.speak(utterance);
+        }
 
-            utterance.onend = () => {
-                alert("تم تشغيل النص بنجاح!");
-            };
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const audioURL = URL.createObjectURL(blob);
+                    const recordedAudio = document.getElementById('recordedAudio');
+                    recordedAudio.src = audioURL;
+                };
+                mediaRecorder.start();
+            }).catch(err => {
+                alert("حدث خطأ أثناء بدء التسجيل: " + err.message);
+            });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
         }
 
         function downloadAudio() {
             alert("هذه الخاصية تحتاج إلى خادم لتفعيل التحميل.");
-        }
-
-        function handleFileUpload() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const content = event.target.result;
-                    document.getElementById('textInput').value = content;
-                };
-                reader.readAsText(file);
-            }
         }
     </script>
 </body>
