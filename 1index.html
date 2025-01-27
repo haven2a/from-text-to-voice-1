@@ -23,7 +23,7 @@
             margin-bottom: 20px;
         }
         textarea, select, button, input {
-            width: 90%;
+            width: 80%;
             padding: 10px;
             margin: 10px 0;
             border: 2px solid #333;
@@ -42,7 +42,7 @@
             border-radius: 10px;
             padding: 20px;
             background-color: #ffffff;
-            width: 100%;
+            width: 90%;
             max-width: 600px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -58,7 +58,7 @@
             position: absolute;
             display: inline-block;
             white-space: nowrap;
-            animation: scrollText 5s linear infinite;
+            animation: scrollText linear infinite;
         }
         @keyframes scrollText {
             0% { transform: translateX(100%); }
@@ -84,6 +84,7 @@
         }
         .logo {
             margin-bottom: 20px;
+            max-width: 100px;
         }
         button {
             background-color: #007bff;
@@ -108,16 +109,19 @@
             text-align: center;
             z-index: 1000;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div id="lockScreen" class="popup show">
+    <div id="lockScreen" class="popup">
         <h2>إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()">دخول</button>
     </div>
 
-    <div id="appContent" class="disabled">
+    <div id="appContent" class="disabled hidden">
         <div class="top-bar">
             <div class="language-toggle">
                 <button onclick="setLanguage('ar')">العربية</button>
@@ -132,7 +136,7 @@
             <!-- نافذة النصوص -->
             <div class="section">
                 <h2>إدخال النصوص</h2>
-                <textarea id="textInput" rows="8" placeholder="أدخل النص هنا..."></textarea>
+                <textarea id="textInput" rows="6" placeholder="أدخل النص هنا..."></textarea>
                 <label for="languageSelect">اختر اللغة:</label>
                 <select id="languageSelect">
                     <option value="ar">العربية</option>
@@ -169,7 +173,8 @@
         function unlockApp() {
             let code = document.getElementById('accessCode').value;
             if (code === "1234") {
-                document.getElementById('lockScreen').classList.remove('show');
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('appContent').classList.remove('hidden');
                 document.getElementById('appContent').classList.remove('disabled');
             } else {
                 alert("رمز الدخول غير صحيح!");
@@ -179,6 +184,10 @@
         function setLanguage(language) {
             document.documentElement.lang = language;
             document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+            const textElements = document.querySelectorAll('h1, h2, button, label');
+            textElements.forEach(el => {
+                el.textContent = language === 'ar' ? el.dataset.ar : el.dataset.en;
+            });
             alert(`تم تغيير اللغة إلى ${language === 'ar' ? 'العربية' : 'English'}`);
         }
 
