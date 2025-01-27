@@ -210,12 +210,14 @@
         }
 
         function unlockApp() {
-            let code = document.getElementById('accessCode').value;
+            let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
+                alert("تم تفعيل التطبيق بنجاح!");
             } else {
-                alert("رمز الدخول غير صحيح!");
+                alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
+                document.getElementById('accessCode').value = "";
             }
         }
 
@@ -270,4 +272,9 @@
                 audio.currentTime = 0;
                 alert("تم إيقاف الصوت.");
             } else {
-                alert("لا يوجد صوت نشط لإ
+                alert("لا يوجد صوت نشط لإيقافه.");
+            }
+        }
+    </script>
+</body>
+</html>
