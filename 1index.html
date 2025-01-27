@@ -93,8 +93,8 @@
     </div>
 
     <div id="appContent" class="disabled">
-        <!-- إضافة الشعار هنا -->
-        <img id="logo" src="https://example.com/logo.png" alt="شعار التطبيق">
+        <!-- إضافة الشعار هنا مع الربط إلى الملف المحلي -->
+        <img id="logo" src="images/logo.png" alt="شعار التطبيق">
         
         <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى صوت</h1>
         <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
@@ -110,7 +110,7 @@
             <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
         </div>
 
-        <label for="language">اختر اللغة:</label>
+        <label for="language" id="languageLabel">اختر اللغة:</label>
         <select id="language" name="language" onchange="changeLanguage()">
             <option value="ar">العربية</option>
             <option value="en">English</option>
@@ -182,11 +182,13 @@
                 document.getElementById("greeting").textContent = "Welcome to the Text to Voice App";
                 document.getElementById("genderLabel").textContent = "Select Gender:";
                 document.getElementById("speedLabel").textContent = "Speed:";
+                document.getElementById("languageLabel").textContent = "Select Language:";
                 document.getElementById("convertButton").textContent = "Convert Text to Speech";
             } else {
                 document.getElementById("greeting").textContent = "مرحبًا بك في تطبيق تحويل النص إلى صوت";
                 document.getElementById("genderLabel").textContent = "اختر الجنس:";
                 document.getElementById("speedLabel").textContent = "سرعة الصوت:";
+                document.getElementById("languageLabel").textContent = "اختر اللغة:";
                 document.getElementById("convertButton").textContent = "تحويل النص إلى صوت";
             }
         }
