@@ -109,53 +109,45 @@ app.post('/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ جميع الحقول (الاسم، البريد الإلكتروني، وكلمة المرور) مطلوبة!' });
     }
 
-    // قراءة البيانات من users.json
-    fs.readFile(path.join(__dirname, 'users.json'), 'utf-8', (err, data) => {
+    // التحقق من إذا كان البريد الإلكتروني موجودًا مسبقًا في قاعدة البيانات
+    const db = new sqlite3.Database(dbPath, (err) => {
         if (err) {
-            console.error('❌ خطأ في قراءة بيانات المستخدمين:', err.message);
-            return res.status(500).json({ message: '❌ حدث خطأ في قراءة بيانات المستخدمين.' });
+            console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err.message);
+            return res.status(500).json({ message: '❌ حدث خطأ أثناء الاتصال بقاعدة البيانات.' });
         }
 
-        let users = [];
-        if (data) {
-            users = JSON.parse(data); // تحويل البيانات من JSON إلى كائن JavaScript
-        }
-
-        // التحقق مما إذا كان المستخدم موجودًا بالفعل
-        const userExists = users.some(user => user.email === email);
-        if (userExists) {
-            return res.status(400).json({ message: '❌ هذا البريد الإلكتروني مسجل بالفعل!' });
-        }
-
-        // تشفير كلمة المرور باستخدام bcrypt
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
+        db.get('SELECT email FROM users WHERE email = ?', [email], (err, row) => {
             if (err) {
-                console.error('❌ خطأ في تشفير كلمة المرور:', err.message);
-                return res.status(500).json({ message: '❌ حدث خطأ أثناء تشفير كلمة المرور.' });
+                console.error('❌ خطأ في استعلام قاعدة البيانات:', err.message);
+                return res.status(500).json({ message: '❌ حدث خطأ أثناء التحقق من البريد الإلكتروني.' });
+            }
+            
+            if (row) {
+                return res.status(400).json({ message: '❌ هذا البريد الإلكتروني مسجل بالفعل!' });
             }
 
-            // إضافة المستخدم الجديد إلى القائمة
-            const newUser = {
-                username,
-                email,
-                password: hashedPassword,
-                registeredAt: new Date().toISOString()
-            };
-            users.push(newUser);
-
-            // حفظ البيانات المحدثة في ملف users.json
-            fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2), (err) => {
+            // تشفير كلمة المرور باستخدام bcrypt
+            bcrypt.hash(password, 10, (err, hashedPassword) => {
                 if (err) {
-                    console.error('❌ خطأ في حفظ بيانات المستخدم:', err.message);
-                    return res.status(500).json({ message: '❌ حدث خطأ في حفظ بيانات المستخدم.' });
+                    console.error('❌ خطأ في تشفير كلمة المرور:', err.message);
+                    return res.status(500).json({ message: '❌ حدث خطأ أثناء تشفير كلمة المرور.' });
                 }
 
-                // إرسال البريد الإلكتروني الترحيبي
-                sendWelcomeEmail(email, username);
+                // إضافة المستخدم الجديد إلى قاعدة البيانات
+                db.run('INSERT INTO users (username, email, password, registeredAt) VALUES (?, ?, ?, ?)', 
+                    [username, email, hashedPassword, new Date().toISOString()], (err) => {
+                        if (err) {
+                            console.error('❌ خطأ في إدخال بيانات المستخدم في قاعدة البيانات:', err.message);
+                            return res.status(500).json({ message: '❌ حدث خطأ أثناء إدخال بيانات المستخدم.' });
+                        }
 
-                console.log('✅ تم تسجيل العميل بنجاح:', { username, email });
+                        // إرسال البريد الإلكتروني الترحيبي
+                        sendWelcomeEmail(email, username);
 
-                res.status(201).json({ message: '✅ تم تسجيل العميل بنجاح!' });
+                        console.log('✅ تم تسجيل العميل بنجاح:', { username, email });
+
+                        res.status(201).json({ message: '✅ تم تسجيل العميل بنجاح!' });
+                    });
             });
         });
     });
