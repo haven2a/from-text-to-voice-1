@@ -87,8 +87,7 @@
 </head>
 <body>
 
-    
-    <div class="container">
+       <div class="container">
         <h1>الدعم الفني</h1>
         <p>إذا كانت لديك أي استفسارات أو تحتاج إلى مساعدة، يمكنك إرسال استفسارك عبر النموذج أدناه:</p>
 
@@ -97,11 +96,11 @@
 
 <<<<<<< HEAD:public/support.html
         <form id="supportForm" action="/support" method="POST">
-=======
+
         <form id="supportForm" action="/send-support-query" method="POST">
             <input type="hidden" name="csrf_token" value="your_csrf_token_here">
 
->>>>>>> 73c1c95ad9f4791aeb26e837b1fa771285bfc832:support.html
+
             <label for="name">اسمك:</label>
             <input type="text" id="name" name="name" placeholder="أدخل اسمك" required>
 
