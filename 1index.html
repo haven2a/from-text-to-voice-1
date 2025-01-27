@@ -9,21 +9,32 @@
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+            margin: 0;
+            padding: 0;
             direction: rtl;
+            overflow-x: hidden;
         }
-        #logo {
-            margin-bottom: 20px;
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
         }
-        h1 {
-            color: blue;
-            font-size: 28px;
+        section {
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
-        textarea, select, button, input[type="range"] {
-            width: 90%;
+        section:hover {
+            transform: translateY(-5px);
+            opacity: 0.95;
+        }
+        textarea, select, button, input {
+            width: 100%;
             margin: 10px 0;
             padding: 15px;
             border: 2px solid #333;
@@ -31,13 +42,13 @@
             font-size: 18px;
         }
         button {
-            background-color: #007bff;
+            background-color: #28a745;
             color: white;
             cursor: pointer;
-            font-size: 18px;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #218838;
         }
         .popup {
             display: none;
@@ -45,105 +56,108 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
+            background: white;
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        .popup h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        .popup input {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
             border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .popup button {
-            background-color: #34d399;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .popup button:hover {
-            background-color: #059669;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
         }
         .popup.show {
             display: block;
         }
-        .disabled {
-            pointer-events: none;
-            opacity: 0.5;
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -60%);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
+        #overlay.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <!-- الشعار -->
-    <div id="logo">
-        <img src="https://via.placeholder.com/150" alt="شعار التطبيق" style="width: 150px; border-radius: 50%;">
-    </div>
+    <header>
+        تحويل النص إلى فيديو
+    </header>
 
-    <!-- نافذة إدخال كود التفعيل -->
-    <div id="lockScreen" class="popup show">
+    <div id="overlay"></div>
+    <div id="lockScreen" class="popup">
         <h2>إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()">دخول</button>
     </div>
 
-    <!-- محتوى التطبيق -->
-    <div id="appContent" class="disabled">
-        <h1>مرحبًا بك في تطبيق تحويل النص إلى فيديو</h1>
-        <form action="/generate-audio" method="post">
-            <textarea name="text" placeholder="أدخل النص هنا" rows="6"></textarea>
+    <main id="appContent" style="display: none;">
+        <section>
+            <h2>أدخل النص لتحويله إلى صوت</h2>
+            <textarea placeholder="أدخل النص هنا"></textarea>
 
             <label for="gender">اختر الجنس:</label>
-            <select id="gender" name="gender">
+            <select id="gender">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
             </select>
 
-            <label for="speed">سرعة الصوت:</label>
-            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
-
             <label for="language">اختر اللغة:</label>
-            <select id="language" name="language">
+            <select id="language">
                 <option value="ar">العربية</option>
-                <option value="en">English</option>
+                <option value="en">الإنجليزية</option>
             </select>
 
-            <button type="submit">تحويل إلى صوت</button>
-        </form>
-    </div>
+            <label for="speed">سرعة الصوت:</label>
+            <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+
+            <button>تحويل النص إلى صوت</button>
+        </section>
+
+        <section>
+            <h2>تحميل ملف وورد أو صوت</h2>
+            <button onclick="document.getElementById('uploadInput').click()">تحميل ملف وورد</button>
+            <input type="file" id="uploadInput" style="display: none;">
+
+            <button onclick="downloadAudio()">تحميل الصوت</button>
+        </section>
+
+        <section>
+            <h2>التسجيل الصوتي</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <audio id="audioPlayback" controls></audio>
+        </section>
+    </main>
 
     <script>
         function unlockApp() {
-            let code = document.getElementById('accessCode').value;
-            if (code === "1234") {
+            const code = document.getElementById('accessCode').value;
+            if (code === '1234') {
                 document.getElementById('lockScreen').classList.remove('show');
-                document.getElementById('appContent').classList.remove('disabled');
+                document.getElementById('overlay').classList.remove('show');
+                document.getElementById('appContent').style.display = 'block';
             } else {
-                alert("رمز الدخول غير صحيح!");
+                alert('رمز الدخول غير صحيح!');
             }
         }
+
+        function startRecording() {
+            alert('بدء التسجيل الصوتي');
+        }
+
+        function stopRecording() {
+            alert('إيقاف التسجيل الصوتي');
+        }
+
+        function downloadAudio() {
+            alert('جاري تحميل الصوت');
+        }
+
+        // إظهار نافذة إدخال الكود عند فتح التطبيق
+        document.getElementById('lockScreen').classList.add('show');
+        document.getElementById('overlay').classList.add('show');
     </script>
 </body>
 </html>
