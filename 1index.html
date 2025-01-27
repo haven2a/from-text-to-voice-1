@@ -211,6 +211,14 @@
             const speed = parseFloat(document.getElementById('speed').value);
             const voice = (gender === "male") ? "Arabic Male" : "Arabic Female";
             responsiveVoice.speak(text, voice, { rate: speed });
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speed;
+            const audioBlob = new Blob([text], { type: 'text/plain' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const downloadLink = document.getElementById('convertedAudioButton');
+            downloadLink.href = audioUrl;
+            downloadLink.style.display = 'block';
         }
 
         let mediaRecorder;
