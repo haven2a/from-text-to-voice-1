@@ -210,7 +210,7 @@
         }
 
         function unlockApp() {
-            const code = document.getElementById('accessCode').value.trim();
+            let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
@@ -260,11 +260,4 @@
 
                     mediaRecorder.onstop = () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        audioUrl = URL.createObjectURL(audioBlob);
-                        const audio = document.getElementById("audioPlayback");
-                        audio.src = audioUrl;
-
-                        const downloadButton = document.getElementById('downloadAudioButton');
-                        downloadButton.href = audioUrl;
-                        downloadButton.style.display = 'inline-block';
-                        downloadButton.download = 'output.mp3';
+                        audioUrl = URL.createObjectURL(audio
