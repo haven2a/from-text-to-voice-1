@@ -142,7 +142,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="downloadAudioTitle">تحميل الصوت الناتج</h2>
         <div class="button-container">
-            <a id="downloadAudioButton" style="display: none;" download="output.mp3">تحميل الصوت الناتج</a>
+            <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
         </div>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
@@ -210,7 +210,7 @@
         }
 
         function unlockApp() {
-            let code = document.getElementById('accessCode').value.trim();
+            const code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
@@ -268,9 +268,3 @@
                         downloadButton.href = audioUrl;
                         downloadButton.style.display = 'inline-block';
                         downloadButton.download = 'output.mp3';
-                    };
-
-                    alert("تم بدء التسجيل.");
-                })
-                .catch(error => {
-                    console.error("حدث خطأ أثناء محاولة الوصول إلى الميكروفون:
