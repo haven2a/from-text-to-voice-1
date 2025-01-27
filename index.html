@@ -8,14 +8,13 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            direction: rtl; /* النص من اليمين لليسار */
-            background-color: #f0f8ff; /* خلفية فاتحة */
-            color: #333; /* نص داكن */
+            direction: rtl;
+            background-color: #282c34; /* لون خلفية داكن لإبراز العناصر */
+            color: #ffffff; /* لون نص واضح */
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             height: 100vh;
         }
@@ -23,114 +22,109 @@
         .container {
             width: 80%;
             text-align: center;
-            margin-bottom: 50px; /* إضافة مسافة أسفل المحتوى قبل الفوتر */
+            margin-bottom: 50px;
         }
 
         .logo img {
-            width: 200px; /* تكبير حجم اللوجو */
-            margin-bottom: 20px;
+            width: 150px; /* حجم متوسط للوجو */
+            margin-top: 20px;
         }
 
         h1, h2, p {
             margin: 20px 0;
             padding: 15px;
-            background-color: #fff5e6; /* تغيير خلفية الحركة إلى لون فاتح */
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.5s ease-in-out;
-            font-weight: 700; /* تكبير الخط */
+            background-color: rgba(255, 255, 255, 0.1); /* خلفية شفافة قليلاً */
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
         }
 
         h1 {
-            font-size: 4em; /* تكبير حجم الخط */
-            color: #FF5733; /* لون نص عناوين كبير */
+            font-size: 3em;
+            color: #f4b400; /* لون النص بارز */
         }
 
         h2 {
-            font-size: 2.5em; /* تكبير حجم الخط */
-            color: #FF5733;
+            font-size: 2em;
+            color: #34a853;
         }
 
         p {
-            font-size: 1.5em; /* تكبير حجم الخط */
-            color: #333;
+            font-size: 1.2em;
+            color: #e8eaed;
         }
 
-        /* التأثير الزحلق مع خلفية جديدة */
         .fade-in {
             opacity: 0;
-            transform: translateX(-100%);
-            background-color: #ffcccb; /* خلفية الزحلق بلون وردي فاتح */
-            animation: slideIn 1s forwards;
+            transform: translateY(-50px);
+            animation: fadeIn 1s forwards ease-in-out;
         }
 
-        @keyframes slideIn {
-            0% {
-                opacity: 0;
-                transform: translateX(-100%);
-            }
-            100% {
+        @keyframes fadeIn {
+            to {
                 opacity: 1;
-                transform: translateX(0);
+                transform: translateY(0);
             }
         }
 
         .video-section iframe {
             width: 100%;
-            max-width: 700px; /* زيادة الحجم ليناسب التنسيق */
-            height: 400px; /* تكبير الفيديو */
+            max-width: 700px;
+            height: 400px;
             margin-top: 20px;
             border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         .arrow-link {
             display: inline-block;
-            font-size: 1.5em; /* تكبير حجم الخط */
-            color: #4CAF50;
+            font-size: 1.5em;
+            color: #0d6efd;
             margin-top: 20px;
             text-decoration: none;
             font-weight: bold;
         }
 
         .arrow {
-            font-size: 2.5em;
-            color: #FF5733;
+            font-size: 2em;
+            color: #f4b400;
         }
 
         .subscribe-section a {
             display: block;
             margin-top: 30px;
-            font-size: 2em; /* تكبير حجم الخط */
-            color: #0000FF;
+            font-size: 1.5em;
+            color: #000;
             text-decoration: none;
             padding: 15px;
-            background-color: #ffffe0;
+            background-color: #f4b400;
             border-radius: 10px;
+            color: white;
         }
 
         footer {
-            margin-top: 50px;
-            background-color: #333;
-            color: white;
+            margin-top: auto;
+            background-color: #20232a;
+            color: #61dafb;
             padding: 20px 0;
             width: 100%;
             text-align: center;
         }
 
         footer a {
-            color: #FF5733;
+            color: #61dafb;
             margin: 0 15px;
-            font-size: 1.3em;
+            font-size: 1em;
             text-decoration: none;
         }
 
         footer p {
-            font-size: 1.5em;
-            margin-bottom: 20px;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
 
         footer a:hover {
-            color: #FF0000;
+            color: #f4b400;
         }
     </style>
 </head>
@@ -149,14 +143,14 @@
         <p class="fade-in">ترجمة كاملة لأدوات هذا التطبيق من العربية إلى الإنجليزية.</p>
 
         <div class="video-section">
-            <iframe width="560" height="315" src="video.mp4" frameborder="0" allowfullscreen></iframe>
+            <iframe src="video.mp4" frameborder="0" allowfullscreen></iframe>
         </div>
         
-        <!-- رابط مع الأسهم -->
-        <a href="1index.html" class="arrow-link">صفحة التطبيق</a>
-        🔴 شاهد التطبيق 🔴
-        <span class="arrow">➡️</span>
-        <span class="arrow">➡️</span>
+        <a href="1index.html" class="arrow-link">
+            صفحة التطبيق
+            <span class="arrow">➡️</span>
+            <span class="arrow">➡️</span>
+        </a>
 
         <div class="subscribe-section">
             <a href="subscribe.html">نعم، أريد الاشتراك في هذا التطبيق!</a>
@@ -172,12 +166,5 @@
         <a href="privacy.html" target="_blank">سياسة الخصوصية</a>
         <a href="terms.html" target="_blank">الشروط والأحكام</a>
     </footer>
-
-    <script>
-        // إضافة التأثير عند الإشارة
-        document.querySelectorAll('.fade-in').forEach(function (element) {
-            element.classList.add('fade-in-visible');
-        });
-    </script>
 </body>
 </html>
