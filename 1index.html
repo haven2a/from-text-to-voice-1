@@ -28,9 +28,8 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 120px; /* تكبير العرض */
-            height: 120px; /* تكبير الطول */
-            margin: 20px; /* إضافة هوامش حول الصورة */
+            width: 100px;
+            height: 100px;
             animation: fadeIn 1.5s ease-in-out;
         }
         h1 {
@@ -147,13 +146,59 @@
     </div>
 
     <script>
-        // سكربت التطبيق - كما هو في الكود الأساسي
-        const translations = { /* محتوى الترجمة */ };
+        const translations = {
+            ar: {
+                appTitle: "تحويل النص إلى فيديو",
+                accessTitle: "إدخال رمز الدخول",
+                accessButton: "دخول",
+                languageLabel: "اختر لغة التطبيق:",
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                playButton: "تشغيل الصوت",
+                downloadWordButton: "تحميل ملف Word",
+                recordingTitle: "تسجيل الصوت",
+                startRecordButton: "بدء التسجيل",
+                stopRecordButton: "إيقاف التسجيل",
+                downloadAudioTitle: "تحميل الصوت",
+                downloadAudioButton: "تحميل الصوت الناتج",
+                textInput: "أدخل النص هنا"
+            },
+            en: {
+                appTitle: "Text to Video Converter",
+                accessTitle: "Enter Access Code",
+                accessButton: "Enter",
+                languageLabel: "Select Application Language:",
+                genderLabel: "Choose Gender:",
+                speedLabel: "Voice Speed:",
+                playButton: "Play Voice",
+                downloadWordButton: "Download Word File",
+                recordingTitle: "Audio Recording",
+                startRecordButton: "Start Recording",
+                stopRecordButton: "Stop Recording",
+                downloadAudioTitle: "Download Audio",
+                downloadAudioButton: "Download Generated Audio",
+                textInput: "Enter text here"
+            }
+        };
 
         function translateApp() {
             const lang = document.getElementById('languageSelector').value;
             const translation = translations[lang];
-            // تحديث النصوص حسب اللغة المختارة
+
+            document.getElementById('appTitle').innerText = translation.appTitle;
+            document.getElementById('accessTitle').innerText = translation.accessTitle;
+            document.getElementById('accessButton').innerText = translation.accessButton;
+            document.getElementById('languageLabel').innerText = translation.languageLabel;
+            document.getElementById('genderLabel').innerText = translation.genderLabel;
+            document.getElementById('speedLabel').innerText = translation.speedLabel;
+            document.getElementById('playButton').innerText = translation.playButton;
+            document.getElementById('downloadWordButton').innerText = translation.downloadWordButton;
+            document.getElementById('recordingTitle').innerText = translation.recordingTitle;
+            document.getElementById('startRecordButton').innerText = translation.startRecordButton;
+            document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
+            document.getElementById('downloadAudioTitle').innerText = translation.downloadAudioTitle;
+            document.getElementById('downloadAudioButton').innerText = translation.downloadAudioButton;
+            document.getElementById('textInput').placeholder = translation.textInput;
         }
 
         function unlockApp() {
@@ -169,13 +214,58 @@
         let mediaRecorder;
         let audioChunks = [];
 
-        function startRecording() { /* كود التسجيل */ }
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.start();
 
-        function stopRecording() { /* كود إيقاف التسجيل */ }
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
 
-        function downloadWord() { /* كود تحميل ملف الورد */ }
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = document.getElementById("audioPlayback");
+                        audio.src = audioUrl;
 
-        function playVoice() { /* كود تشغيل الصوت */ }
-    </script>
-</body>
-</html>
+                        const downloadButton = document.getElementById('downloadAudioButton');
+                        downloadButton.href = audioUrl;
+                        downloadButton.style.display = 'inline-block';
+                        downloadButton.download = 'output.mp3';
+                    };
+
+                    alert("تم بدء التسجيل.");
+                })
+                .catch(error => {
+                    console.error("حدث خطأ أثناء محاولة الوصول إلى الميكروفون:", error);
+                    alert("تعذر الوصول إلى الميكروفون. يرجى التحقق من الأذونات.");
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                alert("تم إيقاف التسجيل.");
+            } else {
+                alert("لا يوجد تسجيل نشط لإيقافه.");
+            }
+        }
+
+        function downloadWord() {
+            const textContent = document.getElementById("textInput").value;
+            if (!textContent) {
+                alert("يرجى إدخال نص قبل التحميل!");
+                return;
+            }
+            const blob = new Blob([textContent], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "output.docx";
+            link.click();
+        }
+
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
