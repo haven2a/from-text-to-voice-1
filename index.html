@@ -25,9 +25,22 @@
             margin-bottom: 50px;
         }
 
+        .logo {
+            margin-top: 20px;
+            animation: moveSideways 2s infinite alternate ease-in-out;
+        }
+
         .logo img {
             width: 150px; /* حجم متوسط للوجو */
-            margin-top: 20px;
+        }
+
+        @keyframes moveSideways {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(50px); /* يتحرك 50 بكسل إلى اليمين */
+            }
         }
 
         h1, h2, p {
