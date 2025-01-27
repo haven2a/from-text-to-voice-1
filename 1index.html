@@ -113,8 +113,8 @@
 
         <h2 id="recordingTitle">تسجيل الصوت</h2>
         <div class="button-container">
-            <button onclick="startRecording()">{{startRecordingButton}}</button>
-            <button onclick="stopRecording()">{{stopRecordingButton}}</button>
+            <button id="startRecordingButton" onclick="startRecording()">بدء التسجيل</button>
+            <button id="stopRecordingButton" onclick="stopRecording()">إيقاف التسجيل</button>
         </div>
         <audio id="audioPlayback" controls></audio>
     </div>
@@ -161,6 +161,10 @@
             document.getElementById("recordingTitle").textContent = translation.recordingTitle;
             document.getElementById("startRecordingButton").textContent = translation.startRecordingButton;
             document.getElementById("stopRecordingButton").textContent = translation.stopRecordingButton;
+
+            // Change the language of the UI elements based on the selected language
+            document.documentElement.lang = language;
+            document.body.dir = language === "ar" ? "rtl" : "ltr";
         }
 
         function unlockApp() {
