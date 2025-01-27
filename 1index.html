@@ -28,8 +28,8 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             animation: fadeIn 1.5s ease-in-out;
         }
         h1 {
@@ -203,11 +203,11 @@
 
         function unlockApp() {
             let code = document.getElementById('accessCode').value;
-            if (code === "1234") {
+            if (code.trim() === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
             } else {
-                alert("رمز الدخول غير صحيح!");
+                alert("رمز الدخول غير صحيح! حاول مجددًا.");
             }
         }
 
@@ -269,3 +269,17 @@
 
         function playVoice() {
             const text = document.getElementById("textInput").value;
+            const gender = document.getElementById("gender").value;
+            const speed = parseFloat(document.getElementById("speed").value);
+
+            if (!text) {
+                alert("يرجى إدخال نص لتشغيل الصوت!");
+                return;
+            }
+
+            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voiceName, { rate: speed });
+        }
+    </script>
+</body>
+</html>
