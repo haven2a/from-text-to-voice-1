@@ -86,6 +86,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
 <body>
     <div id="lockScreen" class="popup show fade-in">
@@ -97,7 +98,7 @@
     <div id="appContent" class="disabled">
         <h1>مرحبًا بك في تطبيق تحويل النص إلى فيديو</h1>
         <form action="/generate-audio" method="post">
-            <textarea name="text" placeholder="أدخل النص هنا" rows="6"></textarea>
+            <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
 
             <div class="button-container">
                 <label for="gender">اختر الجنس:</label>
@@ -117,7 +118,7 @@
             </select>
 
             <div class="button-container">
-                <button type="submit">تحويل إلى صوت</button>
+                <button type="button" onclick="playVoice()">تشغيل الصوت</button>
                 <button type="button" onclick="downloadWord()">تحميل ملف Word</button>
             </div>
         </form>
@@ -171,6 +172,15 @@
             if (mediaRecorder) {
                 mediaRecorder.stop();
             }
+        }
+
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            const language = document.getElementById('language').value === 'ar' ? 'Arabic Male' : 'UK English Male';
+            const gender = document.getElementById('gender').value;
+            const pitch = document.getElementById('speed').value;
+
+            responsiveVoice.speak(text, language, { pitch: pitch });
         }
 
         function downloadAudio() {
