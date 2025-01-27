@@ -71,26 +71,24 @@
             font-size: 18px;
             display: none;
         }
-        .language-switch {
-            margin-bottom: 20px;
+        #downloadContainer {
+            display: none;
+            margin-top: 20px;
         }
-        .language-switch select {
-            width: auto;
-            padding: 10px;
-            font-size: 18px;
+        #downloadLink {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 20px;
+        }
+        #downloadLink:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <!-- تغيير اللغة -->
-    <div class="language-switch">
-        <label for="languageSelect">اختر اللغة:</label>
-        <select id="languageSelect" onchange="changeLanguage()">
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-        </select>
-    </div>
-
     <!-- شعار التطبيق -->
     <img id="logo" src="logo.png" alt="Logo">
 
@@ -110,48 +108,40 @@
         </div>
 
         <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
-        <button type="button" onclick="downloadAudio()" id="downloadButton">تحميل الصوت</button>
     </div>
 
     <!-- نافذة متحركة -->
     <div id="movingBox" class="moving-box">جاري التشغيل...</div>
 
-    <script>
-        function changeLanguage() {
-            const selectedLanguage = document.getElementById('languageSelect').value;
-            if (selectedLanguage === 'en') {
-                document.documentElement.lang = 'en';
-                document.documentElement.dir = 'ltr';
-                document.getElementById('greeting').textContent = 'Welcome to the Text-to-Speech App';
-                document.getElementById('textToConvert').placeholder = 'Enter text here';
-                document.getElementById('genderLabel').textContent = 'Select Gender:';
-                document.getElementById('speedLabel').textContent = 'Speech Speed:';
-                document.getElementById('convertButton').textContent = 'Convert Text to Speech';
-                document.getElementById('downloadButton').textContent = 'Download Audio';
-            } else {
-                document.documentElement.lang = 'ar';
-                document.documentElement.dir = 'rtl';
-                document.getElementById('greeting').textContent = 'مرحبًا بك في تطبيق تحويل النص إلى صوت';
-                document.getElementById('textToConvert').placeholder = 'أدخل النص هنا';
-                document.getElementById('genderLabel').textContent = 'اختر الجنس:';
-                document.getElementById('speedLabel').textContent = 'سرعة الصوت:';
-                document.getElementById('convertButton').textContent = 'تحويل النص إلى صوت';
-                document.getElementById('downloadButton').textContent = 'تحميل الصوت';
-            }
-        }
+    <!-- رابط تحميل الصوت -->
+    <div id="downloadContainer">
+        <a id="downloadLink" href="#" download>تحميل الصوت</a>
+    </div>
 
+    <script>
         function convertTextToVoice() {
             const text = document.getElementById('textToConvert').value;
             const gender = document.getElementById('gender').value;
             const speed = document.getElementById('speed').value;
             const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
 
+            if (!text.trim()) {
+                alert('الرجاء إدخال النص للتحويل.');
+                return;
+            }
+
             // تقدير مدة الصوت بناءً على طول النص وسرعة الصوت
             const estimatedDuration = text.length / (speed * 10); // تقدير بسيط
             const movingBox = document.getElementById('movingBox');
-            
+
             // تشغيل النص كصوت
-            responsiveVoice.speak(text, voice, { rate: speed });
+            responsiveVoice.speak(text, voice, {
+                rate: speed,
+                onend: () => {
+                    // عرض رابط التحميل عند انتهاء الصوت
+                    generateAudioFile(text, voice, speed);
+                }
+            });
 
             // عرض النافذة المتحركة
             movingBox.style.display = 'block';
@@ -180,17 +170,15 @@
             requestAnimationFrame(animateBox);
         }
 
-        function downloadAudio() {
-            const text = document.getElementById('textToConvert').value;
-            const gender = document.getElementById('gender').value;
-            const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
+        function generateAudioFile(text, voice, speed) {
+            const blob = new Blob([text], { type: 'text/plain' }); // محاكاة ملف الصوت كنص فقط
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.getElementById('downloadLink');
+            const downloadContainer = document.getElementById('downloadContainer');
 
-            const audioBlob = new Blob([text], { type: 'audio/wav' });
-            const url = URL.createObjectURL(audioBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'audio.wav';
-            link.click();
+            downloadLink.href = url;
+            downloadLink.download = 'converted-audio.txt'; // اسم الملف الصوتي (محاكاة)
+            downloadContainer.style.display = 'block';
         }
     </script>
 </body>
