@@ -210,6 +210,32 @@
                 alert("رمز الدخول غير صحيح!");
             }
         }
+
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            const gender = document.getElementById('gender').value;
+            const speed = document.getElementById('speed').value;
+
+            if (!text) {
+                alert("الرجاء إدخال النص لتشغيل الصوت!");
+                return;
+            }
+
+            let voice = "Arabic Female";
+            if (gender === "male") {
+                voice = "Arabic Male";
+            }
+
+            responsiveVoice.speak(text, voice, {
+                rate: speed,
+                onstart: function() {
+                    console.log("بدأ تشغيل الصوت.");
+                },
+                onend: function() {
+                    console.log("تم الانتهاء من تشغيل الصوت.");
+                }
+            });
+        }
     </script>
 </body>
 </html>
