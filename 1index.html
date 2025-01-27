@@ -20,8 +20,7 @@
             margin-bottom: 20px;
         }
 
-        /* نافذة تغيير اللغة */
-        .language-popup {
+        .upload-popup {
             position: relative;
             width: 300px;
             padding: 20px;
@@ -36,16 +35,7 @@
             align-items: center;
         }
 
-        .language-popup select {
-            width: 80%;
-            padding: 10px;
-            font-size: 18px;
-            border: 1px solid #333;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .language-popup button {
+        .upload-popup button, .upload-popup input {
             background-color: #007bff;
             color: white;
             padding: 10px 20px;
@@ -53,9 +43,10 @@
             border-radius: 10px;
             font-size: 18px;
             cursor: pointer;
+            margin-top: 10px;
         }
 
-        .language-popup button:hover {
+        .upload-popup button:hover {
             background-color: #0056b3;
         }
 
@@ -68,29 +59,46 @@
             }
         }
     </style>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
     <script>
-        let translations = {
-            ar: {
-                greeting: "مرحبًا بك في تطبيق تحويل النص إلى صوت",
-                convertButton: "تحويل النص إلى صوت",
-                languageLabel: "اختر اللغة:"
-            },
-            en: {
-                greeting: "Welcome to the Text-to-Speech App",
-                convertButton: "Convert Text to Speech",
-                languageLabel: "Select Language:"
+        let audioBlob;
+
+        function convertTextToVoice() {
+            const text = document.getElementById('textToConvert').value;
+            const gender = document.getElementById('gender').value;
+            const speed = document.getElementById('speed').value;
+            const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
+
+            // تحدث النص بصوت
+            responsiveVoice.speak(text, voice, { rate: speed });
+
+            // إنشاء ملف صوتي بصيغة Blob
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ar-SA";
+            utterance.rate = speed;
+
+            // تسجيل الصوت الناتج
+            const audioChunks = [];
+            const mediaRecorder = new MediaRecorder(new MediaStream());
+            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                document.getElementById('downloadButton').style.display = 'block';
+            };
+            mediaRecorder.start();
+            setTimeout(() => mediaRecorder.stop(), text.length * 100); // حساب الوقت بناءً على النص
+        }
+
+        function downloadAudio() {
+            if (audioBlob) {
+                const url = URL.createObjectURL(audioBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'converted_audio.wav';
+                link.click();
+            } else {
+                alert("لا يوجد صوت لتحميله. قم بتحويل النص أولاً!");
             }
-        };
-
-        function changeLanguage() {
-            let language = document.getElementById('popupLanguage').value;
-            let translation = translations[language];
-
-            document.getElementById('greeting').textContent = translation.greeting;
-            document.getElementById('convertButton').textContent = translation.convertButton;
-
-            document.documentElement.lang = language;
-            document.body.dir = language === "ar" ? "rtl" : "ltr";
         }
     </script>
 </head>
@@ -98,19 +106,26 @@
     <!-- شعار التطبيق -->
     <img id="logo" src="logo.png" alt="Logo">
 
-    <!-- نافذة تغيير اللغة -->
-    <div class="language-popup">
-        <label for="popupLanguage">اختر لغة الواجهة:</label>
-        <select id="popupLanguage" onchange="changeLanguage()">
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-        </select>
-        <button onclick="changeLanguage()">تطبيق</button>
-    </div>
+    <!-- نافذة لتحميل الصوت -->
+    <div class="upload-popup">
+        <label for="textToConvert">أدخل النص لتحويله إلى صوت:</label>
+        <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
 
-    <!-- محتوى التطبيق -->
-    <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى صوت</h1>
-    <textarea id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
-    <button id="convertButton" onclick="alert('تم تحويل النص إلى صوت')">تحويل النص إلى صوت</button>
+        <div>
+            <label for="gender">اختر الجنس:</label>
+            <select id="gender">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="speed">سرعة الصوت:</label>
+            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+        </div>
+
+        <button onclick="convertTextToVoice()">تحويل النص إلى صوت</button>
+        <button id="downloadButton" style="display: none;" onclick="downloadAudio()">تحميل الصوت</button>
+    </div>
 </body>
 </html>
