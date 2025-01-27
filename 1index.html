@@ -11,57 +11,157 @@
             background-color: #f4f4f4;
             text-align: center;
             padding: 20px;
+            border: 10px solid #333;
+            width: 90%;
+            margin: auto;
+            border-radius: 10px;
+            background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
             direction: rtl;
         }
-
+        h1 {
+            color: blue;
+            font-size: 28px;
+        }
+        textarea {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 20px;
+            text-align: right;
+            display: block;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        select, button, input {
+            width: 45%;
+            padding: 15px;
+            margin: 10px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 22px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .popup.show {
+            display: block;
+        }
+        .popup-close {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
         #logo {
             width: 150px;
             height: auto;
             margin-bottom: 20px;
         }
-
-        .upload-popup {
-            position: relative;
-            width: 300px;
-            padding: 20px;
-            background: #ffffff;
-            border: 2px solid #333;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: slideSideways 3s infinite alternate ease-in-out;
-            margin: 0 auto 30px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .upload-popup button, .upload-popup input {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .upload-popup button:hover {
-            background-color: #0056b3;
-        }
-
-        @keyframes slideSideways {
-            0% {
-                transform: translateX(-20px);
-            }
-            100% {
-                transform: translateX(20px);
-            }
-        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=CfkT9jug"></script>
+</head>
+<body>
+    <!-- شعار التطبيق -->
+    <img id="logo" src="logo.png" alt="Logo">
+
+    <!-- نافذة تحميل الصوت -->
+    <div id="downloadPopup" class="popup">
+        <h2>تحميل الصوت</h2>
+        <button onclick="downloadAudio()">تحميل</button>
+        <button class="popup-close" onclick="closePopup('downloadPopup')">إغلاق</button>
+    </div>
+
+    <!-- نافذة تغيير اللغة -->
+    <div id="languagePopup" class="popup">
+        <h2>تغيير اللغة</h2>
+        <select id="languageSelect" onchange="changeLanguage()">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+        <button class="popup-close" onclick="closePopup('languagePopup')">إغلاق</button>
+    </div>
+
+    <div id="appContent">
+        <h1 id="greeting">مرحبًا بك في تطبيق تحويل النص إلى صوت</h1>
+        <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
+
+        <div class="button-container">
+            <label for="gender" id="genderLabel">اختر الجنس:</label>
+            <select id="gender" name="gender">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+
+            <label for="speed" id="speedLabel">سرعة الصوت:</label>
+            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+        </div>
+
+        <button type="button" onclick="convertTextToVoice()" id="convertButton">تحويل النص إلى صوت</button>
+        <button type="button" onclick="openPopup('languagePopup')">تغيير اللغة</button>
+    </div>
+
     <script>
+        let translations = {
+            ar: {
+                greeting: "مرحبًا بك في تطبيق تحويل النص إلى صوت",
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                convertButton: "تحويل النص إلى صوت",
+            },
+            en: {
+                greeting: "Welcome to the Text to Speech App",
+                genderLabel: "Select Gender:",
+                speedLabel: "Speed:",
+                convertButton: "Convert Text to Speech",
+            }
+        };
+
         let audioBlob;
+
+        function changeLanguage() {
+            const language = document.getElementById('languageSelect').value;
+            const translation = translations[language];
+
+            document.getElementById("greeting").textContent = translation.greeting;
+            document.getElementById("genderLabel").textContent = translation.genderLabel;
+            document.getElementById("speedLabel").textContent = translation.speedLabel;
+            document.getElementById("convertButton").textContent = translation.convertButton;
+
+            document.documentElement.lang = language;
+            document.body.dir = language === "ar" ? "rtl" : "ltr";
+        }
 
         function convertTextToVoice() {
             const text = document.getElementById('textToConvert').value;
@@ -69,24 +169,19 @@
             const speed = document.getElementById('speed').value;
             const voice = gender === "female" ? "Arabic Female" : "Arabic Male";
 
-            // تحدث النص بصوت
             responsiveVoice.speak(text, voice, { rate: speed });
 
-            // إنشاء ملف صوتي بصيغة Blob
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "ar-SA";
-            utterance.rate = speed;
+            // Placeholder for audio data
+            audioBlob = new Blob([text], { type: 'audio/wav' });
+            openPopup('downloadPopup');
+        }
 
-            // تسجيل الصوت الناتج
-            const audioChunks = [];
-            const mediaRecorder = new MediaRecorder(new MediaStream());
-            mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-            mediaRecorder.onstop = () => {
-                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                document.getElementById('downloadButton').style.display = 'block';
-            };
-            mediaRecorder.start();
-            setTimeout(() => mediaRecorder.stop(), text.length * 100); // حساب الوقت بناءً على النص
+        function openPopup(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function closePopup(id) {
+            document.getElementById(id).classList.remove('show');
         }
 
         function downloadAudio() {
@@ -101,31 +196,5 @@
             }
         }
     </script>
-</head>
-<body>
-    <!-- شعار التطبيق -->
-    <img id="logo" src="logo.png" alt="Logo">
-
-    <!-- نافذة لتحميل الصوت -->
-    <div class="upload-popup">
-        <label for="textToConvert">أدخل النص لتحويله إلى صوت:</label>
-        <textarea name="text" id="textToConvert" placeholder="أدخل النص هنا" rows="6"></textarea>
-
-        <div>
-            <label for="gender">اختر الجنس:</label>
-            <select id="gender">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="speed">سرعة الصوت:</label>
-            <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
-        </div>
-
-        <button onclick="convertTextToVoice()">تحويل النص إلى صوت</button>
-        <button id="downloadButton" style="display: none;" onclick="downloadAudio()">تحميل الصوت</button>
-    </div>
 </body>
 </html>
