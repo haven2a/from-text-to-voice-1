@@ -99,7 +99,7 @@
 <body>
     <header>
         <img src="logo.png" alt="Logo">
-        <h1 id="appTitle">تحويل النص إلى فيديو</h1>
+   <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
     <div id="lockScreen" class="popup show fade-in">
@@ -130,8 +130,8 @@
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
+                <button type="button" onclick="stopVoice()" id="stopButton">إيقاف الصوت</button>
                 <button type="button" onclick="downloadWord()" id="downloadWordButton">تحميل ملف Word</button>
-                <input type="file" id="uploadWordFile" accept=".doc,.docx" onchange="uploadWordFile()">
             </div>
         </form>
         <h2 id="recordingTitle">تسجيل الصوت</h2>
@@ -156,6 +156,7 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
+                stopButton: "إيقاف الصوت",
                 downloadWordButton: "تحميل ملف Word",
                 recordingTitle: "تسجيل الصوت",
                 startRecordButton: "بدء التسجيل",
@@ -172,6 +173,7 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
+                stopButton: "Stop Voice",
                 downloadWordButton: "Download Word File",
                 recordingTitle: "Audio Recording",
                 startRecordButton: "Start Recording",
@@ -193,6 +195,7 @@
             document.getElementById('genderLabel').innerText = translation.genderLabel;
             document.getElementById('speedLabel').innerText = translation.speedLabel;
             document.getElementById('playButton').innerText = translation.playButton;
+            document.getElementById('stopButton').innerText = translation.stopButton;
             document.getElementById('downloadWordButton').innerText = translation.downloadWordButton;
             document.getElementById('recordingTitle').innerText = translation.recordingTitle;
             document.getElementById('startRecordButton').innerText = translation.startRecordButton;
@@ -255,6 +258,23 @@
             }
         }
 
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            const gender = document.getElementById("gender").value;
+            const speed = parseFloat(document.getElementById("speed").value);
+
+            if (text.trim() === "") {
+                alert("يرجى إدخال نص لتشغيل الصوت.");
+                return;
+            }
+
+            responsiveVoice.speak(text, gender === "male" ? "Arabic Male" : "Arabic Female", { rate: speed });
+        }
+
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
+
         function downloadWord() {
             const textContent = document.getElementById("textInput").value;
             if (!textContent) {
@@ -266,35 +286,6 @@
             link.href = URL.createObjectURL(blob);
             link.download = "output.docx";
             link.click();
-        }
-
-        function uploadWordFile() {
-            const fileInput = document.getElementById('uploadWordFile');
-            const file = fileInput.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('textInput').value = event.target.result;
-                };
-                reader.readAsText(file);
-            } else {
-                alert("يرجى اختيار ملف Word للتحميل!");
-            }
-        }
-
-        function playVoice() {
-            const text = document.getElementById("textInput").value;
-            const gender = document.getElementById("gender").value;
-            const speed = parseFloat(document.getElementById("speed").value);
-
-            if (!text) {
-                alert("يرجى إدخال النص لتشغيل الصوت!");
-                return;
-            }
-
-            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
-            responsiveVoice.speak(text, voice, { rate: speed });
         }
     </script>
 </body>
