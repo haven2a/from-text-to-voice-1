@@ -221,6 +221,28 @@
             }
         }
 
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            const gender = document.getElementById('gender').value;
+            const speed = parseFloat(document.getElementById('speed').value);
+            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
+
+            if (text.trim() === "") {
+                alert("يرجى إدخال نص للتحويل إلى صوت.");
+                return;
+            }
+
+            responsiveVoice.speak(text, voice, { rate: speed });
+
+            const audioBlob = new Blob([text], { type: "text/plain" }); // Placeholder for generated audio
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const convertedButton = document.getElementById("convertedAudioButton");
+
+            convertedButton.href = audioUrl;
+            convertedButton.style.display = "inline-block";
+            convertedButton.download = "converted_audio.mp3";
+        }
+
         let mediaRecorder;
         let audioChunks = [];
         let audioUrl = "";
@@ -261,20 +283,4 @@
                 mediaRecorder.stop();
                 alert("تم إيقاف التسجيل.");
             } else {
-                alert("لا يوجد تسجيل نشط لإيقافه.");
-            }
-        }
-
-        function stopVoice() {
-            const audio = document.getElementById("audioPlayback");
-            if (!audio.paused) {
-                audio.pause();
-                audio.currentTime = 0;
-                alert("تم إيقاف الصوت.");
-            } else {
-                alert("لا يوجد صوت نشط لإيقافه.");
-            }
-        }
-    </script>
-</body>
-</html>
+                alert("لا يوجد
