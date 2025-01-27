@@ -109,32 +109,115 @@
     </div>
 
     <div id="appContent" class="disabled">
+        <div class="button-container">
+            <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
+            <select id="languageSelector" onchange="translateApp()">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
         <form id="textForm">
-            <textarea id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
+            <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="button-container">
-                <label for="gender">اختر الجنس:</label>
-                <select id="gender">
+                <label for="gender" id="genderLabel">اختر الجنس:</label>
+                <select id="gender" name="gender">
                     <option value="male">ذكر</option>
                     <option value="female">أنثى</option>
                 </select>
-                <label for="speed">سرعة الصوت:</label>
-                <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+                <label for="speed" id="speedLabel">سرعة الصوت:</label>
+                <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
             </div>
             <div class="button-container">
-                <button type="button" onclick="playVoice()">تشغيل الصوت</button>
-                <button type="button" onclick="downloadTextToSpeech()">تحميل الصوت المحول</button>
+                <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
+                <button type="button" onclick="downloadWord()" id="downloadWordButton">تحميل ملف Word</button>
             </div>
         </form>
+        <h2 id="recordingTitle">تسجيل الصوت</h2>
+        <div class="button-container">
+            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
+            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+            <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
+        </div>
+        <audio id="audioPlayback" controls></audio>
+        <h2 id="downloadAudioTitle">تحميل الصوت الناتج</h2>
+        <div class="button-container">
+            <a id="downloadAudioButton" style="display: none;">تحميل الصوت الناتج</a>
+        </div>
+        <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
+        <div class="button-container">
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
+        </div>
     </div>
 
     <script>
+        const translations = {
+            ar: {
+                appTitle: "تحويل النص إلى فيديو",
+                accessTitle: "إدخال رمز الدخول",
+                accessButton: "دخول",
+                languageLabel: "اختر لغة التطبيق:",
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                playButton: "تشغيل الصوت",
+                downloadWordButton: "تحميل ملف Word",
+                recordingTitle: "تسجيل الصوت",
+                startRecordButton: "بدء التسجيل",
+                stopRecordButton: "إيقاف التسجيل",
+                downloadAudioTitle: "تحميل الصوت",
+                downloadAudioButton: "تحميل الصوت الناتج",
+                convertedAudioTitle: "تحميل الصوت المحول من النص",
+                textInput: "أدخل النص هنا"
+            },
+            en: {
+                appTitle: "Text to Video Converter",
+                accessTitle: "Enter Access Code",
+                accessButton: "Enter",
+                languageLabel: "Select Application Language:",
+                genderLabel: "Choose Gender:",
+                speedLabel: "Voice Speed:",
+                playButton: "Play Voice",
+                downloadWordButton: "Download Word File",
+                recordingTitle: "Audio Recording",
+                startRecordButton: "Start Recording",
+                stopRecordButton: "Stop Recording",
+                downloadAudioTitle: "Download Audio",
+                downloadAudioButton: "Download Generated Audio",
+                convertedAudioTitle: "Download Converted Audio",
+                textInput: "Enter text here"
+            }
+        };
+
+        function translateApp() {
+            const lang = document.getElementById('languageSelector').value;
+            const translation = translations[lang];
+
+            document.getElementById('appTitle').innerText = translation.appTitle;
+            document.getElementById('accessTitle').innerText = translation.accessTitle;
+            document.getElementById('accessButton').innerText = translation.accessButton;
+            document.getElementById('languageLabel').innerText = translation.languageLabel;
+            document.getElementById('genderLabel').innerText = translation.genderLabel;
+            document.getElementById('speedLabel').innerText = translation.speedLabel;
+            document.getElementById('playButton').innerText = translation.playButton;
+            document.getElementById('downloadWordButton').innerText = translation.downloadWordButton;
+            document.getElementById('recordingTitle').innerText = translation.recordingTitle;
+            document.getElementById('startRecordButton').innerText = translation.startRecordButton;
+            document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
+            document.getElementById('downloadAudioTitle').innerText = translation.downloadAudioTitle;
+            document.getElementById('downloadAudioButton').innerText = translation.downloadAudioButton;
+            document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
+            document.getElementById('textInput').placeholder = translation.textInput;
+        }
+
         function unlockApp() {
-            const code = document.getElementById('accessCode').value.trim();
+            let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
-                alert("تم فتح التطبيق بنجاح!");
+                document.getElementById('appContent').classList.remove('disabled');
+                alert("تم تفعيل التطبيق بنجاح!");
             } else {
-                alert("رمز الدخول غير صحيح!");
+                alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
+                document.getElementById('accessCode').value = "";
             }
         }
 
@@ -142,33 +225,4 @@
             const text = document.getElementById('textInput').value;
             const gender = document.getElementById('gender').value;
             const speed = parseFloat(document.getElementById('speed').value);
-
-            if (text.trim() === "") {
-                alert("أدخل نص لتحويله!");
-                return;
-            }
-
-            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
-            responsiveVoice.speak(text, voice, { rate: speed });
-        }
-
-        function downloadTextToSpeech() {
-            const text = document.getElementById('textInput').value;
-            const gender = document.getElementById('gender').value;
-            const speed = parseFloat(document.getElementById('speed').value);
-
-            if (text.trim() === "") {
-                alert("يرجى إدخال نص!");
-                return;
-            }
-
-            // Mock download link
-            const downloadLink = document.createElement("a");
-            downloadLink.href = "data:text/plain;charset=utf-8," + encodeURIComponent("الصوت المحول:\n" + text);
-            downloadLink.download = "converted_text.mp3";
-            downloadLink.textContent = "تحميل الصوت المحول";
-            document.body.appendChild(downloadLink);
-        }
-    </script>
-</body>
-</html>
+            const voice =
