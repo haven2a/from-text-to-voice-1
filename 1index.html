@@ -117,7 +117,7 @@
             </select>
         </div>
 
-        <form action="/generate-audio" method="post">
+        <form id="textForm">
             <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="button-container">
                 <label for="gender" id="genderLabel">اختر الجنس:</label>
@@ -247,6 +247,33 @@
                 mediaRecorder.stop();
                 console.log("Recording stopped.");
             }
+        }
+
+        function downloadWord() {
+            const textContent = document.getElementById("textInput").value;
+            if (!textContent) {
+                alert("يرجى إدخال نص قبل التحميل!");
+                return;
+            }
+            const blob = new Blob([textContent], { type: "application/msword" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "output.doc";
+            link.click();
+        }
+
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            const gender = document.getElementById("gender").value;
+            const speed = document.getElementById("speed").value;
+
+            if (!text) {
+                alert("يرجى إدخال النص لتشغيل الصوت!");
+                return;
+            }
+
+            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voiceName, { rate: parseFloat(speed) });
         }
     </script>
 </body>
