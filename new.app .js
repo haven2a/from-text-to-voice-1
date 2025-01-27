@@ -79,7 +79,7 @@ const sendWelcomeEmail = (to, username) => {
     // الرسالة بتنسيق HTML مع الخصائص المطلوبة
     const htmlContent = `
         <div style="border: 10px solid #4CAF50; padding: 40px; font-family: 'Cairo', sans-serif; font-size: 28px; text-align: center; background-color: #f0f8ff;">
-            <img src="https://example.com/your-logo.png" alt="شعار التطبيق" style="max-width: 200px; margin-bottom: 20px;">
+            <img src="/public/images/logo.png" alt="شعار التطبيق" style="max-width: 200px; margin-bottom: 20px;">
             <h2 style="color: #0000ff;">مرحبًا ${username}!</h2>
             <p>شكرًا لتسجيلك في تطبيقنا. نتمنى لك تجربة رائعة!</p>
             <p>فريق الدعم.</p>
