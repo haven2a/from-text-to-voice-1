@@ -4,24 +4,24 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
-    direction: rtl; /* اتجاه النص من اليمين إلى اليسار */
+    direction: rtl; /* النصوص من اليمين لليسار */
     text-align: center;
 }
 .container {
     max-width: 900px;
-    margin: 20px auto;
+    margin: 50px auto;
     background: #fff;
     padding: 40px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 2px solid #4CAF50;
     box-sizing: border-box;
-    text-align: right; /* محاذاة النص إلى اليمين */
+    text-align: right; /* النص في الجهة اليمنى */
 }
 h1, h2 {
     color: #4CAF50;
     font-weight: 700;
-    font-size: 2em; /* زيادة حجم النص */
+    font-size: 2.5em; /* زيادة حجم الخط للعناوين */
     margin-bottom: 20px;
 }
 h1 {
@@ -104,12 +104,12 @@ h2 {
 
 /* تأثيرات الفقرات */
 .container p {
-    padding: 15px;
+    padding: 20px;
     margin: 10px 0;
     background-color: #fff;
     border: 2px solid #3498db;
     border-radius: 8px;
-    font-size: 1.3em; /* زيادة حجم النص */
+    font-size: 1.4em; /* زيادة حجم الخط في الفقرات */
     color: #333;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transform: scale(1);
