@@ -225,4 +225,8 @@
             const text = document.getElementById('textInput').value;
             const gender = document.getElementById('gender').value;
             const speed = parseFloat(document.getElementById('speed').value);
-            const voice =
+            responsiveVoice.speak(text, gender === 'male' ? 'Arabic Male' : 'Arabic Female', { rate: speed });
+        }
+    </script>
+</body>
+</html>
