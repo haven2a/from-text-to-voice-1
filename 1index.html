@@ -99,7 +99,7 @@
 <body>
     <header>
         <img src="logo.png" alt="Logo">
-   <h1 id="appTitle">تحويل النص إلى صوت</h1>
+        <h1 id="appTitle">تحويل النص إلى فيديو</h1>
     </header>
 
     <div id="lockScreen" class="popup show fade-in">
@@ -130,7 +130,6 @@
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                <button type="button" onclick="stopVoice()" id="stopButton">إيقاف الصوت</button>
                 <button type="button" onclick="downloadWord()" id="downloadWordButton">تحميل ملف Word</button>
             </div>
         </form>
@@ -138,6 +137,7 @@
         <div class="button-container">
             <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
             <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+            <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
         </div>
         <audio id="audioPlayback" controls></audio>
         <h2 id="downloadAudioTitle">تحميل الصوت</h2>
@@ -156,7 +156,6 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
-                stopButton: "إيقاف الصوت",
                 downloadWordButton: "تحميل ملف Word",
                 recordingTitle: "تسجيل الصوت",
                 startRecordButton: "بدء التسجيل",
@@ -173,7 +172,6 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
-                stopButton: "Stop Voice",
                 downloadWordButton: "Download Word File",
                 recordingTitle: "Audio Recording",
                 startRecordButton: "Start Recording",
@@ -195,7 +193,6 @@
             document.getElementById('genderLabel').innerText = translation.genderLabel;
             document.getElementById('speedLabel').innerText = translation.speedLabel;
             document.getElementById('playButton').innerText = translation.playButton;
-            document.getElementById('stopButton').innerText = translation.stopButton;
             document.getElementById('downloadWordButton').innerText = translation.downloadWordButton;
             document.getElementById('recordingTitle').innerText = translation.recordingTitle;
             document.getElementById('startRecordButton').innerText = translation.startRecordButton;
@@ -217,6 +214,7 @@
 
         let mediaRecorder;
         let audioChunks = [];
+        let audioUrl = "";
 
         function startRecording() {
             navigator.mediaDevices.getUserMedia({ audio: true })
@@ -231,7 +229,7 @@
 
                     mediaRecorder.onstop = () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
+                        audioUrl = URL.createObjectURL(audioBlob);
                         const audio = document.getElementById("audioPlayback");
                         audio.src = audioUrl;
 
@@ -258,21 +256,15 @@
             }
         }
 
-        function playVoice() {
-            const text = document.getElementById("textInput").value;
-            const gender = document.getElementById("gender").value;
-            const speed = parseFloat(document.getElementById("speed").value);
-
-            if (text.trim() === "") {
-                alert("يرجى إدخال نص لتشغيل الصوت.");
-                return;
-            }
-
-            responsiveVoice.speak(text, gender === "male" ? "Arabic Male" : "Arabic Female", { rate: speed });
-        }
-
         function stopVoice() {
-            responsiveVoice.cancel();
+            const audio = document.getElementById("audioPlayback");
+            if (!audio.paused) {
+                audio.pause();
+                audio.currentTime = 0;
+                alert("تم إيقاف الصوت.");
+            } else {
+                alert("لا يوجد صوت نشط لإيقافه.");
+            }
         }
 
         function downloadWord() {
@@ -286,6 +278,20 @@
             link.href = URL.createObjectURL(blob);
             link.download = "output.docx";
             link.click();
+        }
+
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            const gender = document.getElementById("gender").value;
+            const speed = document.getElementById("speed").value;
+
+            if (!text) {
+                alert("يرجى إدخال نص لتشغيل الصوت!");
+                return;
+            }
+
+            const voice = gender === "male" ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voice, { rate: speed });
         }
     </script>
 </body>
