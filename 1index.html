@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #333;
+            background-color: #222; /* الخلفية الرمادية الداكنة */
             color: white;
             text-align: center;
             padding: 20px;
@@ -34,24 +34,27 @@
             animation: logoMovement 3s ease-in-out infinite;
         }
         h1 {
-            color: #ff6347; /* تعديل اللون */
+            color: white; /* تغيير اللون إلى الأبيض */
             font-size: 32px;
             margin: 0;
             animation: fadeIn 1s ease-in-out;
         }
         h2 {
-            color: #ffd700; /* تغيير اللون للعناوين */
+            color: white; /* تغيير اللون إلى الأبيض */
             font-size: 24px;
             margin: 10px 0;
+            border: 2px solid #ffd700; /* إطار أصفر */
+            padding: 10px;
+            border-radius: 10px;
         }
         textarea, select, button, input {
             width: 45%;
             padding: 15px;
             margin: 10px;
-            border: 2px solid #ff6347; /* تعديل اللون للإطارات */
+            border: 2px solid #ffd700; /* تعديل اللون للإطارات إلى الأصفر */
             border-radius: 10px;
             font-size: 20px;
-            background-color: #444;
+            background-color: #444; /* خلفية داكنة */
             color: white;
             animation: fadeIn 0.8s ease-in-out;
         }
@@ -168,7 +171,39 @@
     </div>
 
     <script>
-        // الكود الخاص بالوظائف يبقى كما هو
-    </script>
-</body>
-</html>
+        function unlockApp() {
+            let code = document.getElementById('accessCode').value.trim();
+            if (code === "1234") {
+                // إزالة نافذة رمز الدخول وتفعيل التطبيق
+                document.getElementById('lockScreen').classList.remove('show');
+                document.getElementById('appContent').classList.remove('disabled');
+                alert("تم تفعيل التطبيق بنجاح!");
+            } else {
+                alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
+                document.getElementById('accessCode').value = "";
+            }
+        }
+
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            const gender = document.getElementById('gender').value;
+            const speed = parseFloat(document.getElementById('speed').value);
+            const voice = (gender === "male") ? "Arabic Male" : "Arabic Female";
+            responsiveVoice.speak(text, voice, { rate: speed });
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speed;
+
+            const audioBlob = new Blob([text], { type: 'audio/mp3' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const downloadLink = document.getElementById('convertedAudioButton');
+            downloadLink.href = audioUrl;
+            downloadLink.style.display = 'block';
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream
