@@ -6,7 +6,6 @@
     <title>تحويل النص إلى صوت</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #2c2c2c;
@@ -14,78 +13,61 @@
             text-align: center;
             margin: 0;
             padding: 0;
+            height: 100vh; /* جعل الارتفاع 100% لملء الشاشة */
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: center; /* توسيط المحتوى عموديًا وأفقيًا */
             background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
-            direction: rtl;
             overflow: hidden;
         }
-
+        .container {
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            background-color: #444;
+            padding: 20px;
+            border: 2px solid yellow;
+            animation: slideUp 0.8s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
         header {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 20px;
             animation: slideIn 1s ease-in-out;
         }
-
         header img {
             width: 200px;
             height: 200px;
             animation: logoMovement 3s ease-in-out infinite;
         }
-
         h1 {
             color: #ffd700;
             font-size: 36px;
             margin: 0;
         }
-
-        .container {
+        .button-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             gap: 20px;
-            animation: fadeIn 1s ease-in-out;
-            width: 100%;
-            max-width: 600px;
         }
-
-        .window {
-            border: 2px solid #ffd700;
-            padding: 20px;
-            border-radius: 15px;
-            background-color: #444;
-            width: 100%;
-            max-width: 500px;
-            margin-top: 20px;
-            animation: slideUp 1s ease-in-out;
-        }
-
-        button {
+        button, select, input {
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 20px;
             background-color: #007bff;
             color: white;
-            cursor: pointer;
-            font-size: 22px;
             border: none;
             transition: all 0.3s ease-in-out;
+            cursor: pointer;
         }
-
         button:hover {
             background-color: #0056b3;
             transform: scale(1.1);
         }
-
-        input[type="file"], select, input[type="range"] {
-            padding: 10px;
-            font-size: 16px;
-            margin-top: 10px;
-            width: 100%;
-        }
-
         .popup {
             display: none;
             position: fixed;
@@ -98,61 +80,86 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.5s ease-in-out;
             z-index: 1000;
+            border: 2px solid yellow;
         }
-
         .popup.show {
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
+            animation: slideUp 0.8s ease-in-out;
         }
-
-        .disabled {
-            display: none;
-        }
-
-        .container button {
-            margin-top: 20px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         @keyframes logoMovement {
             0% { transform: translateX(0); }
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
-
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Additional style for the language selector window */
-        .language-window {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            animation: slideDown 1s ease-in-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="Logo">
+        <h1 id="appTitle">تحويل النص إلى صوت</h1>
+    </header>
+
+    <div id="lockScreen" class="popup show">
+        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
+        <input type="password" id="accessCode" placeholder="أدخل الكود">
+        <button onclick="unlockApp()" id="accessButton">دخول</button>
+    </div>
+
+    <div id="appContent" class="disabled container">
+        <div class="button-container">
+            <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
+            <select id="languageSelector" onchange="translateApp()">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <form id="textForm">
+            <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
+            <div class="button-container">
+                <label for="gender" id="genderLabel">اختر الجنس:</label>
+                <select id="gender" name="gender">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+                <label for="speed" id="speedLabel">سرعة الصوت:</label>
+                <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+            </div>
+            <div class="button-container">
+                <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
+                <button type="button" onclick="stopVoice()" id="stopButton">إيقاف الصوت</button>
+            </div>
+        </form>
+        
+        <h2 id="recordingTitle">تسجيل الصوت</h2>
+        <div class="button-container">
+            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
+            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+        </div>
+        <audio id="audioPlayback" controls></audio>
+
+        <h2 id="convertedAudioTitle">تحميل الصوت المحول</h2>
+        <div class="button-container">
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
+        </div>
+
+        <h2 id="uploadTextTitle">تحميل ملف نصي</h2>
+        <div class="button-container">
+            <input type="file" id="fileInput" accept=".txt" onchange="loadFile()">
+        </div>
+    </div>
+
     <script>
         function unlockApp() {
             const accessCode = document.getElementById("accessCode").value;
@@ -176,6 +183,12 @@
 
             const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
             responsiveVoice.speak(text, voiceName, { rate: speed });
+
+            // تحميل الصوت المحول بعد النطق
+            const audioUrl = `https://api.voicerss.org/?key=f7a288dd9a824d228a720645c2b177ec&hl=ar-sa&src=${encodeURIComponent(text)}&r=${speed}&c=mp3&f=8khz_8bit_mono`;
+            const convertedAudioButton = document.getElementById("convertedAudioButton");
+            convertedAudioButton.href = audioUrl;
+            convertedAudioButton.style.display = "block";
         }
 
         function stopVoice() {
@@ -190,24 +203,18 @@
             alert("إيقاف التسجيل");
         }
 
-        function handleFileUpload() {
-            const fileInput = document.getElementById("textFileInput");
+        function loadFile() {
+            const fileInput = document.getElementById("fileInput");
             const file = fileInput.files[0];
-
-            if (file) {
+            if (file && file.type === "text/plain") {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("textInput").value = e.target.result;
+                reader.onload = function(event) {
+                    document.getElementById("textInput").value = event.target.result;
                 };
                 reader.readAsText(file);
             } else {
-                alert("يرجى اختيار ملف نصي");
+                alert("الرجاء تحميل ملف نصي بصيغة .txt");
             }
-        }
-
-        function convertFileToVoice() {
-            const text = document.getElementById("textInput").value;
-            playVoice();
         }
 
         function translateApp() {
@@ -235,14 +242,13 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
+                stopButton: "إيقاف الصوت",
                 recordingTitle: "تسجيل الصوت",
                 startRecordButton: "بدء التسجيل",
                 stopRecordButton: "إيقاف التسجيل",
-                convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
-                convertFileButton: "تحويل الملف إلى صوت",
-                recordedAudioTitle: "تحميل الصوت المسجل",
-                textInput: "أدخل النص هنا"
+                convertedAudioTitle: "تحميل الصوت المحول",
+                textInput: "أدخل النص هنا",
+                uploadTextTitle: "تحميل ملف نصي"
             },
             en: {
                 appTitle: "Text to Voice Converter",
@@ -252,70 +258,15 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
+                stopButton: "Stop Voice",
                 recordingTitle: "Record Voice",
                 startRecordButton: "Start Recording",
                 stopRecordButton: "Stop Recording",
                 convertedAudioTitle: "Download Converted Audio",
-                textFileTitle: "Upload Text File to Convert",
-                convertFileButton: "Convert File to Voice",
-                recordedAudioTitle: "Download Recorded Audio",
-                textInput: "Enter text here"
+                textInput: "Enter text here",
+                uploadTextTitle: "Upload Text File"
             }
         };
     </script>
-</head>
-<body>
-    <!-- Language Selector (Visible at the top) -->
-    <div class="language-window">
-        <label for="languageSelector">اختر لغة التطبيق:</label>
-        <select id="languageSelector" onchange="translateApp()">
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-        </select>
-    </div>
-
-    <header>
-        <img src="logo.png" alt="Logo">
-        <h1 id="appTitle">تحويل النص إلى صوت</h1>
-    </header>
-
-    <div id="lockScreen" class="popup show">
-        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
-        <input type="password" id="accessCode" placeholder="أدخل الكود">
-        <button onclick="unlockApp()" id="accessButton">دخول</button>
-    </div>
-
-    <div id="appContent" class="disabled">
-        <div class="window">
-            <form id="textForm">
-                <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
-                <div class="window">
-                    <label for="gender">اختر الجنس:</label>
-                    <select id="gender" name="gender">
-                        <option value="male">ذكر</option>
-                        <option value="female">أنثى</option>
-                    </select>
-                    <label for="speed">سرعة الصوت:</label>
-                    <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
-                </div>
-                <div class="window">
-                    <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                    <button type="button" onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
-                </div>
-            </form>
-        </div>
-        <div class="window">
-            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
-        </div>
-        <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
-        <a id="convertedAudioButton" href="#" download="converted_audio.mp3" style="display:none;">تحميل الصوت المحول</a>
-
-        <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
-        <div class="window">
-            <input type="file" id="textFileInput" onchange="handleFileUpload()" />
-            <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
-        </div>
-    </div>
 </body>
 </html>
