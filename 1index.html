@@ -17,9 +17,16 @@
             background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
             direction: rtl;
             overflow-x: hidden;
+            animation: fadeIn 1s ease-in-out;
         }
 
-        /* تحسين الأزرار */
+        /* حركة الشعار من اليمين لليسار */
+        header img {
+            width: 100px;
+            animation: slideInRight 2s ease-in-out;
+        }
+
+        /* التأثيرات على الأزرار */
         button, input[type="file"] {
             padding: 15px;
             margin: 10px;
@@ -27,12 +34,28 @@
             border-radius: 10px;
             font-size: 18px;
             transition: 0.3s ease-in-out;
+            background-color: #008CBA;
+            color: white;
         }
 
         button:hover, input[type="file"]:hover {
-            background-color: #007bff;
-            color: white;
+            background-color: #005f6b;
+            color: #ffffff;
             cursor: pointer;
+        }
+
+        /* تحسين شكل العناوين */
+        h1, h2 {
+            font-size: 28px;
+            color: #FF6347; /* لون برتقالي مائل للطماطم */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* تأثيرات التحميل */
+        .loading {
+            display: none;
+            color: green;
+            font-size: 18px;
         }
 
         .button-container {
@@ -70,26 +93,31 @@
             border: 2px solid #333;
         }
 
-        h2 {
-            font-size: 22px;
-            color: #333;
-        }
-
-        /* تأثيرات التحميل */
-        .loading {
-            display: none;
-            color: green;
-            font-size: 18px;
+        /* تنسيق خلفية النوافذ */
+        #appContent {
+            margin-top: 30px;
         }
 
         .audio-container {
             margin-top: 20px;
         }
+
+        /* تأثيرات الحركات */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(0); }
+        }
+
     </style>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Logo" width="100">
+        <img src="logo.png" alt="Logo">
         <h1>تحويل النص إلى صوت</h1>
     </header>
 
