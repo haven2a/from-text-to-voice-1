@@ -111,6 +111,7 @@
         }
 
         .language-popup {
+            display: none;
             animation: slideUpDown 0.5s ease-in-out;
         }
 
@@ -118,7 +119,6 @@
             0% { transform: translateY(-100%); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
-
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
@@ -141,6 +141,7 @@
                 <option value="ar">العربية</option>
                 <option value="en">English</option>
             </select>
+            <button onclick="toggleLanguagePopup()">تغيير لغة القارئ</button>
         </div>
 
         <form id="textForm">
@@ -158,45 +159,27 @@
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
             </div>
         </form>
-        <h2 id="recordingTitle">تسجيل الصوت</h2>
-        <div class="button-container">
-            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
-            <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
-        </div>
-        <audio id="audioPlayback" controls></audio>
+
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
-            <!-- هنا زر التحميل سيكون مخفيًا في البداية -->
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
-        </div>
-        
-        <!-- نافذة تحميل ملف نصي -->
-        <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
-        <div class="button-container">
-            <input type="file" id="textFileInput" onchange="handleFileUpload()" />
-            <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
-        </div>
-        
-        <!-- نافذة تحميل الصوت المسجل -->
-        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
-        <div class="button-container">
-            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
     </div>
 
-    <div id="languagePopup" class="language-popup disabled">
+    <div id="languagePopup" class="language-popup">
         <h3>تغيير لغة القارئ</h3>
         <select id="voiceSelector" onchange="changeVoice()">
             <option value="Arabic Male">ذكر عربي</option>
             <option value="Arabic Female">أنثى عربية</option>
-            <option value="English Male">Male English</option>
-            <option value="English Female">Female English</option>
+            <option value="English Male">ذكر إنجليزي</option>
+            <option value="English Female">أنثى إنجليزية</option>
         </select>
         <button onclick="toggleLanguagePopup()">إغلاق</button>
     </div>
 
     <script>
+        let audioBlob;
+
         function unlockApp() {
             const accessCode = document.getElementById("accessCode").value;
             if (accessCode === "1234") {
@@ -220,13 +203,14 @@
             const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
             responsiveVoice.speak(text, voiceName, { rate: speed });
 
-            // هنا بعد تحويل الصوت نعرض زر التحميل
+            // عند تشغيل الصوت، سيتم توفير رابط تحميل الصوت المحول
+            audioBlob = new Blob([text], { type: 'audio/mp3' }); // محاكاة للملف الصوتي
+            const audioUrl = URL.createObjectURL(audioBlob);
+
             setTimeout(function() {
-                // استبدال الرابط بعنوان الملف المحول
-                const audioUrl = generateAudioUrl(text, voiceName, speed);
                 const audioLink = document.getElementById("convertedAudioButton");
                 audioLink.href = audioUrl;
-                audioLink.style.display = "block"; // إظهار الرابط
+                audioLink.style.display = "block"; // إظهار رابط التحميل
             }, 1000); // تأخير بسيط لانتظار انتهاء عملية التحدث
         }
 
@@ -234,34 +218,14 @@
             responsiveVoice.cancel();
         }
 
-        function startRecording() {
-            // Placeholder for starting recording
-            alert("بدء التسجيل");
+        function toggleLanguagePopup() {
+            const languagePopup = document.getElementById("languagePopup");
+            languagePopup.classList.toggle("language-popup");
         }
 
-        function stopRecording() {
-            // Placeholder for stopping recording
-            alert("إيقاف التسجيل");
-        }
-
-        function handleFileUpload() {
-            const fileInput = document.getElementById("textFileInput");
-            const file = fileInput.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("textInput").value = e.target.result;
-                };
-                reader.readAsText(file);
-            } else {
-                alert("يرجى اختيار ملف نصي");
-            }
-        }
-
-        function convertFileToVoice() {
-            const text = document.getElementById("textInput").value;
-            playVoice();
+        function changeVoice() {
+            const voice = document.getElementById("voiceSelector").value;
+            responsiveVoice.setDefaultVoice(voice);
         }
 
         function translateApp() {
@@ -280,16 +244,6 @@
             }
         }
 
-        function toggleLanguagePopup() {
-            const languagePopup = document.getElementById("languagePopup");
-            languagePopup.classList.toggle("disabled");
-        }
-
-        function changeVoice() {
-            const voice = document.getElementById("voiceSelector").value;
-            responsiveVoice.setDefaultVoice(voice);
-        }
-
         const translations = {
             ar: {
                 appTitle: "تحويل النص إلى صوت",
@@ -299,13 +253,7 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
-                recordingTitle: "تسجيل الصوت",
-                startRecordButton: "بدء التسجيل",
-                stopRecordButton: "إيقاف التسجيل",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
-                convertFileButton: "تحويل الملف إلى صوت",
-                recordedAudioTitle: "تحميل الصوت المسجل",
                 textInput: "أدخل النص هنا"
             },
             en: {
@@ -316,13 +264,7 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
-                recordingTitle: "Record Voice",
-                startRecordButton: "Start Recording",
-                stopRecordButton: "Stop Recording",
                 convertedAudioTitle: "Download Converted Audio",
-                textFileTitle: "Upload Text File to Convert",
-                convertFileButton: "Convert File to Voice",
-                recordedAudioTitle: "Download Recorded Audio",
                 textInput: "Enter text here"
             }
         };
