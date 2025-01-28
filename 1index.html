@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحويل النص إلى صوت</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #f4f4f4;
@@ -19,52 +18,29 @@
             direction: rtl;
             overflow-x: hidden;
         }
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            animation: slideIn 1s ease-in-out;
-        }
-        header img {
-            width: 100px;
-            height: 100px;
-            animation: fadeIn 1.5s ease-in-out;
-        }
-        h1 {
-            color: blue;
-            font-size: 28px;
-            margin: 0;
-            animation: slideIn 1s ease-in-out;
-        }
-        textarea, select, button, input {
-            width: 45%;
+
+        /* تحسين الأزرار */
+        button, input[type="file"] {
             padding: 15px;
             margin: 10px;
             border: 2px solid #333;
             border-radius: 10px;
-            font-size: 20px;
-            animation: fadeIn 0.8s ease-in-out;
+            font-size: 18px;
+            transition: 0.3s ease-in-out;
         }
+
+        button:hover, input[type="file"]:hover {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
         .button-container {
             display: flex;
             justify-content: center;
             gap: 20px;
-            animation: fadeIn 1s ease-in-out;
         }
-        button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            font-size: 22px;
-            border: none;
-            transition: all 0.3s ease-in-out;
-        }
-        button:hover {
-            background-color: #0056b3;
-            transform: scale(1.1);
-        }
+
         .popup {
             display: none;
             position: fixed;
@@ -78,121 +54,88 @@
             transition: all 0.5s ease-in-out;
             z-index: 1000;
         }
+
         .popup.show {
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+
+        textarea {
+            width: 80%;
+            padding: 15px;
+            font-size: 18px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid #333;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        h2 {
+            font-size: 22px;
+            color: #333;
+        }
+
+        /* تأثيرات التحميل */
+        .loading {
+            display: none;
+            color: green;
+            font-size: 18px;
         }
     </style>
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Logo">
-        <h1 id="appTitle">تحويل النص إلى صوت</h1>
+        <img src="logo.png" alt="Logo" width="100">
+        <h1>تحويل النص إلى صوت</h1>
     </header>
 
     <div id="lockScreen" class="popup show">
-        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
+        <h2>إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
 
     <div id="appContent" class="disabled">
+        <!-- نافذة تحميل الملفات -->
         <div class="button-container">
-            <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
-            <select id="languageSelector" onchange="translateApp()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
+            <label for="fileUpload">رفع ملف نصي:</label>
+            <input type="file" id="fileUpload" accept=".txt,.docx,.pdf" onchange="handleFileUpload(event)">
         </div>
+
+        <!-- إشعار التحميل -->
+        <div id="loadingMessage" class="loading">جاري تحميل الملف...</div>
 
         <form id="textForm">
             <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="button-container">
-                <label for="gender" id="genderLabel">اختر الجنس:</label>
+                <label for="gender">اختر الجنس:</label>
                 <select id="gender" name="gender">
                     <option value="male">ذكر</option>
                     <option value="female">أنثى</option>
                 </select>
-                <label for="speed" id="speedLabel">سرعة الصوت:</label>
+                <label for="speed">سرعة الصوت:</label>
                 <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
             </div>
         </form>
-        <h2 id="recordingTitle">تسجيل الصوت</h2>
+
+        <h2>تسجيل الصوت</h2>
         <div class="button-container">
-            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
-            <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
         <audio id="audioPlayback" controls></audio>
-        <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
+
+        <h2>تحميل الصوت المحول من النص</h2>
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
         </div>
     </div>
 
     <script>
-        const translations = {
-            ar: {
-                appTitle: "تحويل النص إلى صوت",
-                accessTitle: "إدخال رمز الدخول",
-                accessButton: "دخول",
-                languageLabel: "اختر لغة التطبيق:",
-                genderLabel: "اختر الجنس:",
-                speedLabel: "سرعة الصوت:",
-                playButton: "تشغيل الصوت",
-                recordingTitle: "تسجيل الصوت",
-                startRecordButton: "بدء التسجيل",
-                stopRecordButton: "إيقاف التسجيل",
-                convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textInput: "أدخل النص هنا"
-            },
-            en: {
-                appTitle: "Text to Voice Converter",
-                accessTitle: "Enter Access Code",
-                accessButton: "Enter",
-                languageLabel: "Select Application Language:",
-                genderLabel: "Choose Gender:",
-                speedLabel: "Voice Speed:",
-                playButton: "Play Voice",
-                recordingTitle: "Audio Recording",
-                startRecordButton: "Start Recording",
-                stopRecordButton: "Stop Recording",
-                convertedAudioTitle: "Download Converted Audio",
-                textInput: "Enter text here"
-            }
-        };
-
-        function translateApp() {
-            const lang = document.getElementById('languageSelector').value;
-            const translation = translations[lang];
-
-            document.getElementById('appTitle').innerText = translation.appTitle;
-            document.getElementById('accessTitle').innerText = translation.accessTitle;
-            document.getElementById('accessButton').innerText = translation.accessButton;
-            document.getElementById('languageLabel').innerText = translation.languageLabel;
-            document.getElementById('genderLabel').innerText = translation.genderLabel;
-            document.getElementById('speedLabel').innerText = translation.speedLabel;
-            document.getElementById('playButton').innerText = translation.playButton;
-            document.getElementById('recordingTitle').innerText = translation.recordingTitle;
-            document.getElementById('startRecordButton').innerText = translation.startRecordButton;
-            document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
-            document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
-            document.getElementById('textInput').placeholder = translation.textInput;
-        }
-
         function unlockApp() {
             let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
@@ -205,6 +148,34 @@
             }
         }
 
+        // معالجة تحميل الملفات النصية
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            const fileType = file.name.split('.').pop().toLowerCase();
+            const supportedFileTypes = ['txt', 'docx', 'pdf'];
+
+            // تحقق من نوع الملف
+            if (!supportedFileTypes.includes(fileType)) {
+                alert("الملف غير مدعوم! فقط ملفات TXT، DOCX، و PDF مسموحة.");
+                return;
+            }
+
+            document.getElementById('loadingMessage').style.display = 'block';
+
+            reader.onload = function(e) {
+                document.getElementById('textInput').value = e.target.result;
+                document.getElementById('loadingMessage').style.display = 'none';
+            };
+
+            reader.onerror = function() {
+                alert("حدث خطأ أثناء تحميل الملف!");
+                document.getElementById('loadingMessage').style.display = 'none';
+            };
+
+            reader.readAsText(file);
+        }
+
         function playVoice() {
             const text = document.getElementById('textInput').value;
             const gender = document.getElementById('gender').value;
@@ -213,11 +184,11 @@
 
             responsiveVoice.speak(text, voice, { rate: speed });
 
-            // Simulate audio file generation for download
+            // محاكاة إنشاء ملف صوتي للتنزيل
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = speed;
 
-            // Create dummy audio file
+            // إنشاء ملف صوتي وهمي
             const audioBlob = new Blob([text], { type: 'audio/wav' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const downloadLink = document.getElementById('convertedAudioButton');
