@@ -72,8 +72,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            background: #333;
-            color: white;
+            background: #444;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -85,7 +84,6 @@
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
-            animation: slideInUp 1s ease-in-out;
         }
         .disabled {
             display: none;
@@ -98,32 +96,21 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(100%); }
-            to { opacity: 1; transform: translateY(0); }
-        }
         @keyframes logoMovement {
             0% { transform: translateX(0); }
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .popup {
+            animation: popupFadeIn 0.5s ease-in-out;
         }
-        /* تحسين العناوين داخل الأطر */
-        h2, #accessTitle, #appTitle, #convertedAudioTitle, #textFileDownloadTitle {
-            color: white;
-            background-color: #3b3b3b;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid #cc9b00;
-        }
-        #appTitle {
-            background-color: #ffd700;
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+    <script src="https://api.voicerss.org/voiceRSS.js"></script>
 </head>
 <body>
     <header>
@@ -131,14 +118,12 @@
         <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
-    <!-- نافذة الدخول -->
     <div id="lockScreen" class="popup show">
         <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
 
-    <!-- نافذة التطبيق بعد تسجيل الدخول -->
     <div id="appContent" class="disabled">
         <div class="button-container">
             <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
@@ -148,7 +133,6 @@
             </select>
         </div>
 
-        <!-- نموذج النص -->
         <form id="textForm">
             <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="button-container">
@@ -162,42 +146,23 @@
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                <button type="button" onclick="downloadText()" id="downloadTextButton">تحميل النص</button>
             </div>
         </form>
-
+        
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
         </div>
 
-        <h2 id="textFileDownloadTitle">تحميل الملف النصي</h2>
+        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
         <div class="button-container">
-            <a id="textFileDownloadButton" style="display: none;" download="input_text.txt">تحميل النص المدخل</a>
-        </div>
-
-        <!-- تحميل ملف نصي من الكمبيوتر -->
-        <div class="button-container">
-            <label for="fileInput" id="fileLabel">تحميل النص من الملف:</label>
-            <input type="file" id="fileInput" onchange="handleFileUpload()" accept=".txt">
-        </div>
-
-        <!-- نافذة تسجيل الصوت -->
-        <div class="button-container">
-            <button id="startRecordingButton" onclick="startRecording()">بدء التسجيل</button>
-            <button id="stopRecordingButton" onclick="stopRecording()" style="display:none;">إيقاف التسجيل</button>
-        </div>
-        <div class="button-container">
-            <a id="downloadRecordedAudio" style="display: none;" download="recorded_audio.wav">تحميل الصوت المسجل</a>
+            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
     </div>
 
     <script>
-        let audioBlob;
-        let recorder;
-        let recordedChunks = [];
+        const apiKey = "f7a288dd9a824d228a720645c2b177ec"; // مفتاح API من Voice RSS
 
-        // فتح التطبيق بعد إدخال الكود
         function unlockApp() {
             const accessCode = document.getElementById("accessCode").value;
             if (accessCode === "1234") {
@@ -208,7 +173,6 @@
             }
         }
 
-        // تشغيل الصوت
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const gender = document.getElementById("gender").value;
@@ -219,76 +183,23 @@
                 return;
             }
 
-            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
-            responsiveVoice.speak(text, voiceName, { rate: speed });
-
-            // عند تشغيل الصوت، سيتم توفير رابط تحميل الصوت المحول
-            audioBlob = new Blob([text], { type: 'audio/mp3' }); // محاكاة للملف الصوتي
-            const audioUrl = URL.createObjectURL(audioBlob);
-
-            setTimeout(function() {
-                const audioLink = document.getElementById("convertedAudioButton");
-                audioLink.href = audioUrl;
-                audioLink.style.display = "block"; // إظهار رابط التحميل
-            }, 1000); // تأخير بسيط لانتظار انتهاء عملية التحدث
-        }
-
-        // تحميل النص
-        function downloadText() {
-            const text = document.getElementById("textInput").value;
-            const textBlob = new Blob([text], { type: 'text/plain' });
-            const textUrl = URL.createObjectURL(textBlob);
-            const textLink = document.getElementById("textFileDownloadButton");
-            textLink.href = textUrl;
-            textLink.style.display = "block"; // إظهار رابط تحميل النص
-        }
-
-        // قراءة النص من الملف النصي
-        function handleFileUpload() {
-            const file = document.getElementById("fileInput").files[0];
-            if (!file) {
-                alert("يرجى اختيار ملف نصي");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileText = e.target.result;
-                document.getElementById("textInput").value = fileText; // إدخال النص في textarea
-                playVoice(); // تحويل النص إلى صوت بعد تحميله
+            const voiceParams = {
+                key: apiKey,
+                src: text,
+                hl: "ar-ar",
+                v: gender === "male" ? "male" : "female",
+                r: speed,
+                c: "mp3",
+                f: "44khz_16bit_stereo"
             };
-            reader.readAsText(file);
+
+            VoiceRSS.speech(voiceParams);
+
+            const audioLink = document.getElementById("convertedAudioButton");
+            audioLink.style.display = "inline-block";
+            audioLink.href = `https://api.voicerss.org/?key=${apiKey}&src=${encodeURIComponent(text)}&hl=ar-ar&v=${gender === "male" ? "male" : "female"}&r=${speed}&c=mp3`;
         }
 
-        // بدء تسجيل الصوت
-        function startRecording() {
-            recordedChunks = [];
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    recorder = new MediaRecorder(stream);
-                    recorder.ondataavailable = event => recordedChunks.push(event.data);
-                    recorder.onstop = () => {
-                        const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        const downloadLink = document.getElementById("downloadRecordedAudio");
-                        downloadLink.href = audioUrl;
-                        downloadLink.style.display = "block"; // إظهار رابط تحميل التسجيل
-                    };
-                    recorder.start();
-                    document.getElementById("startRecordingButton").style.display = "none";
-                    document.getElementById("stopRecordingButton").style.display = "inline";
-                })
-                .catch(error => alert("لا يمكن الوصول إلى الميكروفون: " + error));
-        }
-
-        // إيقاف تسجيل الصوت
-        function stopRecording() {
-            recorder.stop();
-            document.getElementById("startRecordingButton").style.display = "inline";
-            document.getElementById("stopRecordingButton").style.display = "none";
-        }
-
-        // ترجمة النصوص بناءً على اللغة المختارة
         function translateApp() {
             const lang = document.getElementById("languageSelector").value;
             const translation = translations[lang];
@@ -315,11 +226,8 @@
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textInput: "أدخل النص هنا",
-                textFileDownloadTitle: "تحميل الملف النصي",
-                fileLabel: "تحميل النص من الملف:",
-                startRecordingButton: "بدء التسجيل",
-                stopRecordingButton: "إيقاف التسجيل"
+                recordedAudioTitle: "تحميل الصوت المسجل",
+                textInput: "أدخل النص هنا"
             },
             en: {
                 appTitle: "Text to Voice Converter",
@@ -330,11 +238,8 @@
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
                 convertedAudioTitle: "Download Converted Audio",
-                textInput: "Enter text here",
-                textFileDownloadTitle: "Download Text File",
-                fileLabel: "Upload text file:",
-                startRecordingButton: "Start Recording",
-                stopRecordingButton: "Stop Recording"
+                recordedAudioTitle: "Download Recorded Audio",
+                textInput: "Enter text here"
             }
         };
     </script>
