@@ -128,12 +128,14 @@
         <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
+    <!-- نافذة الدخول -->
     <div id="lockScreen" class="popup show">
         <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
 
+    <!-- نافذة التطبيق بعد تسجيل الدخول -->
     <div id="appContent" class="disabled">
         <div class="button-container">
             <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
@@ -144,6 +146,7 @@
             <button onclick="toggleLanguagePopup()">تغيير لغة القارئ</button>
         </div>
 
+        <!-- نموذج النص -->
         <form id="textForm">
             <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="button-container">
@@ -157,6 +160,7 @@
             </div>
             <div class="button-container">
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
+                <button type="button" onclick="downloadText()" id="downloadTextButton">تحميل النص</button>
             </div>
         </form>
 
@@ -164,8 +168,14 @@
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
         </div>
+
+        <h2 id="textFileDownloadTitle">تحميل الملف النصي</h2>
+        <div class="button-container">
+            <a id="textFileDownloadButton" style="display: none;" download="input_text.txt">تحميل النص المدخل</a>
+        </div>
     </div>
 
+    <!-- نافذة لتغيير لغة القارئ -->
     <div id="languagePopup" class="language-popup">
         <h3>تغيير لغة القارئ</h3>
         <select id="voiceSelector" onchange="changeVoice()">
@@ -180,6 +190,7 @@
     <script>
         let audioBlob;
 
+        // فتح التطبيق بعد إدخال الكود
         function unlockApp() {
             const accessCode = document.getElementById("accessCode").value;
             if (accessCode === "1234") {
@@ -190,6 +201,7 @@
             }
         }
 
+        // تشغيل الصوت
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const gender = document.getElementById("gender").value;
@@ -214,20 +226,29 @@
             }, 1000); // تأخير بسيط لانتظار انتهاء عملية التحدث
         }
 
-        function stopVoice() {
-            responsiveVoice.cancel();
+        // تحميل النص
+        function downloadText() {
+            const text = document.getElementById("textInput").value;
+            const textBlob = new Blob([text], { type: 'text/plain' });
+            const textUrl = URL.createObjectURL(textBlob);
+            const textLink = document.getElementById("textFileDownloadButton");
+            textLink.href = textUrl;
+            textLink.style.display = "block"; // إظهار رابط تحميل النص
         }
 
+        // تغيير لغة القارئ
         function toggleLanguagePopup() {
             const languagePopup = document.getElementById("languagePopup");
             languagePopup.classList.toggle("language-popup");
         }
 
+        // تغيير صوت القارئ
         function changeVoice() {
             const voice = document.getElementById("voiceSelector").value;
             responsiveVoice.setDefaultVoice(voice);
         }
 
+        // ترجمة النصوص بناءً على اللغة المختارة
         function translateApp() {
             const lang = document.getElementById("languageSelector").value;
             const translation = translations[lang];
@@ -254,7 +275,8 @@
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textInput: "أدخل النص هنا"
+                textInput: "أدخل النص هنا",
+                textFileDownloadTitle: "تحميل الملف النصي"
             },
             en: {
                 appTitle: "Text to Voice Converter",
@@ -265,7 +287,8 @@
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
                 convertedAudioTitle: "Download Converted Audio",
-                textInput: "Enter text here"
+                textInput: "Enter text here",
+                textFileDownloadTitle: "Download Text File"
             }
         };
     </script>
