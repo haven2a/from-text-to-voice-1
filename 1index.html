@@ -29,14 +29,14 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 150px; /* زيادة حجم الشعار */
-            height: 150px;
-            animation: fadeIn 1.5s ease-in-out;
-            animation: slideIn 1s ease-in-out;
+            width: 180px; /* زيادة حجم الشعار */
+            height: 180px;
+            animation: slideIn 2s ease-in-out;
+            animation: logoMovement 3s ease-in-out infinite;
         }
         h1 {
-            color: blue;
-            font-size: 28px;
+            color: #ffd700; /* اللون الذهبي */
+            font-size: 32px;
             margin: 0;
             animation: slideIn 1s ease-in-out;
         }
@@ -44,9 +44,11 @@
             width: 45%;
             padding: 15px;
             margin: 10px;
-            border: 2px solid #333;
+            border: 2px solid #ffd700; /* لون أصفر لحدود النوافذ */
             border-radius: 10px;
             font-size: 20px;
+            background-color: #444;
+            color: white;
             animation: fadeIn 0.8s ease-in-out;
         }
         .button-container {
@@ -97,6 +99,19 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes logoMovement {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+        .popup {
+            animation: popupFadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
@@ -145,7 +160,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
-            <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
         </div>
         
         <!-- نافذة تحميل ملف نصي -->
@@ -158,7 +173,7 @@
         <!-- نافذة تحميل الصوت المسجل -->
         <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
         <div class="button-container">
-            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.wav">تحميل الصوت المسجل</a>
+            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
     </div>
 
@@ -241,12 +256,12 @@
 
             responsiveVoice.speak(text, voice, { rate: speed });
 
-            // Simulate audio file generation for download
+            // Create dummy audio file
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = speed;
 
-            // Create dummy audio file
-            const audioBlob = new Blob([text], { type: 'audio/wav' });
+            // Create Blob for the audio
+            const audioBlob = new Blob([text], { type: 'audio/mp3' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const downloadLink = document.getElementById('convertedAudioButton');
             downloadLink.href = audioUrl;
@@ -266,7 +281,7 @@
                 };
 
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audioElement = document.getElementById("audioPlayback");
                     audioElement.src = audioUrl;
@@ -293,27 +308,4 @@
         }
 
         function handleFileUpload() {
-            const file = document.getElementById('textFileInput').files[0];
-            if (file && file.type === "text/plain") {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const text = e.target.result;
-                    document.getElementById('textInput').value = text;
-                };
-                reader.readAsText(file);
-            } else {
-                alert("يرجى تحميل ملف نصي.");
-            }
-        }
-
-        function convertFileToVoice() {
-            const text = document.getElementById('textInput').value;
-            if (text.trim() !== "") {
-                playVoice();
-            } else {
-                alert("الرجاء إدخال نص لتحويله إلى صوت.");
-            }
-        }
-    </script>
-</body>
-</html>
+           
