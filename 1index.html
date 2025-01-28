@@ -118,13 +118,7 @@
         <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
-    <div id="lockScreen" class="popup show">
-        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
-        <input type="password" id="accessCode" placeholder="أدخل الكود">
-        <button onclick="unlockApp()" id="accessButton">دخول</button>
-    </div>
-
-    <div id="appContent" class="disabled">
+    <div id="appContent">
         <div class="button-container">
             <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
             <select id="languageSelector" onchange="translateApp()">
@@ -172,25 +166,9 @@
         <div class="button-container">
             <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
-
-        <!-- إضافة السكربت لتحميل الملف باستخدام مفتاح -->
-        <h2 id="downloadFileTitle">تحميل الملف باستخدام المفتاح</h2>
-        <div class="button-container">
-            <button onclick="downloadFile()">تحميل الملف الصوتي</button>
-        </div>
     </div>
 
     <script>
-        function unlockApp() {
-            const accessCode = document.getElementById("accessCode").value;
-            if (accessCode === "1234") {
-                document.getElementById("lockScreen").classList.remove("show");
-                document.getElementById("appContent").classList.remove("disabled");
-            } else {
-                alert("رمز الدخول غير صحيح");
-            }
-        }
-
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const gender = document.getElementById("gender").value;
@@ -258,7 +236,35 @@
         const translations = {
             ar: {
                 appTitle: "تحويل النص إلى صوت",
-                accessTitle: "إدخال رمز الدخول",
-                accessButton: "دخول",
                 languageLabel: "اختر لغة التطبيق:",
-                gender
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                playButton: "تشغيل الصوت",
+                recordingTitle: "تسجيل الصوت",
+                startRecordButton: "بدء التسجيل",
+                stopRecordButton: "إيقاف التسجيل",
+                convertedAudioTitle: "تحميل الصوت المحول من النص",
+                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
+                convertFileButton: "تحويل الملف إلى صوت",
+                recordedAudioTitle: "تحميل الصوت المسجل",
+                textInput: "أدخل النص هنا"
+            },
+            en: {
+                appTitle: "Text to Voice Converter",
+                languageLabel: "Select Application Language:",
+                genderLabel: "Choose Gender:",
+                speedLabel: "Voice Speed:",
+                playButton: "Play Voice",
+                recordingTitle: "Record Voice",
+                startRecordButton: "Start Recording",
+                stopRecordButton: "Stop Recording",
+                convertedAudioTitle: "Download Converted Audio",
+                textFileTitle: "Upload Text File to Convert",
+                convertFileButton: "Convert File to Voice",
+                recordedAudioTitle: "Download Recorded Audio",
+                textInput: "Enter text here"
+            }
+        };
+    </script>
+</body>
+</html>
