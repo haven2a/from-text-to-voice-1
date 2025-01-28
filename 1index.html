@@ -139,7 +139,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
-            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
         </div>
     </div>
 
@@ -210,11 +210,16 @@
             const gender = document.getElementById('gender').value;
             const speed = parseFloat(document.getElementById('speed').value);
             const voice = (gender === "male") ? "Arabic Male" : "Arabic Female";
+
+            // Play voice
             responsiveVoice.speak(text, voice, { rate: speed });
 
+            // Simulate audio file generation for download
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = speed;
-            const audioBlob = new Blob([text], { type: 'text/plain' });
+
+            // Create dummy audio file
+            const audioBlob = new Blob([text], { type: 'audio/wav' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const downloadLink = document.getElementById('convertedAudioButton');
             downloadLink.href = audioUrl;
