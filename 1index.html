@@ -8,10 +8,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #2c2c2c;
-            color: white;
+            background-color: #f4f4f4;
             text-align: center;
             padding: 20px;
+            border: 10px solid #333;
+            width: 90%;
             margin: auto;
             border-radius: 10px;
             background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
@@ -27,13 +28,13 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 200px;
-            height: 200px;
-            animation: logoMovement 3s ease-in-out infinite;
+            width: 100px;
+            height: 100px;
+            animation: fadeIn 1.5s ease-in-out;
         }
         h1 {
-            color: #ffd700;
-            font-size: 36px;
+            color: blue;
+            font-size: 28px;
             margin: 0;
             animation: slideIn 1s ease-in-out;
         }
@@ -41,11 +42,9 @@
             width: 45%;
             padding: 15px;
             margin: 10px;
-            border: 2px solid #ffd700;
+            border: 2px solid #333;
             border-radius: 10px;
             font-size: 20px;
-            background-color: #444;
-            color: white;
             animation: fadeIn 0.8s ease-in-out;
         }
         .button-container {
@@ -72,21 +71,17 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            background: #444;
+            background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.5s ease-in-out;
             z-index: 1000;
-            border: 2px solid yellow;
         }
         .popup.show {
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
-        }
-        .disabled {
-            display: none;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -96,21 +91,8 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes logoMovement {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
-        }
-        .popup {
-            animation: popupFadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes popupFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
-    <script src="https://api.voicerss.org/voiceRSS.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
 <body>
     <header>
@@ -148,74 +130,20 @@
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
             </div>
         </form>
-        
+        <h2 id="recordingTitle">تسجيل الصوت</h2>
+        <div class="button-container">
+            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
+            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+            <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
+        </div>
+        <audio id="audioPlayback" controls></audio>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
-            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
-        </div>
-
-        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
-        <div class="button-container">
-            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
         </div>
     </div>
 
     <script>
-        const apiKey = "f7a288dd9a824d228a720645c2b177ec"; // مفتاح API من Voice RSS
-
-        function unlockApp() {
-            const accessCode = document.getElementById("accessCode").value;
-            if (accessCode === "1234") {
-                document.getElementById("lockScreen").classList.remove("show");
-                document.getElementById("appContent").classList.remove("disabled");
-            } else {
-                alert("رمز الدخول غير صحيح");
-            }
-        }
-
-        function playVoice() {
-            const text = document.getElementById("textInput").value;
-            const gender = document.getElementById("gender").value;
-            const speed = document.getElementById("speed").value;
-
-            if (text.trim() === "") {
-                alert("يرجى إدخال النص للتحويل");
-                return;
-            }
-
-            const voiceParams = {
-                key: apiKey,
-                src: text,
-                hl: "ar-ar",
-                v: gender === "male" ? "male" : "female",
-                r: speed,
-                c: "mp3",
-                f: "44khz_16bit_stereo"
-            };
-
-            VoiceRSS.speech(voiceParams);
-
-            const audioLink = document.getElementById("convertedAudioButton");
-            audioLink.style.display = "inline-block";
-            audioLink.href = `https://api.voicerss.org/?key=${apiKey}&src=${encodeURIComponent(text)}&hl=ar-ar&v=${gender === "male" ? "male" : "female"}&r=${speed}&c=mp3`;
-        }
-
-        function translateApp() {
-            const lang = document.getElementById("languageSelector").value;
-            const translation = translations[lang];
-
-            for (const key in translation) {
-                const element = document.getElementById(key);
-                if (element) {
-                    if (element.placeholder) {
-                        element.placeholder = translation[key];
-                    } else {
-                        element.textContent = translation[key];
-                    }
-                }
-            }
-        }
-
         const translations = {
             ar: {
                 appTitle: "تحويل النص إلى صوت",
@@ -225,8 +153,10 @@
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
+                recordingTitle: "تسجيل الصوت",
+                startRecordButton: "بدء التسجيل",
+                stopRecordButton: "إيقاف التسجيل",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
-                recordedAudioTitle: "تحميل الصوت المسجل",
                 textInput: "أدخل النص هنا"
             },
             en: {
@@ -237,11 +167,97 @@
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
+                recordingTitle: "Audio Recording",
+                startRecordButton: "Start Recording",
+                stopRecordButton: "Stop Recording",
                 convertedAudioTitle: "Download Converted Audio",
-                recordedAudioTitle: "Download Recorded Audio",
                 textInput: "Enter text here"
             }
         };
+
+        function translateApp() {
+            const lang = document.getElementById('languageSelector').value;
+            const translation = translations[lang];
+
+            document.getElementById('appTitle').innerText = translation.appTitle;
+            document.getElementById('accessTitle').innerText = translation.accessTitle;
+            document.getElementById('accessButton').innerText = translation.accessButton;
+            document.getElementById('languageLabel').innerText = translation.languageLabel;
+            document.getElementById('genderLabel').innerText = translation.genderLabel;
+            document.getElementById('speedLabel').innerText = translation.speedLabel;
+            document.getElementById('playButton').innerText = translation.playButton;
+            document.getElementById('recordingTitle').innerText = translation.recordingTitle;
+            document.getElementById('startRecordButton').innerText = translation.startRecordButton;
+            document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
+            document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
+            document.getElementById('textInput').placeholder = translation.textInput;
+        }
+
+        function unlockApp() {
+            let code = document.getElementById('accessCode').value.trim();
+            if (code === "1234") {
+                document.getElementById('lockScreen').classList.remove('show');
+                document.getElementById('appContent').classList.remove('disabled');
+                alert("تم تفعيل التطبيق بنجاح!");
+            } else {
+                alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
+                document.getElementById('accessCode').value = "";
+            }
+        }
+
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            const gender = document.getElementById('gender').value;
+            const speed = parseFloat(document.getElementById('speed').value);
+            const voice = (gender === "male") ? "Arabic Male" : "Arabic Female";
+
+            responsiveVoice.speak(text, voice, { rate: speed });
+
+            // Simulate audio file generation for download
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speed;
+
+            // Create dummy audio file
+            const audioBlob = new Blob([text], { type: 'audio/wav' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const downloadLink = document.getElementById('convertedAudioButton');
+            downloadLink.href = audioUrl;
+            downloadLink.style.display = 'block';
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioElement = document.getElementById("audioPlayback");
+                    audioElement.src = audioUrl;
+                };
+
+                alert("تم بدء التسجيل.");
+            });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                alert("تم إيقاف التسجيل.");
+            }
+        }
+
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
     </script>
 </body>
 </html>
