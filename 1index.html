@@ -72,7 +72,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            background: #444;
+            background: #333;
+            color: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -84,6 +85,7 @@
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
+            animation: slideInUp 1s ease-in-out;
         }
         .disabled {
             display: none;
@@ -96,28 +98,29 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes logoMovement {
             0% { transform: translateX(0); }
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
-        .popup {
-            animation: popupFadeIn 0.5s ease-in-out;
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes popupFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* تحسين العناوين داخل الأطر */
+        h2, #accessTitle, #appTitle, #convertedAudioTitle, #textFileDownloadTitle {
+            color: white;
+            background-color: #3b3b3b;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #cc9b00;
         }
-
-        .language-popup {
-            display: none;
-            animation: slideUpDown 0.5s ease-in-out;
-        }
-
-        @keyframes slideUpDown {
-            0% { transform: translateY(-100%); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        #appTitle {
+            background-color: #ffd700;
         }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
@@ -143,7 +146,6 @@
                 <option value="ar">العربية</option>
                 <option value="en">English</option>
             </select>
-            <button onclick="toggleLanguagePopup()">تغيير لغة القارئ</button>
         </div>
 
         <!-- نموذج النص -->
@@ -173,22 +175,27 @@
         <div class="button-container">
             <a id="textFileDownloadButton" style="display: none;" download="input_text.txt">تحميل النص المدخل</a>
         </div>
-    </div>
 
-    <!-- نافذة لتغيير لغة القارئ -->
-    <div id="languagePopup" class="language-popup">
-        <h3>تغيير لغة القارئ</h3>
-        <select id="voiceSelector" onchange="changeVoice()">
-            <option value="Arabic Male">ذكر عربي</option>
-            <option value="Arabic Female">أنثى عربية</option>
-            <option value="English Male">ذكر إنجليزي</option>
-            <option value="English Female">أنثى إنجليزية</option>
-        </select>
-        <button onclick="toggleLanguagePopup()">إغلاق</button>
+        <!-- تحميل ملف نصي من الكمبيوتر -->
+        <div class="button-container">
+            <label for="fileInput" id="fileLabel">تحميل النص من الملف:</label>
+            <input type="file" id="fileInput" onchange="handleFileUpload()" accept=".txt">
+        </div>
+
+        <!-- نافذة تسجيل الصوت -->
+        <div class="button-container">
+            <button id="startRecordingButton" onclick="startRecording()">بدء التسجيل</button>
+            <button id="stopRecordingButton" onclick="stopRecording()" style="display:none;">إيقاف التسجيل</button>
+        </div>
+        <div class="button-container">
+            <a id="downloadRecordedAudio" style="display: none;" download="recorded_audio.wav">تحميل الصوت المسجل</a>
+        </div>
     </div>
 
     <script>
         let audioBlob;
+        let recorder;
+        let recordedChunks = [];
 
         // فتح التطبيق بعد إدخال الكود
         function unlockApp() {
@@ -236,16 +243,49 @@
             textLink.style.display = "block"; // إظهار رابط تحميل النص
         }
 
-        // تغيير لغة القارئ
-        function toggleLanguagePopup() {
-            const languagePopup = document.getElementById("languagePopup");
-            languagePopup.classList.toggle("language-popup");
+        // قراءة النص من الملف النصي
+        function handleFileUpload() {
+            const file = document.getElementById("fileInput").files[0];
+            if (!file) {
+                alert("يرجى اختيار ملف نصي");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileText = e.target.result;
+                document.getElementById("textInput").value = fileText; // إدخال النص في textarea
+                playVoice(); // تحويل النص إلى صوت بعد تحميله
+            };
+            reader.readAsText(file);
         }
 
-        // تغيير صوت القارئ
-        function changeVoice() {
-            const voice = document.getElementById("voiceSelector").value;
-            responsiveVoice.setDefaultVoice(voice);
+        // بدء تسجيل الصوت
+        function startRecording() {
+            recordedChunks = [];
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = event => recordedChunks.push(event.data);
+                    recorder.onstop = () => {
+                        const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const downloadLink = document.getElementById("downloadRecordedAudio");
+                        downloadLink.href = audioUrl;
+                        downloadLink.style.display = "block"; // إظهار رابط تحميل التسجيل
+                    };
+                    recorder.start();
+                    document.getElementById("startRecordingButton").style.display = "none";
+                    document.getElementById("stopRecordingButton").style.display = "inline";
+                })
+                .catch(error => alert("لا يمكن الوصول إلى الميكروفون: " + error));
+        }
+
+        // إيقاف تسجيل الصوت
+        function stopRecording() {
+            recorder.stop();
+            document.getElementById("startRecordingButton").style.display = "inline";
+            document.getElementById("stopRecordingButton").style.display = "none";
         }
 
         // ترجمة النصوص بناءً على اللغة المختارة
@@ -276,7 +316,10 @@
                 playButton: "تشغيل الصوت",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
                 textInput: "أدخل النص هنا",
-                textFileDownloadTitle: "تحميل الملف النصي"
+                textFileDownloadTitle: "تحميل الملف النصي",
+                fileLabel: "تحميل النص من الملف:",
+                startRecordingButton: "بدء التسجيل",
+                stopRecordingButton: "إيقاف التسجيل"
             },
             en: {
                 appTitle: "Text to Voice Converter",
@@ -288,7 +331,10 @@
                 playButton: "Play Voice",
                 convertedAudioTitle: "Download Converted Audio",
                 textInput: "Enter text here",
-                textFileDownloadTitle: "Download Text File"
+                textFileDownloadTitle: "Download Text File",
+                fileLabel: "Upload text file:",
+                startRecordingButton: "Start Recording",
+                stopRecordingButton: "Stop Recording"
             }
         };
     </script>
