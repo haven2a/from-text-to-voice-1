@@ -28,9 +28,10 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 120px;
-            height: 120px;
+            width: 150px;
+            height: 150px;
             animation: fadeIn 1.5s ease-in-out;
+            animation: moveLogo 2s ease-in-out infinite;
         }
         h1 {
             color: blue;
@@ -66,7 +67,7 @@
             transform: scale(1.1);
         }
         .popup {
-            display: block;
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -83,9 +84,6 @@
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
         }
-        #appContent.disabled {
-            display: none;
-        }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -94,7 +92,13 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes moveLogo {
+            0% { transform: translateX(-100px); }
+            50% { transform: translateX(0); }
+            100% { transform: translateX(100px); }
+        }
     </style>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
 <body>
     <header>
@@ -102,14 +106,12 @@
         <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
-    <!-- نافذة إدخال الكود -->
     <div id="lockScreen" class="popup show">
         <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
 
-    <!-- محتوى التطبيق -->
     <div id="appContent" class="disabled">
         <div class="button-container">
             <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
@@ -134,6 +136,7 @@
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
             </div>
         </form>
+
         <h2 id="recordingTitle">تسجيل الصوت</h2>
         <div class="button-container">
             <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
@@ -145,20 +148,74 @@
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
         </div>
+
+        <h2 id="fileUploadTitle">تحميل ملف نصي</h2>
+        <div class="button-container">
+            <input type="file" id="fileInput" accept=".txt" onchange="loadTextFile(event)">
+        </div>
     </div>
 
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
-
     <script>
+        const translations = {
+            ar: {
+                appTitle: "تحويل النص إلى صوت",
+                accessTitle: "إدخال رمز الدخول",
+                accessButton: "دخول",
+                languageLabel: "اختر لغة التطبيق:",
+                genderLabel: "اختر الجنس:",
+                speedLabel: "سرعة الصوت:",
+                playButton: "تشغيل الصوت",
+                recordingTitle: "تسجيل الصوت",
+                startRecordButton: "بدء التسجيل",
+                stopRecordButton: "إيقاف التسجيل",
+                convertedAudioTitle: "تحميل الصوت المحول من النص",
+                fileUploadTitle: "تحميل ملف نصي",
+                textInput: "أدخل النص هنا"
+            },
+            en: {
+                appTitle: "Text to Voice Converter",
+                accessTitle: "Enter Access Code",
+                accessButton: "Enter",
+                languageLabel: "Select Application Language:",
+                genderLabel: "Choose Gender:",
+                speedLabel: "Voice Speed:",
+                playButton: "Play Voice",
+                recordingTitle: "Audio Recording",
+                startRecordButton: "Start Recording",
+                stopRecordButton: "Stop Recording",
+                convertedAudioTitle: "Download Converted Audio",
+                fileUploadTitle: "Upload Text File",
+                textInput: "Enter text here"
+            }
+        };
+
+        function translateApp() {
+            const lang = document.getElementById('languageSelector').value;
+            const translation = translations[lang];
+
+            document.getElementById('appTitle').innerText = translation.appTitle;
+            document.getElementById('accessTitle').innerText = translation.accessTitle;
+            document.getElementById('accessButton').innerText = translation.accessButton;
+            document.getElementById('languageLabel').innerText = translation.languageLabel;
+            document.getElementById('genderLabel').innerText = translation.genderLabel;
+            document.getElementById('speedLabel').innerText = translation.speedLabel;
+            document.getElementById('playButton').innerText = translation.playButton;
+            document.getElementById('recordingTitle').innerText = translation.recordingTitle;
+            document.getElementById('startRecordButton').innerText = translation.startRecordButton;
+            document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
+            document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
+            document.getElementById('fileUploadTitle').innerText = translation.fileUploadTitle;
+            document.getElementById('textInput').placeholder = translation.textInput;
+        }
+
         function unlockApp() {
             let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
-                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
-                alert("تم تفعيل التطبيق بنجاح!");
             } else {
                 alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
-                document.getElementById('accessCode').value = ""; // مسح النص
+                document.getElementById('accessCode').value = "";
             }
         }
 
@@ -180,6 +237,51 @@
             const downloadLink = document.getElementById('convertedAudioButton');
             downloadLink.href = audioUrl;
             downloadLink.style.display = 'block';
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioElement = document.getElementById("audioPlayback");
+                    audioElement.src = audioUrl;
+                };
+
+                alert("تم بدء التسجيل.");
+            });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                alert("تم إيقاف التسجيل.");
+            }
+        }
+
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
+
+        function loadTextFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('textInput').value = e.target.result;
+            };
+
+            reader.readAsText(file);
         }
     </script>
 </body>
