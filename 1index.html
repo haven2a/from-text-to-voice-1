@@ -126,12 +126,14 @@
         <h1>تحويل النص إلى صوت</h1>
     </header>
 
+    <!-- نافذة الكود لتفعيل التطبيق -->
     <div id="lockScreen" class="popup show">
         <h2>إدخال رمز الدخول</h2>
         <input type="password" id="accessCode" placeholder="أدخل الكود">
         <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
 
+    <!-- نافذة التطبيق التي سيتم إظهارها بعد إدخال الكود -->
     <div id="appContent" class="disabled">
         <!-- نافذة تحميل الملفات -->
         <div class="button-container">
@@ -192,9 +194,11 @@
 
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=808460c432f04c02bcfc1dfa19ff119b"></script>
     <script>
+        // عملية فتح التطبيق بعد إدخال الكود
         function unlockApp() {
             let code = document.getElementById('accessCode').value.trim();
             if (code === "1234") {
+                // إخفاء نافذة الكود وإظهار التطبيق
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
                 alert("تم تفعيل التطبيق بنجاح!");
@@ -232,6 +236,7 @@
             reader.readAsText(file);
         }
 
+        // تشغيل الصوت باستخدام مكتبة responsiveVoice
         function playVoice() {
             const text = document.getElementById('textInput').value;
             const gender = document.getElementById('gender').value;
@@ -254,6 +259,7 @@
             downloadLink.style.display = 'block';
         }
 
+        // تسجيل الصوت باستخدام MediaRecorder
         let mediaRecorder;
         let audioChunks = [];
 
