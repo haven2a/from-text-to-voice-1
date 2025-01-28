@@ -147,6 +147,19 @@
         <div class="button-container">
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
         </div>
+        
+        <!-- نافذة تحميل ملف نصي -->
+        <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
+        <div class="button-container">
+            <input type="file" id="textFileInput" onchange="handleFileUpload()" />
+            <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
+        </div>
+        
+        <!-- نافذة تحميل الصوت المسجل -->
+        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
+        <div class="button-container">
+            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.wav">تحميل الصوت المسجل</a>
+        </div>
     </div>
 
     <script>
@@ -163,6 +176,9 @@
                 startRecordButton: "بدء التسجيل",
                 stopRecordButton: "إيقاف التسجيل",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
+                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
+                convertFileButton: "تحويل الملف إلى صوت",
+                recordedAudioTitle: "تحميل الصوت المسجل",
                 textInput: "أدخل النص هنا"
             },
             en: {
@@ -177,6 +193,9 @@
                 startRecordButton: "Start Recording",
                 stopRecordButton: "Stop Recording",
                 convertedAudioTitle: "Download Converted Audio",
+                textFileTitle: "Upload Text File to Convert to Audio",
+                convertFileButton: "Convert File to Audio",
+                recordedAudioTitle: "Download Recorded Audio",
                 textInput: "Enter text here"
             }
         };
@@ -196,6 +215,9 @@
             document.getElementById('startRecordButton').innerText = translation.startRecordButton;
             document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
             document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
+            document.getElementById('textFileTitle').innerText = translation.textFileTitle;
+            document.getElementById('convertFileButton').innerText = translation.convertFileButton;
+            document.getElementById('recordedAudioTitle').innerText = translation.recordedAudioTitle;
             document.getElementById('textInput').placeholder = translation.textInput;
         }
 
@@ -248,6 +270,11 @@
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audioElement = document.getElementById("audioPlayback");
                     audioElement.src = audioUrl;
+
+                    // Show download link for recorded audio
+                    const downloadLink = document.getElementById('recordedAudioButton');
+                    downloadLink.href = audioUrl;
+                    downloadLink.style.display = 'block';
                 };
 
                 alert("تم بدء التسجيل.");
@@ -263,6 +290,29 @@
 
         function stopVoice() {
             responsiveVoice.cancel();
+        }
+
+        function handleFileUpload() {
+            const file = document.getElementById('textFileInput').files[0];
+            if (file && file.type === "text/plain") {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const text = e.target.result;
+                    document.getElementById('textInput').value = text;
+                };
+                reader.readAsText(file);
+            } else {
+                alert("يرجى تحميل ملف نصي.");
+            }
+        }
+
+        function convertFileToVoice() {
+            const text = document.getElementById('textInput').value;
+            if (text.trim() !== "") {
+                playVoice();
+            } else {
+                alert("الرجاء إدخال نص لتحويله إلى صوت.");
+            }
         }
     </script>
 </body>
