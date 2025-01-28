@@ -109,6 +109,16 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        .language-popup {
+            animation: slideUpDown 0.5s ease-in-out;
+        }
+
+        @keyframes slideUpDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </head>
@@ -118,7 +128,13 @@
         <h1 id="appTitle">تحويل النص إلى صوت</h1>
     </header>
 
-    <div id="appContent">
+    <div id="lockScreen" class="popup show">
+        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
+        <input type="password" id="accessCode" placeholder="أدخل الكود">
+        <button onclick="unlockApp()" id="accessButton">دخول</button>
+    </div>
+
+    <div id="appContent" class="disabled">
         <div class="button-container">
             <label for="languageSelector" id="languageLabel">اختر لغة التطبيق:</label>
             <select id="languageSelector" onchange="translateApp()">
@@ -151,6 +167,7 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
+            <!-- هنا زر التحميل سيكون مخفيًا في البداية -->
             <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
         </div>
         
@@ -168,7 +185,28 @@
         </div>
     </div>
 
+    <div id="languagePopup" class="language-popup disabled">
+        <h3>تغيير لغة القارئ</h3>
+        <select id="voiceSelector" onchange="changeVoice()">
+            <option value="Arabic Male">ذكر عربي</option>
+            <option value="Arabic Female">أنثى عربية</option>
+            <option value="English Male">Male English</option>
+            <option value="English Female">Female English</option>
+        </select>
+        <button onclick="toggleLanguagePopup()">إغلاق</button>
+    </div>
+
     <script>
+        function unlockApp() {
+            const accessCode = document.getElementById("accessCode").value;
+            if (accessCode === "1234") {
+                document.getElementById("lockScreen").classList.remove("show");
+                document.getElementById("appContent").classList.remove("disabled");
+            } else {
+                alert("رمز الدخول غير صحيح");
+            }
+        }
+
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const gender = document.getElementById("gender").value;
@@ -181,6 +219,15 @@
 
             const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female";
             responsiveVoice.speak(text, voiceName, { rate: speed });
+
+            // هنا بعد تحويل الصوت نعرض زر التحميل
+            setTimeout(function() {
+                // استبدال الرابط بعنوان الملف المحول
+                const audioUrl = generateAudioUrl(text, voiceName, speed);
+                const audioLink = document.getElementById("convertedAudioButton");
+                audioLink.href = audioUrl;
+                audioLink.style.display = "block"; // إظهار الرابط
+            }, 1000); // تأخير بسيط لانتظار انتهاء عملية التحدث
         }
 
         function stopVoice() {
@@ -233,9 +280,21 @@
             }
         }
 
+        function toggleLanguagePopup() {
+            const languagePopup = document.getElementById("languagePopup");
+            languagePopup.classList.toggle("disabled");
+        }
+
+        function changeVoice() {
+            const voice = document.getElementById("voiceSelector").value;
+            responsiveVoice.setDefaultVoice(voice);
+        }
+
         const translations = {
             ar: {
                 appTitle: "تحويل النص إلى صوت",
+                accessTitle: "إدخال رمز الدخول",
+                accessButton: "دخول",
                 languageLabel: "اختر لغة التطبيق:",
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
@@ -251,6 +310,8 @@
             },
             en: {
                 appTitle: "Text to Voice Converter",
+                accessTitle: "Enter Access Code",
+                accessButton: "Enter",
                 languageLabel: "Select Application Language:",
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
