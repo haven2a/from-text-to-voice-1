@@ -172,6 +172,12 @@
         <div class="button-container">
             <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
+
+        <!-- إضافة السكربت لتحميل الملف باستخدام مفتاح -->
+        <h2 id="downloadFileTitle">تحميل الملف باستخدام المفتاح</h2>
+        <div class="button-container">
+            <button onclick="downloadFile()">تحميل الملف الصوتي</button>
+        </div>
     </div>
 
     <script>
@@ -255,36 +261,4 @@
                 accessTitle: "إدخال رمز الدخول",
                 accessButton: "دخول",
                 languageLabel: "اختر لغة التطبيق:",
-                genderLabel: "اختر الجنس:",
-                speedLabel: "سرعة الصوت:",
-                playButton: "تشغيل الصوت",
-                recordingTitle: "تسجيل الصوت",
-                startRecordButton: "بدء التسجيل",
-                stopRecordButton: "إيقاف التسجيل",
-                convertedAudioTitle: "تحميل الصوت المحول من النص",
-                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
-                convertFileButton: "تحويل الملف إلى صوت",
-                recordedAudioTitle: "تحميل الصوت المسجل",
-                textInput: "أدخل النص هنا"
-            },
-            en: {
-                appTitle: "Text to Voice Converter",
-                accessTitle: "Enter Access Code",
-                accessButton: "Enter",
-                languageLabel: "Select Application Language:",
-                genderLabel: "Choose Gender:",
-                speedLabel: "Voice Speed:",
-                playButton: "Play Voice",
-                recordingTitle: "Record Voice",
-                startRecordButton: "Start Recording",
-                stopRecordButton: "Stop Recording",
-                convertedAudioTitle: "Download Converted Audio",
-                textFileTitle: "Upload Text File to Convert",
-                convertFileButton: "Convert File to Voice",
-                recordedAudioTitle: "Download Recorded Audio",
-                textInput: "Enter text here"
-            }
-        };
-    </script>
-</body>
-</html>
+                gender
