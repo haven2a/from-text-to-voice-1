@@ -8,7 +8,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #333;
+            color: white;
             text-align: center;
             padding: 20px;
             border: 10px solid #333;
@@ -28,14 +29,14 @@
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 150px;
-            height: 150px;
-            animation: fadeIn 1.5s ease-in-out;
-            animation: moveLogo 2s ease-in-out infinite;
+            width: 180px; /* زيادة حجم الشعار */
+            height: 180px;
+            animation: slideIn 2s ease-in-out;
+            animation: logoMovement 3s ease-in-out infinite;
         }
         h1 {
-            color: blue;
-            font-size: 28px;
+            color: #ffd700; /* اللون الذهبي */
+            font-size: 32px;
             margin: 0;
             animation: slideIn 1s ease-in-out;
         }
@@ -43,9 +44,11 @@
             width: 45%;
             padding: 15px;
             margin: 10px;
-            border: 2px solid #333;
+            border: 2px solid #ffd700; /* لون أصفر لحدود النوافذ */
             border-radius: 10px;
             font-size: 20px;
+            background-color: #444;
+            color: white;
             animation: fadeIn 0.8s ease-in-out;
         }
         .button-container {
@@ -72,17 +75,21 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            background: white;
+            background: #444;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.5s ease-in-out;
             z-index: 1000;
+            border: 2px solid yellow; /* إطار أصفر حول النافذة */
         }
         .popup.show {
             display: block;
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
+        }
+        .disabled {
+            display: none;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -92,10 +99,18 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes moveLogo {
-            0% { transform: translateX(-100px); }
-            50% { transform: translateX(0); }
-            100% { transform: translateX(100px); }
+        @keyframes logoMovement {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+        .popup {
+            animation: popupFadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
@@ -136,7 +151,6 @@
                 <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
             </div>
         </form>
-
         <h2 id="recordingTitle">تسجيل الصوت</h2>
         <div class="button-container">
             <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
@@ -146,7 +160,20 @@
         <audio id="audioPlayback" controls></audio>
         <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
         <div class="button-container">
-            <a id="convertedAudioButton" style="display: none;" download="converted_audio.wav">تحميل الصوت المحول</a>
+            <a id="convertedAudioButton" style="display: none;" download="converted_audio.mp3">تحميل الصوت المحول</a>
+        </div>
+        
+        <!-- نافذة تحميل ملف نصي -->
+        <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
+        <div class="button-container">
+            <input type="file" id="textFileInput" onchange="handleFileUpload()" />
+            <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
+        </div>
+        
+        <!-- نافذة تحميل الصوت المسجل -->
+        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
+        <div class="button-container">
+            <a id="recordedAudioButton" style="display: none;" download="recorded_audio.mp3">تحميل الصوت المسجل</a>
         </div>
     </div>
 
@@ -164,6 +191,9 @@
                 startRecordButton: "بدء التسجيل",
                 stopRecordButton: "إيقاف التسجيل",
                 convertedAudioTitle: "تحميل الصوت المحول من النص",
+                textFileTitle: "تحميل ملف نصي لتحويله إلى صوت",
+                convertFileButton: "تحويل الملف إلى صوت",
+                recordedAudioTitle: "تحميل الصوت المسجل",
                 textInput: "أدخل النص هنا"
             },
             en: {
@@ -178,6 +208,9 @@
                 startRecordButton: "Start Recording",
                 stopRecordButton: "Stop Recording",
                 convertedAudioTitle: "Download Converted Audio",
+                textFileTitle: "Upload Text File to Convert to Audio",
+                convertFileButton: "Convert File to Audio",
+                recordedAudioTitle: "Download Recorded Audio",
                 textInput: "Enter text here"
             }
         };
@@ -197,6 +230,9 @@
             document.getElementById('startRecordButton').innerText = translation.startRecordButton;
             document.getElementById('stopRecordButton').innerText = translation.stopRecordButton;
             document.getElementById('convertedAudioTitle').innerText = translation.convertedAudioTitle;
+            document.getElementById('textFileTitle').innerText = translation.textFileTitle;
+            document.getElementById('convertFileButton').innerText = translation.convertFileButton;
+            document.getElementById('recordedAudioTitle').innerText = translation.recordedAudioTitle;
             document.getElementById('textInput').placeholder = translation.textInput;
         }
 
@@ -205,6 +241,7 @@
             if (code === "1234") {
                 document.getElementById('lockScreen').classList.remove('show');
                 document.getElementById('appContent').classList.remove('disabled');
+                alert("تم تفعيل التطبيق بنجاح!");
             } else {
                 alert("رمز الدخول غير صحيح! حاول مرة أخرى.");
                 document.getElementById('accessCode').value = "";
@@ -219,12 +256,12 @@
 
             responsiveVoice.speak(text, voice, { rate: speed });
 
-            // Simulate audio file generation for download
+            // Create dummy audio file
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = speed;
 
-            // Create dummy audio file
-            const audioBlob = new Blob([text], { type: 'audio/wav' });
+            // Create Blob for the audio
+            const audioBlob = new Blob([text], { type: 'audio/mp3' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const downloadLink = document.getElementById('convertedAudioButton');
             downloadLink.href = audioUrl;
@@ -244,10 +281,15 @@
                 };
 
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audioElement = document.getElementById("audioPlayback");
                     audioElement.src = audioUrl;
+
+                    // Show download link for recorded audio
+                    const downloadLink = document.getElementById('recordedAudioButton');
+                    downloadLink.href = audioUrl;
+                    downloadLink.style.display = 'block';
                 };
 
                 alert("تم بدء التسجيل.");
@@ -264,6 +306,6 @@
         function stopVoice() {
             responsiveVoice.cancel();
         }
-    </script>
-</body>
-</html>
+
+        function handleFileUpload() {
+           
