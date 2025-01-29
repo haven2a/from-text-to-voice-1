@@ -7,21 +7,22 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #000;
+            background-color: #111;
             color: white;
             text-align: center;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
         .container {
-            width: 80%;
+            width: 100%;
             max-width: 900px;
-            background: #111;
+            background: #222;
             padding: 20px;
             border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
             display: none;
         }
         .code-input-container {
@@ -56,6 +57,23 @@
         button:hover {
             transform: scale(1.1);
         }
+        .window {
+            margin-bottom: 20px;
+            background-color: #333;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 10px;
+            background: black;
+            color: white;
+            border: 1px solid yellow;
+        }
     </style>
 </head>
 <body>
@@ -69,17 +87,20 @@
     <!-- المحتوى الأصلي في الصفحة -->
     <div class="container" id="contentContainer">
         <h1>تحويل النص إلى صوت</h1>
+        
         <div class="window text-window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
             <button onclick="playVoice()">تشغيل الصوت</button>
             <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
+
         <div class="window">
             <h2>تسجيل الصوت</h2>
             <button onclick="startRecording()">بدء التسجيل</button>
             <button onclick="stopRecording()">إيقاف التسجيل</button>
         </div>
+
         <div class="window">
             <h2>تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
