@@ -27,7 +27,7 @@
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
             animation: fadeIn 1s ease-in-out;
-            display: none; /* إخفاء المحتوى حتى يتم إدخال الكود */
+            display: none;
         }
         .window {
             border: 2px solid yellow;
@@ -86,20 +86,16 @@
             border: 1px solid yellow;
         }
 
-        /* تأثير حركة تزحلف للشعار */
-        #logo {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: slideLogo 5s infinite linear;
+        /* نافذة التحكم في الصوت */
+        .audio-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* حركة تزحلف للشعار */
-        @keyframes slideLogo {
-            0% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(100%) translateY(10px); }
-            100% { transform: translateX(-50%) translateY(0); }
+        .audio-controls input {
+            width: 100px;
+            margin: 10px;
         }
 
         @keyframes fadeIn {
@@ -111,43 +107,11 @@
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-
-        /* نافذة القفل */
-        .lock-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
-        }
-        .lock-screen input {
-            padding: 10px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: 1px solid yellow;
-            margin-right: 10px;
-        }
-
-        /* تغيير موقع لغة التطبيق */
-        .language-select {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 999;
-        }
     </style>
 </head>
 <body>
     <!-- نافذة تغيير اللغة في الأعلى -->
-    <div class="language-select">
+    <div style="position: absolute; top: 10px; right: 20px;">
         <label for="languageSelectApp" style="color: white;">اختر لغة التطبيق:</label>
         <select id="languageSelectApp" onchange="changeAppLanguage()">
             <option value="ar" selected>العربية</option>
@@ -159,12 +123,6 @@
     <header>
         <img src="logo.png" alt="Logo" id="logo">
     </header>
-
-    <!-- نافذة القفل -->
-    <div class="lock-screen" id="lockScreen">
-        <input type="password" id="lockCode" placeholder="أدخل رمز القفل" />
-        <button onclick="unlockApp()">فتح التطبيق</button>
-    </div>
 
     <div class="container" id="appContainer">
         <h1 id="title">تحويل النص إلى صوت</h1>
@@ -178,33 +136,37 @@
         <div class="button-group">
             <button onclick="playVoice()">تشغيل الصوت</button>
             <button onclick="stopVoice()">إيقاف الصوت</button>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-            <button onclick="convertFileToVoice()">تحويل إلى صوت من ملف نصي</button>
-            <button onclick="downloadRecordedAudio()">تحميل النص المسجل</button>
         </div>
 
+        <!-- نافذة التحكم في الصوت -->
         <div class="window">
-            <h2>إعدادات القارئ</h2>
-            <div class="button-group">
-                <button onclick="changeVoiceGender('male')">القارئ (ذكر)</button>
-                <button onclick="changeVoiceGender('female')">القارئ (أنثى)</button>
-                <select id="languageSelect" onchange="changeVoiceLanguage()">
-                    <option value="ar-SA">العربية</option>
-                    <option value="en-US">الإنجليزية</option>
-                </select>
+            <h2>إعدادات الصوت</h2>
+            <div class="audio-controls">
+                <label for="speedControl" style="color: white;">سرعة الصوت:</label>
+                <input type="range" id="speedControl" min="0.1" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+                <span id="speedValue" style="color: white;">1</span>
+            </div>
+            <div class="audio-controls">
+                <label for="volumeControl" style="color: white;">مستوى الصوت:</label>
+                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.8" onchange="adjustVolume()">
+                <span id="volumeValue" style="color: white;">0.8</span>
             </div>
         </div>
     </div>
 
     <script>
-        let mediaRecorder;
-        let audioChunks = [];
         let voice = new SpeechSynthesisUtterance();
         voice.lang = 'ar-SA'; // اللغة الافتراضية (العربية)
-        voice.volume = 1; // حجم الصوت
-        voice.rate = 1; // سرعة الصوت
+        voice.volume = 0.8; // تقليل مستوى الصوت (من 0 إلى 1)
+        voice.rate = 1; // سرعة الصوت الافتراضية (من 0.1 إلى 2)
         voice.pitch = 1; // نغمة الصوت
+
+        let voices = [];
+
+        window.speechSynthesis.onvoiceschanged = function() {
+            voices = window.speechSynthesis.getVoices();
+            voice.voice = voices.find(v => v.lang === 'ar-SA' && v.name.includes('Female')) || voices[0];
+        };
 
         // لتغيير لغة واجهة التطبيق
         function changeAppLanguage() {
@@ -214,50 +176,17 @@
                 document.querySelector('h2').textContent = 'Enter text here';
                 document.querySelector('button:nth-child(1)').textContent = 'Play Voice';
                 document.querySelector('button:nth-child(2)').textContent = 'Stop Voice';
-                document.querySelector('button:nth-child(3)').textContent = 'Start Recording';
-                document.querySelector('button:nth-child(4)').textContent = 'Stop Recording';
-                document.querySelector('button:nth-child(5)').textContent = 'Convert to Voice from File';
-                document.querySelector('button:nth-child(6)').textContent = 'Download Recorded Audio';
-                document.querySelector('h2').textContent = 'Voice Reader Settings';
-                document.querySelector('option[value="ar"]').textContent = 'Arabic';
-                document.querySelector('option[value="fr"]').textContent = 'French';
-                document.querySelector('option[value="de"]').textContent = 'German';
+                document.querySelector('h2').textContent = 'Audio Settings';
             } else {
                 document.getElementById('title').textContent = 'تحويل النص إلى صوت';
                 document.querySelector('h2').textContent = 'أدخل النص هنا';
                 document.querySelector('button:nth-child(1)').textContent = 'تشغيل الصوت';
                 document.querySelector('button:nth-child(2)').textContent = 'إيقاف الصوت';
-                document.querySelector('button:nth-child(3)').textContent = 'بدء التسجيل';
-                document.querySelector('button:nth-child(4)').textContent = 'إيقاف التسجيل';
-                document.querySelector('button:nth-child(5)').textContent = 'تحويل إلى صوت من ملف نصي';
-                document.querySelector('button:nth-child(6)').textContent = 'تحميل النص المسجل';
-                document.querySelector('h2').textContent = 'إعدادات القارئ';
+                document.querySelector('h2').textContent = 'إعدادات الصوت';
             }
         }
 
-        // لتغيير لغة القارئ
-        function changeVoiceLanguage() {
-            const language = document.getElementById('languageSelect').value;
-            voice.lang = language;
-        }
-
-        // لتغيير جنس القارئ
-        function changeVoiceGender(gender) {
-            const voices = window.speechSynthesis.getVoices();
-            if (gender === 'male') {
-                voice.voice = voices.find(voice => voice.name.includes('ذكر') && voice.lang === 'ar-SA');
-            } else if (gender === 'female') {
-                voice.voice = voices.find(voice => voice.name.includes('أنثى') && voice.lang === 'ar-SA');
-            }
-        }
-
-        // تحميل الأصوات المتاحة
-        window.speechSynthesis.onvoiceschanged = function() {
-            const voices = window.speechSynthesis.getVoices();
-            // تعيين الصوت الافتراضي للغة العربية
-            voice.voice = voices.find(voice => voice.lang === 'ar-SA');
-        };
-
+        // لتشغيل الصوت
         function playVoice() {
             const text = document.getElementById('textInput').value;
             if (text) {
@@ -272,87 +201,19 @@
             window.speechSynthesis.cancel(); // إيقاف الصوت
         }
 
-        // لتسجيل الصوت
-        function startRecording() {
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.ondataavailable = event => {
-                        audioChunks.push(event.data);
-                    };
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        const audio = new Audio(audioUrl);
-                        audio.play();
-                    };
-                    mediaRecorder.start();
-                })
-                .catch(error => {
-                    console.error("خطأ في الوصول إلى الميكروفون: ", error);
-                });
+        // لتعديل سرعة الصوت
+        function adjustSpeed() {
+            const speed = document.getElementById('speedControl').value;
+            voice.rate = speed;
+            document.getElementById('speedValue').textContent = speed;
         }
 
-        function stopRecording() {
-            if (mediaRecorder) {
-                mediaRecorder.stop();
-            }
+        // لتعديل مستوى الصوت
+        function adjustVolume() {
+            const volume = document.getElementById('volumeControl').value;
+            voice.volume = volume;
+            document.getElementById('volumeValue').textContent = volume;
         }
-
-        // لتحويل ملف نصي إلى صوت
-        function convertFileToVoice() {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = '.txt';
-            fileInput.click();
-            fileInput.onchange = function(e) {
-                const file = e.target.files[0];
-                if (file && file.type === 'text/plain') {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const text = e.target.result;
-                        document.getElementById('textInput').value = text;
-                        playVoice();
-                    };
-                    reader.readAsText(file);
-                } else {
-                    alert("يرجى اختيار ملف نصي.");
-                }
-            };
-        }
-
-        // لتحميل النص المسجل
-        function downloadRecordedAudio() {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const a = document.createElement('a');
-            a.href = audioUrl;
-            a.download = 'recorded_audio.wav';
-            a.click();
-        }
-
-        // فتح التطبيق بعد إدخال الكود
-        function unlockApp() {
-            const lockCode = document.getElementById('lockCode').value;
-            if (lockCode === '123') {
-                localStorage.setItem('appUnlocked', 'true');
-                document.getElementById('lockScreen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('lockScreen').style.display = 'none';
-                    document.getElementById('appContainer').style.display = 'block';
-                }, 1000);
-            } else {
-                alert('رمز القفل غير صحيح!');
-            }
-        }
-
-        // التحقق من حالة القفل عند تحميل الصفحة
-        window.onload = function() {
-            if (localStorage.getItem('appUnlocked') === 'true') {
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-            }
-        };
     </script>
 </body>
 </html>
