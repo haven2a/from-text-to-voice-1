@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحويل النص إلى صوت</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #111;
@@ -14,10 +15,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
-
+        
+        /* رأس الصفحة */
         .header {
             width: 100%;
             display: flex;
@@ -28,6 +31,7 @@
             left: 0;
             right: 0;
             z-index: 100;
+            background-color: #222;
         }
 
         .logo img {
@@ -39,20 +43,10 @@
             font-size: 18px;
         }
 
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            display: none;
-            margin-top: 60px;
-        }
-
+        /* نافذة إدخال الكود */
         .code-input-container {
             position: absolute;
-            top: 100px;
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
@@ -70,20 +64,16 @@
             border: 1px solid yellow;
         }
 
-        button {
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 8px 12px;
-            margin-top: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        button:hover {
-            transform: scale(1.1);
+        /* نافذة المحتوى */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            display: none;
+            margin-top: 100px;
         }
 
         .window {
@@ -103,6 +93,22 @@
             background: black;
             color: white;
             border: 1px solid yellow;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        button:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
