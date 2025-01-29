@@ -18,6 +18,7 @@
             justify-content: center;
             min-height: 100vh;
         }
+
         .header {
             width: 100%;
             display: flex;
@@ -30,13 +31,16 @@
             right: 0;
             z-index: 100;
         }
+
         .logo img {
             max-width: 100px;
         }
+
         .language-selector {
             color: white;
             font-size: 18px;
         }
+
         .container {
             width: 90%;
             max-width: 800px;
@@ -48,6 +52,7 @@
             opacity: 0;
             animation: slideIn 0.5s ease-in-out forwards;
         }
+
         @keyframes slideIn {
             from {
                 transform: translateY(50px);
@@ -58,6 +63,7 @@
                 opacity: 1;
             }
         }
+
         .window {
             margin-bottom: 20px;
             background-color: #333;
@@ -68,6 +74,7 @@
             opacity: 0;
             animation: slideUp 0.7s ease-in-out forwards;
         }
+
         @keyframes slideUp {
             from {
                 transform: translateY(50px);
@@ -78,6 +85,7 @@
                 opacity: 1;
             }
         }
+
         textarea {
             width: 100%;
             height: 250px;
@@ -88,6 +96,7 @@
             color: white;
             border: 2px solid yellow;
         }
+
         button {
             background-color: #007bff;
             color: white;
@@ -99,9 +108,11 @@
             cursor: pointer;
             transition: transform 0.3s ease-in-out;
         }
+
         button:hover {
             transform: scale(1.1);
         }
+
         select, input[type="file"] {
             width: 100%;
             padding: 10px;
@@ -111,6 +122,7 @@
             color: white;
             border: 2px solid yellow;
         }
+
         audio {
             width: 100%;
             margin-top: 10px;
@@ -123,58 +135,71 @@
             <img src="logo.png" alt="شعار التطبيق">
         </div>
         <div class="language-selector">
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
+            <span>اللغة: العربية</span>
         </div>
     </div>
 
     <div class="container">
-        <h1 id="mainTitle">تحويل النص إلى صوت</h1>
+        <h1>تحويل النص إلى صوت</h1>
         
+        <!-- نافذة النص -->
         <div class="window">
-            <h2 id="textWindowTitle">أدخل النص هنا</h2>
+            <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()" id="playBtn">تشغيل الصوت</button>
-            <button onclick="stopVoice()" id="stopBtn">إيقاف الصوت</button>
+            <button onclick="playVoice()">تشغيل الصوت</button>
+            <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
 
+        <!-- نافذة التسجيل الصوتي -->
         <div class="window">
-            <h2 id="recordWindowTitle">تسجيل الصوت</h2>
-            <button onclick="startRecording()" id="startRecordingBtn">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordingBtn">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()" id="downloadRecordingBtn">تحميل الصوت المسجل</button>
+            <h2>تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
             <audio id="audioPlayer" controls style="display:none;"></audio>
         </div>
 
+        <!-- نافذة تحميل الملف النصي -->
         <div class="window">
-            <h2 id="fileWindowTitle">تحميل ملف نصي</h2>
+            <h2>تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()" id="convertFileBtn">تحويل إلى صوت</button>
+            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
 
+        <!-- نافذة تغيير لغة القارئ -->
         <div class="window">
-            <h2 id="voiceSelectTitle">اختيار لغة القارئ</h2>
+            <h2>اختيار لغة القارئ</h2>
             <select id="voiceSelect">
                 <option value="ar">عربي</option>
                 <option value="en">إنجليزي</option>
             </select>
         </div>
 
+        <!-- نافذة تغيير جنس القارئ -->
         <div class="window">
-            <h2 id="genderSelectTitle">اختيار جنس القارئ</h2>
+            <h2>اختيار جنس القارئ</h2>
             <select id="genderSelect">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
             </select>
         </div>
 
+        <!-- نافذة التحكم في سرعة الصوت -->
         <div class="window">
-            <h2 id="speedControlTitle">تسريع/تبطيء الصوت</h2>
+            <h2>تسريع/تبطيء الصوت</h2>
             <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
             <span id="speedLabel">1x</span>
         </div>
+
+        <!-- نافذة تغيير لغة واجهة التطبيق -->
+        <div class="window">
+            <h2>اختيار لغة واجهة التطبيق</h2>
+            <select id="interfaceLanguage">
+                <option value="ar">عربي</option>
+                <option value="en">إنجليزي</option>
+            </select>
+        </div>
+
     </div>
 
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
@@ -183,34 +208,96 @@
         let currentVoice = "ar";
         let currentGender = "male";
         let currentSpeed = 1;
+        let recorder;
+        let audioBlob;
+        let audioUrl;
+        let audioPlayer = document.getElementById("audioPlayer");
 
-        // تغيير لغة التطبيق
-        function changeLanguage() {
-            const lang = document.getElementById("languageSelect").value;
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
+        }
 
-            if (lang === "ar") {
-                document.getElementById("mainTitle").innerText = "تحويل النص إلى صوت";
-                document.getElementById("textWindowTitle").innerText = "أدخل النص هنا";
-                document.getElementById("playBtn").innerText = "تشغيل الصوت";
-                document.getElementById("stopBtn").innerText = "إيقاف الصوت";
-                document.getElementById("recordWindowTitle").innerText = "تسجيل الصوت";
-                document.getElementById("startRecordingBtn").innerText = "بدء التسجيل";
-                document.getElementById("stopRecordingBtn").innerText = "إيقاف التسجيل";
-                document.getElementById("downloadRecordingBtn").innerText = "تحميل الصوت المسجل";
-                document.getElementById("fileWindowTitle").innerText = "تحميل ملف نصي";
-                document.getElementById("convertFileBtn").innerText = "تحويل إلى صوت";
-                document.getElementById("voiceSelectTitle").innerText = "اختيار لغة القارئ";
-                document.getElementById("genderSelectTitle").innerText = "اختيار جنس القارئ";
-                document.getElementById("speedControlTitle").innerText = "تسريع/تبطيء الصوت";
-            } else if (lang === "en") {
-                document.getElementById("mainTitle").innerText = "Text to Speech Converter";
-                document.getElementById("textWindowTitle").innerText = "Enter Text Here";
-                document.getElementById("playBtn").innerText = "Play Voice";
-                document.getElementById("stopBtn").innerText = "Stop Voice";
-                document.getElementById("recordWindowTitle").innerText = "Record Audio";
-                document.getElementById("startRecordingBtn").innerText = "Start Recording";
-                document.getElementById("stopRecordingBtn").innerText = "Stop Recording";
-                document.getElementById("downloadRecordingBtn").innerText = "Download Recorded Audio";
-                document.getElementById("fileWindowTitle").innerText = "Upload Text File";
-                document.getElementById("convertFileBtn").innerText = "Convert to Speech";
-                document.getElementById
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
+
+        function startRecording() {
+            console.log("بدء التسجيل");
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = function(event) {
+                        audioBlob = event.data;
+                        audioUrl = URL.createObjectURL(audioBlob);
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.style.display = 'block';
+                    };
+                    recorder.start();
+                })
+                .catch(function(err) {
+                    console.log("خطأ في الحصول على إذن التسجيل:", err);
+                });
+        }
+
+        function stopRecording() {
+            if (recorder) {
+                recorder.stop();
+            }
+            console.log("إيقاف التسجيل");
+        }
+
+        function downloadRecordedAudio() {
+            if (audioBlob) {
+                const link = document.createElement('a');
+                link.href = audioUrl;
+                link.download = 'recorded-audio.wav';
+                link.click();
+            } else {
+                alert("لا يوجد صوت مسجل لتحميله.");
+            }
+        }
+
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // تغيير لغة القارئ
+        document.getElementById("voiceSelect").addEventListener("change", function() {
+            currentVoice = this.value;
+            responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
+        });
+
+        // تغيير جنس القارئ
+        document.getElementById("genderSelect").addEventListener("change", function() {
+            currentGender = this.value;
+        });
+
+        // التحكم في سرعة الصوت
+        function adjustSpeed() {
+            const speed = document.getElementById("speedControl").value;
+            currentSpeed = speed;
+            document.getElementById("speedLabel").textContent = `${speed}x`;
+        }
+
+        // تغيير لغة واجهة التطبيق
+        document.getElementById("interfaceLanguage").addEventListener("change", function() {
+            const selectedLanguage = this.value;
+            if (selectedLanguage === "ar") {
+                document.documentElement.lang = "ar";
+            } else {
+                document.documentElement.lang = "en";
+            }
+        });
+    </script>
+</body>
+</html>
