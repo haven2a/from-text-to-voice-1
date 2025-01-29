@@ -240,12 +240,13 @@
             }
         }
 
-        // لتحويل النص إلى صوت
-        function playVoice() {
-            const text = document.getElementById('textInput').value;
-            if (text !== "") {
-                voice.text = text;
-                window.speechSynthesis.speak(voice);
+       // تحميل الأصوات
+window.speechSynthesis.onvoiceschanged = function() {
+    const voices = window.speechSynthesis.getVoices();
+    // تعيين الصوت الافتراضي للغة العربية
+    voice.voice = voices.find(voice => voice.lang === 'ar-SA');
+};
+
             } else {
                 alert("يرجى إدخال نص أولاً.");
             }
