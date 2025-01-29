@@ -14,24 +14,24 @@
             margin: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            height: 100%;
+            overflow-x: hidden;
         }
-        
+
         /* رأس الصفحة */
         .header {
             width: 100%;
             display: flex;
             justify-content: space-between;
             padding: 10px 20px;
-            position: absolute;
+            background-color: #222;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 100;
-            background-color: #222;
         }
 
         .logo img {
@@ -45,7 +45,7 @@
 
         /* نافذة إدخال الكود */
         .code-input-container {
-            position: absolute;
+            position: fixed;
             top: 80px;
             left: 50%;
             transform: translateX(-50%);
@@ -53,6 +53,7 @@
             padding: 20px;
             border-radius: 15px;
             z-index: 100;
+            display: none; /* مبدئيًا مخفية */
         }
 
         .code-input {
@@ -64,7 +65,7 @@
             border: 1px solid yellow;
         }
 
-        /* نافذة المحتوى */
+        /* المحتوى بعد فتح التطبيق */
         .container {
             width: 90%;
             max-width: 800px;
@@ -72,8 +73,8 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            display: none;
-            margin-top: 100px;
+            margin-top: 100px; /* يترك مسافة من الأعلى بعد الشعار */
+            display: none; /* مبدئيًا مخفية */
         }
 
         .window {
@@ -109,6 +110,14 @@
 
         button:hover {
             transform: scale(1.1);
+        }
+
+        /* تخصيص التمرير في الصفحة */
+        .content {
+            width: 100%;
+            margin-top: 100px;
+            overflow-y: auto;
+            max-height: 80vh; /* ارتفاع الصفحة يمكن تحريكه */
         }
     </style>
 </head>
