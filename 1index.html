@@ -46,6 +46,7 @@
         .language-selector {
             color: white;
             font-size: 18px;
+            margin-left: 20px;
         }
 
         .container {
@@ -112,7 +113,7 @@
             margin-bottom: 20px;
         }
 
-        select, input[type="file"] {
+        select, input[type="file"], input[type="range"] {
             font-size: 16px;
             padding: 5px;
             border-radius: 8px;
@@ -131,6 +132,10 @@
         </div>
         <div class="language-selector">
             <span>اللغة: العربية</span>
+            <select id="languageSelector" onchange="changeLanguage()">
+                <option value="ar-SA">عربي</option>
+                <option value="en-US">إنجليزي</option>
+            </select>
         </div>
     </div>
 
@@ -157,19 +162,22 @@
         </div>
 
         <div class="window">
-            <h2>تغيير لغة القارئ</h2>
-            <select id="languageSelector">
-                <option value="ar-SA">عربي</option>
-                <option value="en-US">إنجليزي</option>
-            </select>
+            <h2>تحميل الصوت المسجل</h2>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت</button>
         </div>
 
         <div class="window">
-            <h2>تحديد جنس القارئ</h2>
+            <h2>تغيير لغة القارئ</h2>
             <select id="voiceSelector">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
             </select>
+        </div>
+
+        <div class="window">
+            <h2>تغيير سرعة الصوت</h2>
+            <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1" onchange="changeSpeed()">
+            <span id="speedValue">1.0</span>
         </div>
     </div>
 
@@ -177,18 +185,28 @@
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 
     <script>
+        // تغيير لغة واجهة التطبيق
+        function changeLanguage() {
+            const language = document.getElementById("languageSelector").value;
+            if (language === "ar-SA") {
+                document.body.setAttribute("lang", "ar");
+            } else {
+                document.body.setAttribute("lang", "en");
+            }
+        }
+
         // تشغيل الصوت من النص باستخدام ResponsiveVoice
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const language = document.getElementById("languageSelector").value;
             const gender = document.getElementById("voiceSelector").value;
 
-            // تحديد الصوت بناءً على اللغة والجنس
-            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; // يمكنك تعديل هذه الأسماء حسب الصوت المتاح في ResponsiveVoice
+            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; 
+            const speed = document.getElementById("speedRange").value;
 
             responsiveVoice.speak(text, voiceName, {
                 language: language,
-                rate: 1,
+                rate: speed,
                 pitch: 1
             });
         }
@@ -220,10 +238,11 @@
             const gender = document.getElementById("voiceSelector").value;
 
             const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; 
+            const speed = document.getElementById("speedRange").value;
 
             responsiveVoice.speak(text, voiceName, {
                 language: language,
-                rate: 1,
+                rate: speed,
                 pitch: 1
             });
         }
@@ -236,6 +255,21 @@
         // إيقاف التسجيل
         function stopRecording() {
             console.log("إيقاف التسجيل");
+        }
+
+        // تحميل الصوت المسجل
+        function downloadRecordedAudio() {
+            const audioUrl = 'your-recorded-audio-url'; // استبدل هذا بالمسار الفعلي للصوت المسجل
+            const a = document.createElement("a");
+            a.href = audioUrl;
+            a.download = "recorded_audio.mp3"; // تغيير الامتداد حسب نوع الصوت المسجل
+            a.click();
+        }
+
+        // تغيير سرعة الصوت حسب قيمة شريط التمرير
+        function changeSpeed() {
+            const speed = document.getElementById("speedRange").value;
+            document.getElementById("speedValue").textContent = speed;
         }
     </script>
 </body>
