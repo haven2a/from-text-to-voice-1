@@ -13,21 +13,21 @@
             text-align: center;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* تغيير إلى align-items: flex-start لكي نبدأ من أعلى الصفحة */
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            overflow-y: auto; /* تمكين التمرير العمودي عند الحاجة */
-            padding: 0 10px; /* إضافة مسافة من الجوانب */
+            overflow-y: auto;
+            padding: 0 10px;
         }
         .container {
-            width: 100%; /* ضمان أن المحتوى يستخدم كامل عرض الصفحة */
+            width: 100%;
             max-width: 900px;
             background: #111;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
             animation: fadeIn 1s ease-in-out;
-            margin-top: 20px; /* إضافة مسافة من أعلى الصفحة */
+            margin-top: 20px;
         }
         .window {
             border: 2px solid yellow;
@@ -96,5 +96,73 @@
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
     </div>
+
+    <script>
+        // تفعيل النص إلى صوت باستخدام SpeechSynthesis API
+        let synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            if (text !== "") {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA'; // تعيين اللغة العربية
+                synth.speak(utterance);
+                currentUtterance = utterance;
+            }
+        }
+
+        function stopVoice() {
+            if (currentUtterance) {
+                synth.cancel(); // إيقاف الصوت الجاري
+            }
+        }
+
+        // دوال لتسجيل الصوت - استخدام MediaRecorder
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+                        audio.play();
+                        audioChunks = [];
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(error => console.error("Error accessing microphone: ", error));
+        }
+
+        function stopRecording() {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
+        }
+
+        // دالة لتحويل ملف نصي إلى صوت
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            const file = fileInput.files[0];
+            if (file && file.type === "text/plain") {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    document.getElementById("textInput").value = text;
+                    playVoice();
+                };
+                reader.readAsText(file);
+            } else {
+                alert("الرجاء اختيار ملف نصي");
+            }
+        }
+    </script>
 </body>
 </html>
