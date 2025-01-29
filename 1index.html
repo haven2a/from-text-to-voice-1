@@ -1,264 +1,30 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل النص إلى صوت</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(to bottom, #004e92, #000428);
-            background-size: cover;
-            color: white;
-            text-align: center;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            position: relative;
+<!-- قسم تحميل الملف النصي -->
+<div class="window">
+    <h2>تحميل ملف نصي</h2>
+    <input type="file" id="textFileInput" accept=".txt" onchange="loadFileContent()">
+    <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+</div>
+
+<script>
+    // تحميل محتوى الملف النصي وعرضه في نافذة النص
+    function loadFileContent() {
+        const fileInput = document.getElementById("textFileInput");
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const fileContent = event.target.result;
+                document.getElementById("textInput").value = fileContent; // عرض محتوى الملف في نافذة النص
+            };
+            reader.readAsText(file);
         }
+    }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); 
-            opacity: 0.4;
-            z-index: -1;
-        }
-
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            border-radius: 10px;
-            animation: slideLogo 3s ease-in-out infinite;
-        }
-
-        @keyframes slideLogo {
-            0% {
-                transform: translateX(0);
-            }
-            50% {
-                transform: translateX(10px);
-            }
-            100% {
-                transform: translateX(0);
-            }
-        }
-
-        .logo img {
-            max-width: 100px;
-        }
-
-        .language-selector, .gender-selector {
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideIn 0.5s ease-in-out forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .window {
-            margin-bottom: 20px;
-            background-color: #333;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideUp 0.7s ease-in-out forwards;
-            border: 2px solid #f0ad4e;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        textarea {
-            width: 100%;
-            height: 250px;
-            font-size: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            background: #444;
-            color: white;
-            border: 2px solid #f0ad4e;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 10px 15px;
-            margin-top: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-            background-color: #0056b3;
-        }
-
-        input[type="password"] {
-            width: 100%;
-            height: 40px;
-            font-size: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            background: #444;
-            color: white;
-            border: 2px solid #f0ad4e;
-        }
-
-    </style>
-</head>
-<body>
-
-    <!-- محتوى التطبيق -->
-    <div class="header" id="header">
-        <div class="logo">
-            <img src="logo.png" alt="شعار التطبيق">
-        </div>
-        <div class="language-selector">
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-        <div class="gender-selector">
-            <select id="genderSelect" onchange="changeVoiceGender()">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="container" id="container">
-        <h1 id="title">تحويل النص إلى صوت</h1>
-        
-        <div class="window">
-            <h2 id="textInputTitle">أدخل النص هنا</h2>
-            <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()">تشغيل الصوت</button>
-            <button onclick="stopVoice()">إيقاف الصوت</button>
-        </div>
-
-        <div class="window">
-            <h2 id="recordTitle">تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
-        </div>
-
-        <div class="window">
-            <h2 id="fileTitle">تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
-        </div>
-
-        <!-- نافذة كلمة المرور -->
-        <div class="window" id="passwordWindow">
-            <h2>إدخال كلمة المرور</h2>
-            <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
-            <button onclick="validatePassword()">إدخال</button>
-        </div>
-
-    </div>
-
-    <script>
-        let currentLanguage = 'ar'; 
-        let selectedVoice = 'male'; 
-        let mediaRecorder;
-        let recordedChunks = [];
-        let recordedAudioBlob;
-        let isAppLocked = true; // الكود هنا يتحكم في غلق التطبيق حتى إدخال كلمة المرور الصحيحة
-
-        const correctPassword = "123"; // الكود الصحيح لفتح التطبيق
-
-        // التحقق من كلمة المرور
-        function validatePassword() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === correctPassword) {
-                isAppLocked = false;
-                document.getElementById('passwordWindow').style.display = 'none'; // إخفاء نافذة كلمة المرور
-                document.getElementById('container').style.display = 'block'; // إظهار باقي المحتوى
-            } else {
-                alert("كلمة المرور خاطئة! حاول مرة أخرى.");
-            }
-        }
-
-        // تغيير لغة التطبيق
-        function changeLanguage() {
-            const language = document.getElementById("languageSelect").value;
-            currentLanguage = language;
-            updateTextContent();
-        }
-
-        // تغيير صوت القارئ حسب الجنس
-        function changeVoiceGender() {
-            selectedVoice = document.getElementById("genderSelect").value;
-        }
-
-        // تحديث النصوص حسب اللغة المختارة
-        function updateTextContent() {
-            if (currentLanguage === 'ar') {
-                document.getElementById('title').innerText = "تحويل النص إلى صوت";
-                document.getElementById('textInputTitle').innerText = "أدخل النص هنا";
-                document.getElementById('recordTitle').innerText = "تسجيل الصوت";
-                document.getElementById('fileTitle').innerText = "تحميل ملف نصي";
-            } else if (currentLanguage === 'en') {
-                document.getElementById('title').innerText = "Text to Speech Conversion";
-                document.getElementById('textInputTitle').innerText = "Enter text here";
-                document.getElementById('recordTitle').innerText = "Record Audio";
-                document.getElementById('fileTitle').innerText = "Upload Text File";
-            }
-        }
-
-        // تشغيل الصوت
+    // تحويل النص المعروض إلى صوت
+    function convertFileToVoice() {
+        const text = document.getElementById("textInput").value;
+        const speech = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(speech);
+    }
+</script>
