@@ -239,42 +239,53 @@
     </div>
 
     <div id="appContent" class="disabled">
+        <!-- نافذة تحويل النص إلى صوت -->
         <div class="window">
-            <label for="languageSelector">اختر لغة التطبيق:</label>
-            <select id="languageSelector" onchange="translateApp()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-
-        <form id="textForm">
-            <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
-            <div class="window">
-                <label for="gender">اختر الجنس:</label>
-                <select id="gender" name="gender">
+            <h2 id="playTitle">تحويل النص إلى صوت</h2>
+            <textarea id="textInput" class="input-field" placeholder="أدخل النص هنا"></textarea>
+            <div>
+                <label for="gender">اختار الجنس:</label>
+                <select id="gender">
                     <option value="male">ذكر</option>
                     <option value="female">أنثى</option>
                 </select>
+            </div>
+            <div>
                 <label for="speed">سرعة الصوت:</label>
-                <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+                <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
             </div>
-            <div class="window">
-                <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                <button type="button" onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
-            </div>
-        </form>
-        <div class="window">
-            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+            <button onclick="playVoice()">تشغيل الصوت</button>
+            <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
-        <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
-        <a id="convertedAudioButton" href="#" download="converted_audio.mp3">تحميل الصوت المحول</a>
 
-        <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
+        <!-- نافذة التسجيل الصوتي -->
         <div class="window">
-            <input type="file" id="textFileInput" onchange="handleFileUpload()" />
-            <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
+            <h2 id="recordingTitle">تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
         </div>
+
+        <!-- نافذة تحميل الملفات النصية -->
+        <div class="window">
+            <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
+            <input type="file" id="textFileInput" accept=".txt" onchange="handleFileUpload()">
+            <button onclick="convertFileToVoice()">تحويل الملف إلى صوت</button>
+        </div>
+
+        <!-- نافذة اختيار اللغة -->
+        <div class="window">
+            <h2 id="languageLabel">اختر لغة التطبيق:</h2>
+            <select id="languageSelector" onchange="translateApp()">
+                <option value="ar">العربية</option>
+                <option value="en">الإنجليزية</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- نافذة تحميل الصوت المسجل -->
+    <div class="window">
+        <h2 id="recordedAudioTitle">تحميل الصوت المسجل</h2>
+        <button>تحميل الصوت</button>
     </div>
 </body>
 </html>
