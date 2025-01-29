@@ -27,6 +27,7 @@
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
             animation: fadeIn 1s ease-in-out;
+            display: none; /* إخفاء المحتوى حتى يتم إدخال الكود */
         }
         .window {
             border: 2px solid yellow;
@@ -156,7 +157,7 @@
         <button onclick="unlockApp()">فتح التطبيق</button>
     </div>
 
-    <div class="container" id="appContainer" style="display: none;">
+    <div class="container" id="appContainer">
         <h1 id="title">تحويل النص إلى صوت</h1>
 
         <!-- نافذة تحويل النص إلى صوت -->
@@ -240,13 +241,18 @@
             }
         }
 
-       // تحميل الأصوات
-window.speechSynthesis.onvoiceschanged = function() {
-    const voices = window.speechSynthesis.getVoices();
-    // تعيين الصوت الافتراضي للغة العربية
-    voice.voice = voices.find(voice => voice.lang === 'ar-SA');
-};
+        // تحميل الأصوات
+        window.speechSynthesis.onvoiceschanged = function() {
+            const voices = window.speechSynthesis.getVoices();
+            // تعيين الصوت الافتراضي للغة العربية
+            voice.voice = voices.find(voice => voice.lang === 'ar-SA');
+        };
 
+        function playVoice() {
+            const text = document.getElementById('textInput').value;
+            if (text) {
+                voice.text = text;
+                window.speechSynthesis.speak(voice);
             } else {
                 alert("يرجى إدخال نص أولاً.");
             }
