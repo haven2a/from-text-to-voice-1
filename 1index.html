@@ -18,6 +18,7 @@
             height: 100vh;
             margin: 0;
             overflow-y: auto;
+            font-size: 20px;
         }
         .container {
             width: 80%;
@@ -27,17 +28,18 @@
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
             animation: fadeIn 1s ease-in-out;
+            display: none; /* تم إخفاء المحتوى بشكل افتراضي */
         }
         .window {
-            border: 2px solid yellow;
-            border-top-color: red;
             padding: 20px;
             border-radius: 15px;
             background-color: #222;
             width: 100%;
             margin-top: 20px;
             animation: slideIn 1s ease-in-out;
+            transition: transform 0.3s ease-in-out;
         }
+
         .text-window {
             height: 200px;
         }
@@ -85,21 +87,47 @@
             border: 1px solid yellow;
         }
 
-        /* تأثير حركة تزحلف للشعار */
-        .logo {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
-            animation: slideLogo 5s infinite linear;
+        /* نافذة القفل */
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: lockFadeIn 1s ease-in-out;
+            z-index: 9999;
         }
 
-        /* حركة تزحلف للشعار */
-        @keyframes slideLogo {
-            0% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(100%) translateY(10px); }
-            100% { transform: translateX(-50%) translateY(0); }
+        .lock-screen input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 200px;
+            text-align: center;
+            background: #333;
+            color: white;
+            border: 1px solid yellow;
+        }
+
+        .lock-screen button {
+            background-color: #ff5722;
+            color: white;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* حركة انسيابية لظهور نافذة القفل */
+        @keyframes lockFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes fadeIn {
@@ -114,26 +142,15 @@
     </style>
 </head>
 <body>
-    <!-- نافذة تغيير اللغة في الأعلى -->
-    <div style="position: absolute; top: 10px; right: 20px;">
-        <label for="languageSelectApp" style="color: white;">اختر لغة التطبيق:</label>
-        <select id="languageSelectApp" onchange="changeAppLanguage()">
-            <option value="ar" selected>العربية</option>
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
-        </select>
+    <div id="lockScreen" class="lock-screen">
+        <h2>أدخل الكود لفتح التطبيق</h2>
+        <input type="password" id="lockCode" placeholder="أدخل الكود">
+        <button onclick="unlockApp()">فتح التطبيق</button>
     </div>
 
-    <!-- الشعار المتحرك -->
-    <div class="logo">
-        <h1>شعار التطبيق</h1>
-    </div>
-
-    <div class="container">
+    <div class="container" id="appContent">
         <h1 id="title">تحويل النص إلى صوت</h1>
 
-        <!-- نافذة تحويل النص إلى صوت -->
         <div class="window text-window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
@@ -164,59 +181,24 @@
     </div>
 
     <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        let voice = new SpeechSynthesisUtterance();
-        voice.lang = 'ar-SA'; // اللغة الافتراضية (العربية)
-        voice.volume = 1; // حجم الصوت
-        voice.rate = 1; // سرعة الصوت
-        voice.pitch = 1; // نغمة الصوت
+        const correctCode = "123";  // الكود الصحيح لفتح التطبيق
 
-        // لتغيير لغة واجهة التطبيق
-        function changeAppLanguage() {
-            const selectedLanguage = document.getElementById('languageSelectApp').value;
-            if (selectedLanguage === 'en') {
-                document.getElementById('title').textContent = 'Text to Speech';
-                document.querySelector('h2').textContent = 'Enter text here';
-                document.querySelector('button:nth-child(1)').textContent = 'Play Voice';
-                document.querySelector('button:nth-child(2)').textContent = 'Stop Voice';
-                document.querySelector('button:nth-child(3)').textContent = 'Start Recording';
-                document.querySelector('button:nth-child(4)').textContent = 'Stop Recording';
-                document.querySelector('button:nth-child(5)').textContent = 'Convert to Voice from File';
-                document.querySelector('button:nth-child(6)').textContent = 'Download Recorded Audio';
-                document.querySelector('h2').textContent = 'Voice Reader Settings';
-                document.querySelector('option[value="ar"]').textContent = 'Arabic';
-                document.querySelector('option[value="fr"]').textContent = 'French';
-                document.querySelector('option[value="de"]').textContent = 'German';
-            } else if (selectedLanguage === 'fr') {
-                // إضافة دعم للفرنسية هنا
-            } else if (selectedLanguage === 'de') {
-                // إضافة دعم للألمانية هنا
+        // الدالة لفتح التطبيق بعد إدخال الكود
+        function unlockApp() {
+            const enteredCode = document.getElementById('lockCode').value;
+            if (enteredCode === correctCode) {
+                document.getElementById('lockScreen').style.display = "none";  // إخفاء نافذة القفل
+                document.getElementById('appContent').style.display = "block";  // عرض التطبيق
             } else {
-                // العودة للعربية
-                document.getElementById('title').textContent = 'تحويل النص إلى صوت';
-                document.querySelector('h2').textContent = 'أدخل النص هنا';
-                document.querySelector('button:nth-child(1)').textContent = 'تشغيل الصوت';
-                document.querySelector('button:nth-child(2)').textContent = 'إيقاف الصوت';
-                document.querySelector('button:nth-child(3)').textContent = 'بدء التسجيل';
-                document.querySelector('button:nth-child(4)').textContent = 'إيقاف التسجيل';
-                document.querySelector('button:nth-child(5)').textContent = 'تحويل إلى صوت من ملف نصي';
-                document.querySelector('button:nth-child(6)').textContent = 'تحميل النص المسجل';
-                document.querySelector('h2').textContent = 'إعدادات القارئ';
+                alert("الكود غير صحيح! حاول مرة أخرى.");
             }
         }
 
-        // لتغيير لغة القارئ
-        function changeVoiceLanguage() {
-            const language = document.getElementById('languageSelect').value;
-            voice.lang = language;
-        }
-
-        // لتحويل النص إلى صوت
+        // لتشغيل الصوت
         function playVoice() {
             const text = document.getElementById('textInput').value;
             if (text !== "") {
-                voice.text = text;
+                const voice = new SpeechSynthesisUtterance(text);
                 window.speechSynthesis.speak(voice);
             } else {
                 alert("يرجى إدخال نص أولاً.");
@@ -288,6 +270,7 @@
 
         // تغيير جنس القارئ
         function changeVoiceGender(gender) {
+            const voice = new SpeechSynthesisUtterance();
             if (gender === 'male') {
                 voice.voice = speechSynthesis.getVoices().filter(voice => voice.name === 'Google UK English Male')[0];
             } else if (gender === 'female') {
