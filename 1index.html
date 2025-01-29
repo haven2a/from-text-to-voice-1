@@ -242,17 +242,17 @@
                 </select>
             </div>
 
-            <!-- زر غلق التطبيق -->
+            <!-- نافذة لتحميل الصوت المسجل -->
             <div class="window">
-                <h3>لإغلاق التطبيق، أدخل المفتاح:</h3>
-                <input type="text" id="closeKey" placeholder="أدخل المفتاح هنا">
-                <button onclick="closeApp()">غلق التطبيق</button>
+                <h3>تحميل الصوت المسجل</h3>
+                <button onclick="downloadRecordedAudio()">تحميل الصوت</button>
             </div>
         </div>
     </div>
 
     <script>
         let currentVoice = null;
+        let recordedAudioBlob = null; // تخزين الملف الصوتي المسجل
 
         function validatePassword() {
             const password = document.getElementById('passwordInput').value;
@@ -280,10 +280,12 @@
 
         function startRecording() {
             console.log("بدء التسجيل");
+            // هنا يجب إضافة الكود الخاص بتسجيل الصوت
         }
 
         function stopRecording() {
             console.log("إيقاف التسجيل");
+            // بعد التوقف عن التسجيل، حفظ الملف الصوتي
         }
 
         function convertFileToVoice() {
@@ -310,20 +312,14 @@
             currentVoice = voices.find(voice => voice.lang === language && voice.name.includes(gender));
         }
 
-        function closeApp() {
-            const key = document.getElementById("closeKey").value;
-            if (key === "123") {
-                window.close();  // إغلاق النافذة
-            } else {
-                alert("كلمة المرور غير صحيحة!");
+        function downloadRecordedAudio() {
+            if (recordedAudioBlob) {
+                const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                const link = document.createElement('a');
+                link.href = audioUrl;
+                link.download = "recorded_audio.wav";
+                link.click();
             }
-        }
-
-        // تفعيل الصوت عند تحميل الصفحة
-        window.onload = function() {
-            speechSynthesis.onvoiceschanged = function() {
-                updateVoice(); // تحديث الصوت بعد تحميل الأصوات
-            };
         }
     </script>
 </body>
