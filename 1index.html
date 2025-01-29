@@ -2,62 +2,52 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.9">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحويل النص إلى صوت</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #111;
+            background-color: #000;
             color: white;
             text-align: center;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 10px;
         }
         .container {
-            width: 100%;
-            max-width: 650px;
-            background: #222;
+            width: 80%;
+            max-width: 900px;
+            background: #111;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.4);
-            margin-top: 20px;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: fadeIn 1s ease-in-out;
+            border-radius: 15px;
+            display: none;
         }
-        .window {
-            border: 2px solid yellow;
+        .code-input-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 100;
+        }
+        .code-input {
             padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-bottom: 10px;
             border-radius: 10px;
-            background-color: #333;
-            width: 100%;
-            margin-top: 15px;
-            animation: slideIn 1s ease-in-out;
-        }
-        .text-window {
-            height: 180px;
-        }
-        textarea {
-            width: 100%;
-            height: 130px;
-            font-size: 14px;
-            padding: 8px;
-            border-radius: 8px;
-            background: #444;
-            color: white;
             border: 1px solid yellow;
         }
         button {
             background-color: #007bff;
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 15px;
             margin-top: 10px;
             border-radius: 10px;
             cursor: pointer;
@@ -66,124 +56,18 @@
         button:hover {
             transform: scale(1.1);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideIn {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* النص المخصص لتسجيل الصوت */
-        .recording-text {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            padding: 10px;
-            font-size: 18px;
-            background-color: #ff0;
-            color: #000;
-            font-weight: bold;
-            text-align: center;
-            visibility: hidden;
-        }
-
-        /* الشعار في الأعلى */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .logo img {
-            max-width: 100px;
-            height: auto;
-        }
-
-        .language-selector, .gender-selector {
-            background-color: #444;
-            border: none;
-            padding: 8px;
-            color: white;
-            font-size: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        /* نافذة إدخال الكود */
-        .code-input-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            visibility: visible;
-            z-index: 9999;
-        }
-        .code-input {
-            background-color: #222;
-            color: white;
-            font-size: 18px;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid yellow;
-            width: 250px;
-        }
-        .code-input button {
-            background-color: #28a745;
-        }
-
-        /* زر تحميل الصوت */
-        .download-btn {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            font-size: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     <!-- نافذة إدخال الكود -->
     <div id="codeInputContainer" class="code-input-container">
-        <div>
-            <h2 style="color: white;">أدخل الكود لفتح التطبيق:</h2>
-            <input type="password" id="codeInput" class="code-input" placeholder="أدخل الكود هنا">
-            <button onclick="checkCode()">فتح التطبيق</button>
-        </div>
+        <h2 style="color: white;">أدخل الكود لفتح التطبيق:</h2>
+        <input type="password" id="codeInput" class="code-input" placeholder="أدخل الكود هنا">
+        <button id="submitButton">فتح التطبيق</button>
     </div>
 
-    <!-- إضافة الشعار في الأعلى -->
-    <div class="header">
-        <div class="logo">
-            <img src="logo.png" alt="الشعار"> <!-- عرض الشعار هنا -->
-        </div>
-        <div>
-            <select class="language-selector" onchange="changeLanguage(this)">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-            <select class="gender-selector" onchange="changeGender(this)">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="container">
+    <!-- المحتوى الأصلي في الصفحة -->
+    <div class="container" id="contentContainer">
         <h1>تحويل النص إلى صوت</h1>
         <div class="window text-window">
             <h2>أدخل النص هنا</h2>
@@ -201,101 +85,59 @@
             <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
-
-        <!-- نافذة تسريع الصوت -->
-        <div class="window">
-            <h2>تحكم في سرعة الصوت</h2>
-            <label for="speedControl">سرعة الصوت:</label>
-            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
-            <span id="speedValue">1</span>
-        </div>
-
-        <!-- زر تحميل الصوت -->
-        <div id="downloadContainer" style="visibility: hidden;">
-            <button id="downloadBtn" class="download-btn" onclick="downloadAudio()">تحميل الصوت</button>
-        </div>
     </div>
 
-    <!-- النص المخصص لتسجيل الصوت -->
-    <div id="recordingText" class="recording-text">جاري تسجيل الصوت...</div>
-
     <script>
-        // تغيير اللغة
-        function changeLanguage(select) {
-            const language = select.value;
-            const body = document.querySelector('body');
-            if (language === 'en') {
-                body.setAttribute('dir', 'ltr');
-                body.setAttribute('lang', 'en');
-                document.querySelector('h1').innerText = 'Text to Speech Converter';
-                document.querySelector('.window h2:nth-of-type(1)').innerText = 'Enter Text Here';
-                document.querySelector('.window button:nth-of-type(1)').innerText = 'Play Voice';
-                document.querySelector('.window button:nth-of-type(2)').innerText = 'Stop Voice';
-                document.querySelector('.window h2:nth-of-type(2)').innerText = 'Record Audio';
-                document.querySelector('.window button:nth-of-type(3)').innerText = 'Start Recording';
-                document.querySelector('.window button:nth-of-type(4)').innerText = 'Stop Recording';
-                document.querySelector('.window h2:nth-of-type(3)').innerText = 'Upload Text File';
-                document.querySelector('.window button:nth-of-type(5)').innerText = 'Convert to Voice';
-                document.querySelector('.window h2:nth-of-type(4)').innerText = 'Control Speech Speed';
-                document.querySelector('label').innerText = 'Speech Speed:';
-            } else {
-                body.setAttribute('dir', 'rtl');
-                body.setAttribute('lang', 'ar');
-                document.querySelector('h1').innerText = 'تحويل النص إلى صوت';
-                document.querySelector('.window h2:nth-of-type(1)').innerText = 'أدخل النص هنا';
-                document.querySelector('.window button:nth-of-type(1)').innerText = 'تشغيل الصوت';
-                document.querySelector('.window button:nth-of-type(2)').innerText = 'إيقاف الصوت';
-                document.querySelector('.window h2:nth-of-type(2)').innerText = 'تسجيل الصوت';
-                document.querySelector('.window button:nth-of-type(3)').innerText = 'بدء التسجيل';
-                document.querySelector('.window button:nth-of-type(4)').innerText = 'إيقاف التسجيل';
-                document.querySelector('.window h2:nth-of-type(3)').innerText = 'تحميل ملف نصي';
-                document.querySelector('.window button:nth-of-type(5)').innerText = 'تحويل إلى صوت';
-                document.querySelector('.window h2:nth-of-type(4)').innerText = 'تحكم في سرعة الصوت';
-                document.querySelector('label').innerText = 'سرعة الصوت:';
-            }
-        }
-
-        // تغيير الجنس
-        function changeGender(select) {
-            const gender = select.value;
-            const voices = speechSynthesis.getVoices();
-            let voice = null;
-            if (gender === 'male') {
-                voice = voices.find(v => v.name.includes('male'));
-            } else {
-                voice = voices.find(v => v.name.includes('female'));
-            }
-            speechSynthesis.getVoices().forEach(voiceOption => {
-                if (voiceOption === voice) {
-                    window.speechSynthesis.voice = voice;
-                }
-            });
-        }
-
-        // التحقق من الكود
-        function checkCode() {
-            const codeInput = document.getElementById("codeInput").value;
+        // التحقق من الكود المدخل
+        document.getElementById("submitButton").onclick = function() {
+            const codeInput = document.getElementById("codeInput").value; // الحصول على قيمة الكود المدخل
             if (codeInput === "123") {
-                document.getElementById("codeInputContainer").style.visibility = 'hidden'; // إخفاء نافذة الكود
+                // إخفاء نافذة إدخال الكود إذا كان الكود صحيحًا
+                document.getElementById("codeInputContainer").style.display = 'none';
+                // إظهار المحتوى
+                document.getElementById("contentContainer").style.display = 'block';
             } else {
+                // عرض رسالة خطأ إذا كان الكود خاطئًا
                 alert("الكود غير صحيح!");
             }
-        }
+        };
 
-        // تفعيل النص إلى صوت باستخدام SpeechSynthesis API
-        let synth = window.speechSynthesis;
-        let currentUtterance = null;
-
+        // وظائف الصوت (مثال: تشغيل الصوت وإيقافه)
         function playVoice() {
             const text = document.getElementById("textInput").value;
-            if (text !== "") {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA'; // تعيين اللغة العربية
-                utterance.rate = document.getElementById("speedControl").value; // تعديل السرعة
-                synth.speak(utterance);
-                currentUtterance = utterance;
-            }
+            const speech = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(speech);
         }
 
         function stopVoice() {
-            if (currentUtterance) {
+            speechSynthesis.cancel();
+        }
+
+        // وظائف التسجيل (التي قد تحتاج إلى إضافة مكتبة)
+        function startRecording() {
+            console.log("بدء التسجيل");
+            // هنا يمكن إضافة الكود الخاص بتسجيل الصوت
+        }
+
+        function stopRecording() {
+            console.log("إيقاف التسجيل");
+            // هنا يمكن إضافة الكود الخاص بإيقاف التسجيل
+        }
+
+        // تحويل الملف إلى صوت
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    const speech = new SpeechSynthesisUtterance(text);
+                    speechSynthesis.speak(speech);
+                };
+                reader.readAsText(file);
+            }
+        }
+    </script>
+</body>
+</html>
