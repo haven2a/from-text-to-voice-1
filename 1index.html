@@ -218,6 +218,13 @@
                 </form>
             </div>
         </div>
+
+        <!-- زر غلق التطبيق -->
+        <div class="window">
+            <h3>لإغلاق التطبيق، أدخل المفتاح:</h3>
+            <input type="text" id="closeKey" placeholder="أدخل المفتاح هنا">
+            <button onclick="closeApp()">غلق التطبيق</button>
+        </div>
     </div>
 
     <script>
@@ -273,6 +280,16 @@
             e.preventDefault();
             document.getElementById('genderModal').style.display = 'none';
         };
+
+        // دالة لإغلاق التطبيق مع التحقق من كلمة المرور
+        function closeApp() {
+            const key = document.getElementById("closeKey").value;
+            if (key === "123") {
+                window.close();  // إغلاق النافذة
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+            }
+        }
     </script>
 </body>
 </html>
