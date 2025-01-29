@@ -325,6 +325,7 @@
         function unlockApp() {
             const lockCode = document.getElementById('lockCode').value;
             if (lockCode === '123') {
+                localStorage.setItem('appUnlocked', 'true');
                 document.getElementById('lockScreen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('lockScreen').style.display = 'none';
@@ -334,6 +335,14 @@
                 alert('رمز القفل غير صحيح!');
             }
         }
+
+        // التحقق من حالة القفل عند تحميل الصفحة
+        window.onload = function() {
+            if (localStorage.getItem('appUnlocked') === 'true') {
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+            }
+        };
     </script>
 </body>
 </html>
