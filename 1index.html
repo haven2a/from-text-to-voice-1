@@ -173,25 +173,29 @@
         </div>
     </div>
 
+    <!-- تضمين مكتبة ResponsiveVoice -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+
     <script>
-        // تشغيل الصوت من النص
+        // تشغيل الصوت من النص باستخدام ResponsiveVoice
         function playVoice() {
             const text = document.getElementById("textInput").value;
-            const speech = new SpeechSynthesisUtterance(text);
             const language = document.getElementById("languageSelector").value;
             const gender = document.getElementById("voiceSelector").value;
 
-            speech.lang = language;
+            // تحديد الصوت بناءً على اللغة والجنس
+            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; // يمكنك تعديل هذه الأسماء حسب الصوت المتاح في ResponsiveVoice
 
-            const voices = speechSynthesis.getVoices();
-            speech.voice = voices.find(voice => voice.name.toLowerCase().includes(gender));
-
-            speechSynthesis.speak(speech);
+            responsiveVoice.speak(text, voiceName, {
+                language: language,
+                rate: 1,
+                pitch: 1
+            });
         }
 
         // إيقاف الصوت
         function stopVoice() {
-            speechSynthesis.cancel();
+            responsiveVoice.cancel();
         }
 
         // تحميل محتوى الملف وعرضه في نافذة النص
@@ -212,8 +216,16 @@
         // تحويل النص المعروض إلى صوت
         function convertFileToVoice() {
             const text = document.getElementById("textInput").value;
-            const speech = new SpeechSynthesisUtterance(text);
-            speechSynthesis.speak(speech);
+            const language = document.getElementById("languageSelector").value;
+            const gender = document.getElementById("voiceSelector").value;
+
+            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; 
+
+            responsiveVoice.speak(text, voiceName, {
+                language: language,
+                rate: 1,
+                pitch: 1
+            });
         }
 
         // البدء في التسجيل
