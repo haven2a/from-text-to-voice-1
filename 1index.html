@@ -15,19 +15,44 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
-        .container {
+
+        .header {
             width: 100%;
-            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .logo img {
+            max-width: 100px;
+        }
+
+        .language-selector {
+            color: white;
+            font-size: 18px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
             background: #222;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
             display: none;
+            margin-top: 60px;
         }
+
         .code-input-container {
             position: absolute;
-            top: 20px;
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
@@ -35,40 +60,45 @@
             border-radius: 15px;
             z-index: 100;
         }
+
         .code-input {
             padding: 10px;
             font-size: 16px;
-            width: 200px;
+            width: 150px;
             margin-bottom: 10px;
             border-radius: 10px;
             border: 1px solid yellow;
         }
+
         button {
             background-color: #007bff;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             margin-top: 10px;
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.3s ease-in-out;
         }
+
         button:hover {
             transform: scale(1.1);
         }
+
         .window {
             margin-bottom: 20px;
             background-color: #333;
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
+
         textarea {
             width: 100%;
-            height: 150px;
-            font-size: 18px;
-            padding: 10px;
+            height: 120px;
+            font-size: 16px;
+            padding: 8px;
             border-radius: 10px;
             background: black;
             color: white;
@@ -77,6 +107,16 @@
     </style>
 </head>
 <body>
+    <!-- رأس الصفحة -->
+    <div class="header">
+        <div class="logo">
+            <img src="logo.png" alt="شعار التطبيق">
+        </div>
+        <div class="language-selector">
+            <span>اللغة: العربية</span>
+        </div>
+    </div>
+
     <!-- نافذة إدخال الكود -->
     <div id="codeInputContainer" class="code-input-container">
         <h2 style="color: white;">أدخل الكود لفتح التطبيق:</h2>
