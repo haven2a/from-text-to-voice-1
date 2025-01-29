@@ -13,14 +13,12 @@
             text-align: center;
             margin: 0;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
             flex-direction: column;
-            height: 100%;
-            overflow-x: hidden;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
-        /* رأس الصفحة */
         .header {
             width: 100%;
             display: flex;
@@ -43,29 +41,6 @@
             font-size: 18px;
         }
 
-        /* نافذة إدخال الكود */
-        .code-input-container {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            z-index: 100;
-            display: none; /* مبدئيًا مخفية */
-        }
-
-        .code-input {
-            padding: 10px;
-            font-size: 16px;
-            width: 150px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border: 1px solid yellow;
-        }
-
-        /* المحتوى بعد فتح التطبيق */
         .container {
             width: 90%;
             max-width: 800px;
@@ -73,8 +48,20 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            margin-top: 100px; /* يترك مسافة من الأعلى بعد الشعار */
-            display: none; /* مبدئيًا مخفية */
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .window {
@@ -83,17 +70,31 @@
             border-radius: 15px;
             padding: 15px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 0.7s ease-in-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            font-size: 16px;
-            padding: 8px;
+            height: 250px;
+            font-size: 20px;
+            padding: 10px;
             border-radius: 10px;
             background: black;
             color: white;
-            border: 1px solid yellow;
+            border: 2px solid yellow;
         }
 
         button {
@@ -101,7 +102,7 @@
             color: white;
             font-size: 16px;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 15px;
             margin-top: 10px;
             border-radius: 10px;
             cursor: pointer;
@@ -111,18 +112,9 @@
         button:hover {
             transform: scale(1.1);
         }
-
-        /* تخصيص التمرير في الصفحة */
-        .content {
-            width: 100%;
-            margin-top: 100px;
-            overflow-y: auto;
-            max-height: 80vh; /* ارتفاع الصفحة يمكن تحريكه */
-        }
     </style>
 </head>
 <body>
-    <!-- رأس الصفحة -->
     <div class="header">
         <div class="logo">
             <img src="logo.png" alt="شعار التطبيق">
@@ -132,28 +124,14 @@
         </div>
     </div>
 
-    <!-- نافذة إدخال الكود -->
-    <div id="codeInputContainer" class="code-input-container">
-        <h2 style="color: white;">أدخل الكود لفتح التطبيق:</h2>
-        <input type="password" id="codeInput" class="code-input" placeholder="أدخل الكود هنا">
-        <button id="submitButton">فتح التطبيق</button>
-    </div>
-
-    <!-- المحتوى الأصلي في الصفحة -->
-    <div class="container" id="contentContainer">
+    <div class="container">
         <h1>تحويل النص إلى صوت</h1>
         
-        <div class="window text-window">
+        <div class="window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
             <button onclick="playVoice()">تشغيل الصوت</button>
             <button onclick="stopVoice()">إيقاف الصوت</button>
-        </div>
-
-        <div class="window">
-            <h2>تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
         </div>
 
         <div class="window">
@@ -164,21 +142,6 @@
     </div>
 
     <script>
-        // التحقق من الكود المدخل
-        document.getElementById("submitButton").onclick = function() {
-            const codeInput = document.getElementById("codeInput").value; // الحصول على قيمة الكود المدخل
-            if (codeInput === "123") {
-                // إخفاء نافذة إدخال الكود إذا كان الكود صحيحًا
-                document.getElementById("codeInputContainer").style.display = 'none';
-                // إظهار المحتوى
-                document.getElementById("contentContainer").style.display = 'block';
-            } else {
-                // عرض رسالة خطأ إذا كان الكود خاطئًا
-                alert("الكود غير صحيح!");
-            }
-        };
-
-        // وظائف الصوت (مثال: تشغيل الصوت وإيقافه)
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const speech = new SpeechSynthesisUtterance(text);
@@ -189,18 +152,6 @@
             speechSynthesis.cancel();
         }
 
-        // وظائف التسجيل (التي قد تحتاج إلى إضافة مكتبة)
-        function startRecording() {
-            console.log("بدء التسجيل");
-            // هنا يمكن إضافة الكود الخاص بتسجيل الصوت
-        }
-
-        function stopRecording() {
-            console.log("إيقاف التسجيل");
-            // هنا يمكن إضافة الكود الخاص بإيقاف التسجيل
-        }
-
-        // تحويل الملف إلى صوت
         function convertFileToVoice() {
             const fileInput = document.getElementById("textFileInput");
             if (fileInput.files.length > 0) {
