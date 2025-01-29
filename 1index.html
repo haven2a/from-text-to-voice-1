@@ -6,9 +6,11 @@
     <title>تحويل النص إلى صوت</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #111;
+            background: linear-gradient(to bottom, #ff7e5f, #feb47b); /* تدرج ألوان دافئ */
+            background-size: cover;
             color: white;
             text-align: center;
             margin: 0;
@@ -17,6 +19,20 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            position: relative;
+        }
+
+        /* إضافة تأثير لامع على الخلفية */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* نصيحة: استخدام صورة خلفية مميزة */
+            opacity: 0.5;
+            z-index: -1;
         }
 
         .header {
@@ -24,12 +40,13 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 20px;
-            background-color: #222;
+            background-color: rgba(0, 0, 0, 0.7); /* خلفية شفافة */
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 100;
+            border-radius: 10px;
         }
 
         .logo img {
@@ -39,15 +56,17 @@
         .language-selector {
             color: white;
             font-size: 18px;
+            cursor: pointer;
+            padding: 10px;
         }
 
         .container {
             width: 90%;
             max-width: 800px;
-            background: #222;
+            background: rgba(0, 0, 0, 0.7); /* خلفية شفافة */
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
             transform: translateY(50px);
             opacity: 0;
             animation: slideIn 0.5s ease-in-out forwards;
@@ -92,9 +111,9 @@
             font-size: 20px;
             padding: 10px;
             border-radius: 10px;
-            background: black;
+            background: #444;
             color: white;
-            border: 2px solid yellow;
+            border: 2px solid #f0ad4e;
         }
 
         button {
@@ -111,6 +130,28 @@
 
         button:hover {
             transform: scale(1.1);
+            background-color: #0056b3;
+        }
+
+        /* إضافة تنسيق للنوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* الخلفية الشفافة */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
         }
     </style>
 </head>
@@ -119,7 +160,7 @@
         <div class="logo">
             <img src="logo.png" alt="شعار التطبيق">
         </div>
-        <div class="language-selector">
+        <div class="language-selector" onclick="toggleLanguageModal()">
             <span>اللغة: العربية</span>
         </div>
     </div>
@@ -144,6 +185,38 @@
             <h2>تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+        </div>
+
+        <!-- نافذة لتغيير اللغة -->
+        <div id="languageModal" class="modal">
+            <div class="modal-content">
+                <h4>اختر لغة القارئ</h4>
+                <form id="languageForm">
+                    <label>
+                        <input type="radio" name="language" value="عربي" /> عربي
+                    </label><br />
+                    <label>
+                        <input type="radio" name="language" value="إنجليزي" /> إنجليزي
+                    </label><br />
+                    <button type="submit">تأكيد</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- نافذة لتغيير الجنس -->
+        <div id="genderModal" class="modal">
+            <div class="modal-content">
+                <h4>اختر جنس القارئ</h4>
+                <form id="genderForm">
+                    <label>
+                        <input type="radio" name="gender" value="ذكر" /> ذكر
+                    </label><br />
+                    <label>
+                        <input type="radio" name="gender" value="أنثى" /> أنثى
+                    </label><br />
+                    <button type="submit">تأكيد</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -179,6 +252,27 @@
                 reader.readAsText(file);
             }
         }
+
+        // فتح نافذة تغيير اللغة
+        function toggleLanguageModal() {
+            document.getElementById('languageModal').style.display = 'flex';
+        }
+
+        // فتح نافذة تغيير الجنس
+        function toggleGenderModal() {
+            document.getElementById('genderModal').style.display = 'flex';
+        }
+
+        // إغلاق النوافذ عند تقديم النماذج
+        document.getElementById('languageForm').onsubmit = function (e) {
+            e.preventDefault();
+            document.getElementById('languageModal').style.display = 'none';
+        };
+
+        document.getElementById('genderForm').onsubmit = function (e) {
+            e.preventDefault();
+            document.getElementById('genderModal').style.display = 'none';
+        };
     </script>
 </body>
 </html>
