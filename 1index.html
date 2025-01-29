@@ -222,6 +222,26 @@
                 <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
             </div>
 
+            <!-- نافذة لاختيار لغة القارئ -->
+            <div class="window">
+                <h3>اختيار لغة القارئ</h3>
+                <select id="languageSelect" onchange="updateVoice()">
+                    <option value="ar-SA">العربية</option>
+                    <option value="en-US">الإنجليزية</option>
+                    <option value="fr-FR">الفرنسية</option>
+                    <!-- أضف لغات إضافية حسب الحاجة -->
+                </select>
+            </div>
+
+            <!-- نافذة لاختيار جنس القارئ -->
+            <div class="window">
+                <h3>اختيار جنس القارئ</h3>
+                <select id="voiceGenderSelect" onchange="updateVoice()">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+
             <!-- زر غلق التطبيق -->
             <div class="window">
                 <h3>لإغلاق التطبيق، أدخل المفتاح:</h3>
@@ -232,6 +252,8 @@
     </div>
 
     <script>
+        let currentVoice = null;
+
         function validatePassword() {
             const password = document.getElementById('passwordInput').value;
             if (password === "123") {
@@ -248,6 +270,7 @@
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const speech = new SpeechSynthesisUtterance(text);
+            speech.voice = currentVoice;
             speechSynthesis.speak(speech);
         }
 
@@ -271,10 +294,20 @@
                 reader.onload = function(event) {
                     const text = event.target.result;
                     const speech = new SpeechSynthesisUtterance(text);
+                    speech.voice = currentVoice;
                     speechSynthesis.speak(speech);
                 };
                 reader.readAsText(file);
             }
+        }
+
+        function updateVoice() {
+            const language = document.getElementById('languageSelect').value;
+            const gender = document.getElementById('voiceGenderSelect').value;
+
+            // تحديد الصوت بناءً على اللغة والجنس
+            const voices = speechSynthesis.getVoices();
+            currentVoice = voices.find(voice => voice.lang === language && voice.name.includes(gender));
         }
 
         function closeApp() {
@@ -284,6 +317,13 @@
             } else {
                 alert("كلمة المرور غير صحيحة!");
             }
+        }
+
+        // تفعيل الصوت عند تحميل الصفحة
+        window.onload = function() {
+            speechSynthesis.onvoiceschanged = function() {
+                updateVoice(); // تحديث الصوت بعد تحميل الأصوات
+            };
         }
     </script>
 </body>
