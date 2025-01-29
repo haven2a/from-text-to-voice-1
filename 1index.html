@@ -134,11 +134,20 @@
             border: 1px solid yellow;
             margin-right: 10px;
         }
+
+        /* تغيير موقع لغة التطبيق */
+        .language-select {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
     <!-- نافذة تغيير اللغة في الأعلى -->
-    <div style="position: absolute; top: 10px; right: 20px;">
+    <div class="language-select">
         <label for="languageSelectApp" style="color: white;">اختر لغة التطبيق:</label>
         <select id="languageSelectApp" onchange="changeAppLanguage()">
             <option value="ar" selected>العربية</option>
@@ -234,14 +243,15 @@
 
         // لتغيير جنس القارئ
         function changeVoiceGender(gender) {
+            const voices = window.speechSynthesis.getVoices();
             if (gender === 'male') {
-                voice.voice = speechSynthesis.getVoices().filter(voice => voice.name === 'Google UK English Male')[0];
+                voice.voice = voices.find(voice => voice.name.includes('ذكر') && voice.lang === 'ar-SA');
             } else if (gender === 'female') {
-                voice.voice = speechSynthesis.getVoices().filter(voice => voice.name === 'Google UK English Female')[0];
+                voice.voice = voices.find(voice => voice.name.includes('أنثى') && voice.lang === 'ar-SA');
             }
         }
 
-        // تحميل الأصوات
+        // تحميل الأصوات المتاحة
         window.speechSynthesis.onvoiceschanged = function() {
             const voices = window.speechSynthesis.getVoices();
             // تعيين الصوت الافتراضي للغة العربية
