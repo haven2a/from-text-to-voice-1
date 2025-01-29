@@ -143,6 +143,17 @@
         .code-input button {
             background-color: #28a745;
         }
+
+        /* زر تحميل الصوت */
+        .download-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -157,7 +168,9 @@
 
     <!-- إضافة الشعار في الأعلى -->
     <div class="header">
-        <div class="logo">شعار الموقع</div>
+        <div class="logo">
+            <img src="logo.png" alt="الشعار" style="width: 100px; height: auto;"> <!-- تعديل لعرض الشعار -->
+        </div>
         <select class="language-selector" onchange="changeLanguage(this)">
             <option value="ar">العربية</option>
             <option value="en">English</option>
@@ -189,6 +202,11 @@
             <label for="speedControl">سرعة الصوت:</label>
             <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
             <span id="speedValue">1</span>
+        </div>
+
+        <!-- زر تحميل الصوت -->
+        <div id="downloadContainer" style="visibility: hidden;">
+            <button id="downloadBtn" class="download-btn" onclick="downloadAudio()">تحميل الصوت</button>
         </div>
     </div>
 
@@ -265,6 +283,7 @@
         // دوال لتسجيل الصوت - استخدام MediaRecorder
         let mediaRecorder;
         let audioChunks = [];
+        let audioBlob = null;
 
         function startRecording() {
             // إظهار النص المخصص عند بدء التسجيل
@@ -277,11 +296,14 @@
                         audioChunks.push(event.data);
                     };
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
                         const audio = new Audio(audioUrl);
                         audio.play();
                         audioChunks = [];
+
+                        // إظهار زر تحميل الصوت
+                        document.getElementById("downloadContainer").style.visibility = 'visible';
                     };
                     mediaRecorder.start();
                 })
@@ -296,27 +318,11 @@
             document.getElementById("recordingText").style.visibility = 'hidden';
         }
 
-        // دالة لتحويل ملف نصي إلى صوت
-        function convertFileToVoice() {
-            const fileInput = document.getElementById("textFileInput");
-            const file = fileInput.files[0];
-            if (file && file.type === "text/plain") {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    document.getElementById("textInput").value = text;
-                    playVoice();
-                };
-                reader.readAsText(file);
-            } else {
-                alert("الرجاء اختيار ملف نصي");
-            }
-        }
+        // دالة لتحميل الصوت المسجل
+        function downloadAudio() {
+            if (audioBlob) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(audioBlob);
+                link.download = 'recorded_audio.wav'; // اسم الملف عند التح
 
-        // تحديث القيمة المعروضة للسرعة عند تغيير المنزلق
-        document.getElementById("speedControl").addEventListener("input", function() {
-            document.getElementById("speedValue").textContent = this.value;
-        });
-    </script>
-</body>
-</html>
+            
