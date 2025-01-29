@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #3b3b3b;
+            background-color: #1e2a47;
             color: white;
             text-align: center;
             margin: 0;
@@ -34,25 +34,17 @@
 
         .logo img {
             max-width: 100px;
-            animation: slide 2s ease-in-out infinite;
-        }
-
-        @keyframes slide {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
         }
 
         .language-selector {
             color: white;
             font-size: 18px;
-            margin-left: 20px;
         }
 
         .container {
             width: 90%;
             max-width: 800px;
-            background: #444;
+            background: #222;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
@@ -74,10 +66,24 @@
 
         .window {
             margin-bottom: 20px;
-            background-color: #555;
+            background-color: #333;
             border-radius: 15px;
             padding: 15px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 0.7s ease-in-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         textarea {
@@ -107,41 +113,36 @@
             transform: scale(1.1);
         }
 
-        .input-group {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        select, input[type="file"], input[type="range"] {
-            font-size: 16px;
-            padding: 5px;
-            border-radius: 8px;
-            background: #444;
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            background-color: black;
             color: white;
-            border: 1px solid yellow;
+            border: 2px solid yellow;
         }
 
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <!-- المحتوى الأساسي للتطبيق -->
-    <div class="header" id="appHeader" style="display: flex;">
+    <div class="header">
         <div class="logo">
             <img src="logo.png" alt="شعار التطبيق">
         </div>
         <div class="language-selector">
             <span>اللغة: العربية</span>
-            <select id="languageSelector" onchange="changeLanguage()">
-                <option value="ar-SA">عربي</option>
-                <option value="en-US">إنجليزي</option>
-            </select>
         </div>
     </div>
 
-    <div class="container" id="appContainer">
+    <div class="container">
         <h1>تحويل النص إلى صوت</h1>
         
+        <!-- نافذة النص -->
         <div class="window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
@@ -149,127 +150,134 @@
             <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
 
+        <!-- نافذة التسجيل الصوتي -->
         <div class="window">
             <h2>تسجيل الصوت</h2>
             <button onclick="startRecording()">بدء التسجيل</button>
             <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+            <audio id="audioPlayer" controls style="display:none;"></audio>
         </div>
 
+        <!-- نافذة تحميل الملف النصي -->
         <div class="window">
             <h2>تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt" onchange="loadFileContent()">
+            <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
 
+        <!-- نافذة تغيير لغة القارئ -->
         <div class="window">
-            <h2>تحميل الصوت المسجل</h2>
-            <button onclick="downloadRecordedAudio()">تحميل الصوت</button>
+            <h2>اختيار لغة القارئ</h2>
+            <select id="voiceSelect">
+                <option value="ar">عربي</option>
+                <option value="en">إنجليزي</option>
+            </select>
         </div>
 
+        <!-- نافذة تغيير جنس القارئ -->
         <div class="window">
-            <h2>تغيير لغة القارئ</h2>
-            <select id="voiceSelector">
+            <h2>اختيار جنس القارئ</h2>
+            <select id="genderSelect">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
             </select>
         </div>
 
+        <!-- نافذة التحكم في سرعة الصوت -->
         <div class="window">
-            <h2>تغيير سرعة الصوت</h2>
-            <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1" onchange="changeSpeed()">
-            <span id="speedValue">1.0</span>
+            <h2>تسريع/تبطيء الصوت</h2>
+            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+            <span id="speedLabel">1x</span>
         </div>
+
     </div>
 
-    <!-- تضمين مكتبة ResponsiveVoice -->
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
-
+    
     <script>
-        // تغيير لغة واجهة التطبيق
-        function changeLanguage() {
-            const language = document.getElementById("languageSelector").value;
-            if (language === "ar-SA") {
-                document.body.setAttribute("lang", "ar");
-            } else {
-                document.body.setAttribute("lang", "en");
-            }
-        }
+        let currentVoice = "ar";
+        let currentGender = "male";
+        let currentSpeed = 1;
+        let recorder;
+        let audioBlob;
+        let audioUrl;
+        let audioPlayer = document.getElementById("audioPlayer");
 
-        // تشغيل الصوت من النص باستخدام ResponsiveVoice
         function playVoice() {
             const text = document.getElementById("textInput").value;
-            const language = document.getElementById("languageSelector").value;
-            const gender = document.getElementById("voiceSelector").value;
-
-            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; 
-            const speed = document.getElementById("speedRange").value;
-
-            responsiveVoice.speak(text, voiceName, {
-                language: language,
-                rate: speed,
-                pitch: 1
-            });
+            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
         }
 
-        // إيقاف الصوت
         function stopVoice() {
             responsiveVoice.cancel();
         }
 
-        // تحميل محتوى الملف وعرضه في نافذة النص
-        function loadFileContent() {
-            const fileInput = document.getElementById("textFileInput");
-            const file = fileInput.files[0];
+        function startRecording() {
+            console.log("بدء التسجيل");
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = function(event) {
+                        audioBlob = event.data;
+                        audioUrl = URL.createObjectURL(audioBlob);
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.style.display = 'block';
+                    };
+                    recorder.start();
+                })
+                .catch(function(err) {
+                    console.log("خطأ في الحصول على إذن التسجيل:", err);
+                });
+        }
 
-            if (file) {
+        function stopRecording() {
+            if (recorder) {
+                recorder.stop();
+            }
+            console.log("إيقاف التسجيل");
+        }
+
+        function downloadRecordedAudio() {
+            if (audioBlob) {
+                const link = document.createElement('a');
+                link.href = audioUrl;
+                link.download = 'recorded-audio.wav';
+                link.click();
+            } else {
+                alert("لا يوجد صوت مسجل لتحميله.");
+            }
+        }
+
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    const fileContent = event.target.result;
-                    document.getElementById("textInput").value = fileContent;
+                    const text = event.target.result;
+                    responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
                 };
                 reader.readAsText(file);
             }
         }
 
-        // تحويل النص المعروض إلى صوت
-        function convertFileToVoice() {
-            const text = document.getElementById("textInput").value;
-            const language = document.getElementById("languageSelector").value;
-            const gender = document.getElementById("voiceSelector").value;
+        // تغيير لغة القارئ
+        document.getElementById("voiceSelect").addEventListener("change", function() {
+            currentVoice = this.value;
+            responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
+        });
 
-            const voiceName = gender === "male" ? "Arabic Male" : "Arabic Female"; 
-            const speed = document.getElementById("speedRange").value;
+        // تغيير جنس القارئ
+        document.getElementById("genderSelect").addEventListener("change", function() {
+            currentGender = this.value;
+        });
 
-            responsiveVoice.speak(text, voiceName, {
-                language: language,
-                rate: speed,
-                pitch: 1
-            });
-        }
-
-        // البدء في التسجيل
-        function startRecording() {
-            console.log("بدء التسجيل");
-        }
-
-        // إيقاف التسجيل
-        function stopRecording() {
-            console.log("إيقاف التسجيل");
-        }
-
-        // تحميل الصوت المسجل
-        function downloadRecordedAudio() {
-            const audioUrl = 'your-recorded-audio-url'; // استبدل هذا بالمسار الفعلي للصوت المسجل
-            const a = document.createElement("a");
-            a.href = audioUrl;
-            a.download = "recorded_audio.mp3"; // تغيير الامتداد حسب نوع الصوت المسجل
-            a.click();
-        }
-
-        // تغيير سرعة الصوت حسب قيمة شريط التمرير
-        function changeSpeed() {
-            const speed = document.getElementById("speedRange").value;
-            document.getElementById("speedValue").textContent = speed;
+        // التحكم في سرعة الصوت
+        function adjustSpeed() {
+            const speed = document.getElementById("speedControl").value;
+            currentSpeed = speed;
+            document.getElementById("speedLabel").textContent = `${speed}x`;
         }
     </script>
 </body>
