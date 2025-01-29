@@ -8,211 +8,276 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #000;
+            background-color: #1e2a47;
             color: white;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
             margin: 0;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
-        .container {
-            width: 80%;
-            max-width: 900px;
-            background: #111;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
-            animation: fadeIn 1s ease-in-out;
-            display: none;
-        }
-        .window {
-            border: 2px solid yellow;
-            border-top-color: red;
-            padding: 20px;
-            border-radius: 15px;
-            background-color: #222;
+
+        .header {
             width: 100%;
-            margin-top: 20px;
-            animation: slideIn 1s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #222;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
         }
-        .text-window {
-            height: 200px;
+
+        .logo img {
+            max-width: 100px;
         }
+
+        .language-selector {
+            color: white;
+            font-size: 18px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .window {
+            margin-bottom: 20px;
+            background-color: #333;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 0.7s ease-in-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         textarea {
             width: 100%;
-            height: 150px;
-            font-size: 18px;
+            height: 250px;
+            font-size: 20px;
             padding: 10px;
             border-radius: 10px;
             background: black;
             color: white;
-            border: 1px solid yellow;
+            border: 2px solid yellow;
         }
+
         button {
             background-color: #007bff;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             border: none;
             padding: 10px 15px;
             margin-top: 10px;
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.3s ease-in-out;
-            width: 100%;
         }
+
         button:hover {
             transform: scale(1.1);
         }
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        .button-group button {
-            width: 200px;
-        }
-        select {
+
+        select, input[type="file"] {
             width: 100%;
             padding: 10px;
             margin-top: 10px;
-            background: #222;
-            color: white;
             border-radius: 10px;
-            border: 1px solid yellow;
+            background-color: black;
+            color: white;
+            border: 2px solid yellow;
         }
 
-        /* نافذة التحكم في الصوت */
-        .audio-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .audio-controls input {
-            width: 100px;
-            margin: 10px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        audio {
+            width: 100%;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- نافذة تغيير اللغة في الأعلى -->
-    <div style="position: absolute; top: 10px; right: 20px;">
-        <label for="languageSelectApp" style="color: white;">اختر لغة التطبيق:</label>
-        <select id="languageSelectApp" onchange="changeAppLanguage()">
-            <option value="ar" selected>العربية</option>
-            <option value="en">English</option>
-        </select>
+    <div class="header">
+        <div class="logo">
+            <img src="logo.png" alt="شعار التطبيق">
+        </div>
+        <div class="language-selector">
+            <span>اللغة: العربية</span>
+        </div>
     </div>
 
-    <!-- Header (اللوغو) -->
-    <header>
-        <img src="logo.png" alt="Logo" id="logo">
-    </header>
-
-    <div class="container" id="appContainer">
-        <h1 id="title">تحويل النص إلى صوت</h1>
-
-        <!-- نافذة تحويل النص إلى صوت -->
-        <div class="window text-window">
+    <div class="container">
+        <h1>تحويل النص إلى صوت</h1>
+        
+        <!-- نافذة النص -->
+        <div class="window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
-        </div>
-
-        <div class="button-group">
             <button onclick="playVoice()">تشغيل الصوت</button>
             <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
 
-        <!-- نافذة التحكم في الصوت -->
+        <!-- نافذة التسجيل الصوتي -->
         <div class="window">
-            <h2>إعدادات الصوت</h2>
-            <div class="audio-controls">
-                <label for="speedControl" style="color: white;">سرعة الصوت:</label>
-                <input type="range" id="speedControl" min="0.1" max="2" step="0.1" value="1" onchange="adjustSpeed()">
-                <span id="speedValue" style="color: white;">1</span>
-            </div>
-            <div class="audio-controls">
-                <label for="volumeControl" style="color: white;">مستوى الصوت:</label>
-                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.8" onchange="adjustVolume()">
-                <span id="volumeValue" style="color: white;">0.8</span>
-            </div>
+            <h2>تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+            <audio id="audioPlayer" controls style="display:none;"></audio>
         </div>
+
+        <!-- نافذة تحميل الملف النصي -->
+        <div class="window">
+            <h2>تحميل ملف نصي</h2>
+            <input type="file" id="textFileInput" accept=".txt">
+            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+        </div>
+
+        <!-- نافذة تغيير لغة القارئ -->
+        <div class="window">
+            <h2>اختيار لغة القارئ</h2>
+            <select id="voiceSelect">
+                <option value="ar">عربي</option>
+                <option value="en">إنجليزي</option>
+            </select>
+        </div>
+
+        <!-- نافذة تغيير جنس القارئ -->
+        <div class="window">
+            <h2>اختيار جنس القارئ</h2>
+            <select id="genderSelect">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+        </div>
+
+        <!-- نافذة التحكم في سرعة الصوت -->
+        <div class="window">
+            <h2>تسريع/تبطيء الصوت</h2>
+            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+            <span id="speedLabel">1x</span>
+        </div>
+
     </div>
 
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+    
     <script>
-        let voice = new SpeechSynthesisUtterance();
-        voice.lang = 'ar-SA'; // اللغة الافتراضية (العربية)
-        voice.volume = 0.8; // تقليل مستوى الصوت (من 0 إلى 1)
-        voice.rate = 1; // سرعة الصوت الافتراضية (من 0.1 إلى 2)
-        voice.pitch = 1; // نغمة الصوت
+        let currentVoice = "ar";
+        let currentGender = "male";
+        let currentSpeed = 1;
+        let recorder;
+        let audioBlob;
+        let audioUrl;
+        let audioPlayer = document.getElementById("audioPlayer");
 
-        let voices = [];
-
-        window.speechSynthesis.onvoiceschanged = function() {
-            voices = window.speechSynthesis.getVoices();
-            voice.voice = voices.find(v => v.lang === 'ar-SA' && v.name.includes('Female')) || voices[0];
-        };
-
-        // لتغيير لغة واجهة التطبيق
-        function changeAppLanguage() {
-            const selectedLanguage = document.getElementById('languageSelectApp').value;
-            if (selectedLanguage === 'en') {
-                document.getElementById('title').textContent = 'Text to Speech';
-                document.querySelector('h2').textContent = 'Enter text here';
-                document.querySelector('button:nth-child(1)').textContent = 'Play Voice';
-                document.querySelector('button:nth-child(2)').textContent = 'Stop Voice';
-                document.querySelector('h2').textContent = 'Audio Settings';
-            } else {
-                document.getElementById('title').textContent = 'تحويل النص إلى صوت';
-                document.querySelector('h2').textContent = 'أدخل النص هنا';
-                document.querySelector('button:nth-child(1)').textContent = 'تشغيل الصوت';
-                document.querySelector('button:nth-child(2)').textContent = 'إيقاف الصوت';
-                document.querySelector('h2').textContent = 'إعدادات الصوت';
-            }
-        }
-
-        // لتشغيل الصوت
         function playVoice() {
-            const text = document.getElementById('textInput').value;
-            if (text) {
-                voice.text = text;
-                window.speechSynthesis.speak(voice);
-            } else {
-                alert("يرجى إدخال نص أولاً.");
-            }
+            const text = document.getElementById("textInput").value;
+            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
         }
 
         function stopVoice() {
-            window.speechSynthesis.cancel(); // إيقاف الصوت
+            responsiveVoice.cancel();
         }
 
-        // لتعديل سرعة الصوت
+        function startRecording() {
+            console.log("بدء التسجيل");
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = function(event) {
+                        audioBlob = event.data;
+                        audioUrl = URL.createObjectURL(audioBlob);
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.style.display = 'block';
+                    };
+                    recorder.start();
+                })
+                .catch(function(err) {
+                    console.log("خطأ في الحصول على إذن التسجيل:", err);
+                });
+        }
+
+        function stopRecording() {
+            if (recorder) {
+                recorder.stop();
+            }
+            console.log("إيقاف التسجيل");
+        }
+
+        function downloadRecordedAudio() {
+            if (audioBlob) {
+                const link = document.createElement('a');
+                link.href = audioUrl;
+                link.download = 'recorded-audio.wav';
+                link.click();
+            } else {
+                alert("لا يوجد صوت مسجل لتحميله.");
+            }
+        }
+
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // تغيير لغة القارئ
+        document.getElementById("voiceSelect").addEventListener("change", function() {
+            currentVoice = this.value;
+            responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
+        });
+
+        // تغيير جنس القارئ
+        document.getElementById("genderSelect").addEventListener("change", function() {
+            currentGender = this.value;
+        });
+
+        // التحكم في سرعة الصوت
         function adjustSpeed() {
-            const speed = document.getElementById('speedControl').value;
-            voice.rate = speed;
-            document.getElementById('speedValue').textContent = speed;
-        }
-
-        // لتعديل مستوى الصوت
-        function adjustVolume() {
-            const volume = document.getElementById('volumeControl').value;
-            voice.volume = volume;
-            document.getElementById('volumeValue').textContent = volume;
+            const speed = document.getElementById("speedControl").value;
+            currentSpeed = speed;
+            document.getElementById("speedLabel").textContent = `${speed}x`;
         }
     </script>
 </body>
