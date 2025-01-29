@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل النص إلى صوت باستخدام RSS Voice</title>
+    <title>تحويل النص إلى صوت</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
@@ -193,7 +193,6 @@
                 appTitle: "تحويل النص إلى صوت",
                 accessTitle: "إدخال رمز الدخول",
                 accessButton: "دخول",
-                languageLabel: "اختر لغة التطبيق:",
                 genderLabel: "اختر الجنس:",
                 speedLabel: "سرعة الصوت:",
                 playButton: "تشغيل الصوت",
@@ -210,7 +209,6 @@
                 appTitle: "Text to Voice Converter",
                 accessTitle: "Enter Access Code",
                 accessButton: "Enter",
-                languageLabel: "Select Application Language:",
                 genderLabel: "Choose Gender:",
                 speedLabel: "Voice Speed:",
                 playButton: "Play Voice",
@@ -239,15 +237,15 @@
     </div>
 
     <div id="appContent" class="disabled">
-        <div class="window">
-            <label for="languageSelector">اختر لغة التطبيق:</label>
-            <select id="languageSelector" onchange="translateApp()">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-
         <form id="textForm">
+            <div class="window">
+                <label for="languageSelector" id="languageLabel">اختر اللغة:</label>
+                <select id="languageSelector" name="language" onchange="translateApp()">
+                    <option value="ar">العربية</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
             <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
             <div class="window">
                 <label for="gender">اختر الجنس:</label>
@@ -267,4 +265,11 @@
             <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
             <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
         </div>
-        <h2 id="convertedAudio
+        <h2 id="convertedAudioTitle">تحميل الصوت المحول</h2>
+        <div class="window">
+            <input type="file" id="textFileInput" onchange="handleFileUpload()">
+            <button type="button" onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
+        </div>
+    </div>
+</body>
+</html>
