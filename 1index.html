@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9">
     <title>تحويل النص إلى صوت</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #000;
+            background-color: #111;
             color: white;
             text-align: center;
             display: flex;
@@ -16,47 +16,46 @@
             align-items: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 5px;
+            padding: 10px;
         }
         .container {
-            width: 85%;
-            max-width: 750px;
-            background: #111;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
-            animation: fadeIn 1s ease-in-out;
+            width: 100%;
+            max-width: 650px;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.4);
             margin-top: 20px;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
+            animation: fadeIn 1s ease-in-out;
         }
         .window {
             border: 2px solid yellow;
-            border-top-color: red;
-            padding: 15px;
-            border-radius: 15px;
-            background-color: #222;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #333;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 15px;
             animation: slideIn 1s ease-in-out;
         }
         .text-window {
-            height: 200px;
+            height: 180px;
         }
         textarea {
             width: 100%;
-            height: 150px;
-            font-size: 16px;
-            padding: 10px;
-            border-radius: 10px;
-            background: black;
+            height: 130px;
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 8px;
+            background: #444;
             color: white;
             border: 1px solid yellow;
         }
         button {
             background-color: #007bff;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             border: none;
             padding: 8px 12px;
             margin-top: 10px;
@@ -83,7 +82,7 @@
             left: 20px;
             right: 20px;
             padding: 10px;
-            font-size: 20px;
+            font-size: 18px;
             background-color: #ff0;
             color: #000;
             font-weight: bold;
@@ -100,11 +99,12 @@
             background-color: #333;
             color: white;
             border-radius: 10px;
+            margin-bottom: 20px;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
+        .logo img {
+            max-width: 100px;
+            height: auto;
         }
 
         .language-selector {
@@ -112,7 +112,7 @@
             border: none;
             padding: 8px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             border-radius: 10px;
             cursor: pointer;
         }
@@ -150,7 +150,7 @@
             padding: 10px 15px;
             background-color: #28a745;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             border-radius: 10px;
             cursor: pointer;
         }
@@ -169,7 +169,7 @@
     <!-- إضافة الشعار في الأعلى -->
     <div class="header">
         <div class="logo">
-            <img src="logo.png" alt="الشعار" style="width: 100px; height: auto;"> <!-- تعديل لعرض الشعار -->
+            <img src="logo.png" alt="الشعار"> <!-- عرض الشعار هنا -->
         </div>
         <select class="language-selector" onchange="changeLanguage(this)">
             <option value="ar">العربية</option>
@@ -323,6 +323,10 @@
             if (audioBlob) {
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(audioBlob);
-                link.download = 'recorded_audio.wav'; // اسم الملف عند التح
-
-            
+                link.download = 'recorded_audio.wav'; // اسم الملف عند التحميل
+                link.click();
+            }
+        }
+    </script>
+</body>
+</html>
