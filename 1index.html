@@ -135,6 +135,12 @@
         </div>
 
         <div class="window">
+            <h2>تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+        </div>
+
+        <div class="window">
             <h2>تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
@@ -150,6 +156,14 @@
 
         function stopVoice() {
             speechSynthesis.cancel();
+        }
+
+        function startRecording() {
+            console.log("بدء التسجيل");
+        }
+
+        function stopRecording() {
+            console.log("إيقاف التسجيل");
         }
 
         function convertFileToVoice() {
