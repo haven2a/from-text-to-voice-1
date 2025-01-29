@@ -133,101 +133,118 @@
             background-color: #0056b3;
         }
 
-        /* إضافة تنسيق للنوافذ المنبثقة */
-        .modal {
-            display: none;
+        /* إضافة نافذة لطلب كلمة المرور */
+        .modal-password {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* الخلفية الشفافة */
-            align-items: center;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
         }
 
-        .modal-content {
+        .modal-password-content {
             background: #333;
             padding: 20px;
             border-radius: 10px;
             width: 300px;
+            text-align: center;
         }
+
+        .modal-password input {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+            background-color: #444;
+            color: white;
+            font-size: 18px;
+        }
+
+        .modal-password button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <img src="logo.png" alt="شعار التطبيق">
-        </div>
-        <div class="language-selector" onclick="toggleLanguageModal()">
-            <span>اللغة: العربية</span>
+
+    <!-- نافذة المطالبة بكلمة المرور -->
+    <div id="passwordModal" class="modal-password">
+        <div class="modal-password-content">
+            <h2>أدخل كلمة المرور لفتح التطبيق</h2>
+            <input type="text" id="passwordInput" placeholder="أدخل الكود هنا">
+            <button onclick="validatePassword()">إدخال</button>
         </div>
     </div>
 
-    <div class="container">
-        <h1>تحويل النص إلى صوت</h1>
-        
-        <div class="window">
-            <h2>أدخل النص هنا</h2>
-            <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()">تشغيل الصوت</button>
-            <button onclick="stopVoice()">إيقاف الصوت</button>
-        </div>
-
-        <div class="window">
-            <h2>تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-        </div>
-
-        <div class="window">
-            <h2>تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
-        </div>
-
-        <!-- نافذة لتغيير اللغة -->
-        <div id="languageModal" class="modal">
-            <div class="modal-content">
-                <h4>اختر لغة القارئ</h4>
-                <form id="languageForm">
-                    <label>
-                        <input type="radio" name="language" value="عربي" /> عربي
-                    </label><br />
-                    <label>
-                        <input type="radio" name="language" value="إنجليزي" /> إنجليزي
-                    </label><br />
-                    <button type="submit">تأكيد</button>
-                </form>
+    <!-- محتوى التطبيق -->
+    <div id="appContent" style="display:none;">
+        <div class="header">
+            <div class="logo">
+                <img src="logo.png" alt="شعار التطبيق">
+            </div>
+            <div class="language-selector" onclick="toggleLanguageModal()">
+                <span>اللغة: العربية</span>
             </div>
         </div>
 
-        <!-- نافذة لتغيير الجنس -->
-        <div id="genderModal" class="modal">
-            <div class="modal-content">
-                <h4>اختر جنس القارئ</h4>
-                <form id="genderForm">
-                    <label>
-                        <input type="radio" name="gender" value="ذكر" /> ذكر
-                    </label><br />
-                    <label>
-                        <input type="radio" name="gender" value="أنثى" /> أنثى
-                    </label><br />
-                    <button type="submit">تأكيد</button>
-                </form>
+        <div class="container">
+            <h1>تحويل النص إلى صوت</h1>
+            
+            <div class="window">
+                <h2>أدخل النص هنا</h2>
+                <textarea id="textInput" placeholder="أدخل النص"></textarea>
+                <button onclick="playVoice()">تشغيل الصوت</button>
+                <button onclick="stopVoice()">إيقاف الصوت</button>
             </div>
-        </div>
 
-        <!-- زر غلق التطبيق -->
-        <div class="window">
-            <h3>لإغلاق التطبيق، أدخل المفتاح:</h3>
-            <input type="text" id="closeKey" placeholder="أدخل المفتاح هنا">
-            <button onclick="closeApp()">غلق التطبيق</button>
+            <div class="window">
+                <h2>تسجيل الصوت</h2>
+                <button onclick="startRecording()">بدء التسجيل</button>
+                <button onclick="stopRecording()">إيقاف التسجيل</button>
+            </div>
+
+            <div class="window">
+                <h2>تحميل ملف نصي</h2>
+                <input type="file" id="textFileInput" accept=".txt">
+                <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+            </div>
+
+            <!-- زر غلق التطبيق -->
+            <div class="window">
+                <h3>لإغلاق التطبيق، أدخل المفتاح:</h3>
+                <input type="text" id="closeKey" placeholder="أدخل المفتاح هنا">
+                <button onclick="closeApp()">غلق التطبيق</button>
+            </div>
         </div>
     </div>
 
     <script>
+        function validatePassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === "123") {
+                // إخفاء نافذة كلمة المرور
+                document.getElementById('passwordModal').style.display = 'none';
+                // إظهار محتوى التطبيق
+                document.getElementById('appContent').style.display = 'block';
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+                window.close(); // إغلاق التطبيق في حالة كلمة مرور خاطئة
+            }
+        }
+
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const speech = new SpeechSynthesisUtterance(text);
@@ -260,28 +277,6 @@
             }
         }
 
-        // فتح نافذة تغيير اللغة
-        function toggleLanguageModal() {
-            document.getElementById('languageModal').style.display = 'flex';
-        }
-
-        // فتح نافذة تغيير الجنس
-        function toggleGenderModal() {
-            document.getElementById('genderModal').style.display = 'flex';
-        }
-
-        // إغلاق النوافذ عند تقديم النماذج
-        document.getElementById('languageForm').onsubmit = function (e) {
-            e.preventDefault();
-            document.getElementById('languageModal').style.display = 'none';
-        };
-
-        document.getElementById('genderForm').onsubmit = function (e) {
-            e.preventDefault();
-            document.getElementById('genderModal').style.display = 'none';
-        };
-
-        // دالة لإغلاق التطبيق مع التحقق من كلمة المرور
         function closeApp() {
             const key = document.getElementById("closeKey").value;
             if (key === "123") {
