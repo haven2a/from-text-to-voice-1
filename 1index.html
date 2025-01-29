@@ -86,12 +86,11 @@
         }
 
         /* تأثير حركة تزحلف للشعار */
-        .logo {
+        #logo {
             position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 30px;
             animation: slideLogo 5s infinite linear;
         }
 
@@ -143,9 +142,10 @@
         <select id="languageSelectApp" onchange="changeAppLanguage()">
             <option value="ar" selected>العربية</option>
             <option value="en">English</option>
-          
         </select>
-      <!-- Header (اللوغو) -->
+    </div>
+
+    <!-- Header (اللوغو) -->
     <header>
         <img src="logo.png" alt="Logo" id="logo">
     </header>
@@ -182,7 +182,6 @@
                 <select id="languageSelect" onchange="changeVoiceLanguage()">
                     <option value="ar-SA">العربية</option>
                     <option value="en-US">الإنجليزية</option>
-                    
                 </select>
             </div>
         </div>
@@ -213,12 +212,7 @@
                 document.querySelector('option[value="ar"]').textContent = 'Arabic';
                 document.querySelector('option[value="fr"]').textContent = 'French';
                 document.querySelector('option[value="de"]').textContent = 'German';
-            } else if (selectedLanguage === 'fr') {
-                // إضافة دعم للفرنسية هنا
-            } else if (selectedLanguage === 'de') {
-                // إضافة دعم للألمانية هنا
             } else {
-                // العودة للعربية
                 document.getElementById('title').textContent = 'تحويل النص إلى صوت';
                 document.querySelector('h2').textContent = 'أدخل النص هنا';
                 document.querySelector('button:nth-child(1)').textContent = 'تشغيل الصوت';
@@ -235,6 +229,15 @@
         function changeVoiceLanguage() {
             const language = document.getElementById('languageSelect').value;
             voice.lang = language;
+        }
+
+        // لتغيير جنس القارئ
+        function changeVoiceGender(gender) {
+            if (gender === 'male') {
+                voice.voice = speechSynthesis.getVoices().filter(voice => voice.name === 'Google UK English Male')[0];
+            } else if (gender === 'female') {
+                voice.voice = speechSynthesis.getVoices().filter(voice => voice.name === 'Google UK English Female')[0];
+            }
         }
 
         // لتحويل النص إلى صوت
