@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل النص إلى صوت</title>
+    <title>تحويل النص إلى صوت باستخدام RSS Voice</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
@@ -12,37 +12,37 @@
             color: white;
             text-align: center;
             padding: 20px;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: auto;
+            border-radius: 10px;
             background-image: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
             direction: rtl;
             overflow-x: hidden;
         }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            animation: slideInUp 1s ease-out;
-        }
         header {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 15px;
             margin-bottom: 20px;
             animation: slideIn 1s ease-in-out;
         }
         header img {
-            width: 150px;
-            height: 150px;
+            width: 200px;
+            height: 200px;
             animation: logoMovement 3s ease-in-out infinite;
         }
         h1 {
             color: #ffd700;
             font-size: 36px;
             margin: 0;
+            animation: slideIn 1s ease-in-out;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
         }
         .window {
             border: 2px solid #ffd700;
@@ -50,8 +50,9 @@
             border-radius: 15px;
             background-color: #444;
             width: 100%;
+            max-width: 400px;
             margin-top: 20px;
-            animation: fadeInUp 1s ease-in-out;
+            animation: popupFadeIn 0.5s ease-in-out;
         }
         button {
             background-color: #007bff;
@@ -92,22 +93,25 @@
         .disabled {
             display: none;
         }
+        .container button {
+            margin-top: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(100px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes logoMovement {
             0% { transform: translateX(0); }
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
+        }
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
@@ -223,56 +227,44 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <img src="logo.png" alt="Logo">
-            <h1 id="appTitle">تحويل النص إلى صوت</h1>
-        </header>
+    <header>
+        <img src="logo.png" alt="Logo">
+        <h1 id="appTitle">تحويل النص إلى صوت</h1>
+    </header>
 
-        <div id="lockScreen" class="popup show">
-            <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
-            <input type="password" id="accessCode" placeholder="أدخل الكود">
-            <button onclick="unlockApp()" id="accessButton">دخول</button>
-        </div>
-
-        <div id="appContent" class="disabled">
-            <div class="window">
-                <label for="languageSelector">اختر لغة التطبيق:</label>
-                <select id="languageSelector" onchange="translateApp()">
-                    <option value="ar">العربية</option>
-                    <option value="en">English</option>
-                </select>
-            </div>
-
-            <form id="textForm">
-                <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
-                <div class="window">
-                    <label for="gender">اختر الجنس:</label>
-                    <select id="gender" name="gender">
-                        <option value="male">ذكر</option>
-                        <option value="female">أنثى</option>
-                    </select>
-                    <label for="speed">سرعة الصوت:</label>
-                    <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
-                </div>
-                <div class="window">
-                    <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
-                    <button type="button" onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
-                </div>
-            </form>
-            <div class="window">
-                <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
-                <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
-            </div>
-            <h2 id="convertedAudioTitle">تحميل الصوت المحول من النص</h2>
-            <a id="convertedAudioButton" href="#" download="converted_audio.mp3">تحميل الصوت المحول</a>
-
-            <h2 id="textFileTitle">تحميل ملف نصي لتحويله إلى صوت</h2>
-            <div class="window">
-                <input type="file" id="textFileInput" onchange="handleFileUpload()" />
-                <button onclick="convertFileToVoice()" id="convertFileButton">تحويل الملف إلى صوت</button>
-            </div>
-        </div>
+    <div id="lockScreen" class="popup show">
+        <h2 id="accessTitle" style="color: #007bff;">إدخال رمز الدخول</h2>
+        <input type="password" id="accessCode" placeholder="أدخل الكود">
+        <button onclick="unlockApp()" id="accessButton">دخول</button>
     </div>
-</body>
-</html>
+
+    <div id="appContent" class="disabled">
+        <div class="window">
+            <label for="languageSelector">اختر لغة التطبيق:</label>
+            <select id="languageSelector" onchange="translateApp()">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <form id="textForm">
+            <textarea name="text" id="textInput" placeholder="أدخل النص هنا" rows="6"></textarea>
+            <div class="window">
+                <label for="gender">اختر الجنس:</label>
+                <select id="gender" name="gender">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+                <label for="speed">سرعة الصوت:</label>
+                <input type="range" id="speed" name="speed" min="0.5" max="2" step="0.1" value="1">
+            </div>
+            <div class="window">
+                <button type="button" onclick="playVoice()" id="playButton">تشغيل الصوت</button>
+                <button type="button" onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
+            </div>
+        </form>
+        <div class="window">
+            <button onclick="startRecording()" id="startRecordButton">بدء التسجيل</button>
+            <button onclick="stopRecording()" id="stopRecordButton">إيقاف التسجيل</button>
+        </div>
+        <h2 id="convertedAudio
