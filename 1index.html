@@ -13,11 +13,10 @@
             text-align: center;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start; /* تعديل لوضع المحتوى في الأعلى */
+            min-height: 100vh; /* التأكد من أن المحتوى يشغل كامل ارتفاع الصفحة */
             margin: 0;
-            overflow-y: auto;
-            padding: 0 10px;
+            padding: 20px; /* إضافة هامش لضمان عدم التلاصق مع الحواف */
         }
         .container {
             width: 100%;
@@ -74,6 +73,21 @@
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
+        /* النص المخصص لتسجيل الصوت */
+        .recording-text {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 10px;
+            font-size: 20px;
+            background-color: #ff0;
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+            visibility: hidden; /* سيظهر عندما نبدأ التسجيل */
+        }
     </style>
 </head>
 <body>
@@ -95,7 +109,18 @@
             <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
+
+        <!-- نافذة تسريع الصوت -->
+        <div class="window">
+            <h2>تحكم في سرعة الصوت</h2>
+            <label for="speedControl">سرعة الصوت:</label>
+            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+            <span id="speedValue">1</span>
+        </div>
     </div>
+
+    <!-- النص المخصص لتسجيل الصوت -->
+    <div id="recordingText" class="recording-text">جاري تسجيل الصوت...</div>
 
     <script>
         // تفعيل النص إلى صوت باستخدام SpeechSynthesis API
@@ -107,6 +132,7 @@
             if (text !== "") {
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA'; // تعيين اللغة العربية
+                utterance.rate = document.getElementById("speedControl").value; // تعديل السرعة
                 synth.speak(utterance);
                 currentUtterance = utterance;
             }
@@ -123,6 +149,9 @@
         let audioChunks = [];
 
         function startRecording() {
+            // إظهار النص المخصص عند بدء التسجيل
+            document.getElementById("recordingText").style.visibility = 'visible';
+
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaRecorder = new MediaRecorder(stream);
@@ -145,6 +174,8 @@
             if (mediaRecorder) {
                 mediaRecorder.stop();
             }
+            // إخفاء النص المخصص بعد إيقاف التسجيل
+            document.getElementById("recordingText").style.visibility = 'hidden';
         }
 
         // دالة لتحويل ملف نصي إلى صوت
@@ -163,6 +194,11 @@
                 alert("الرجاء اختيار ملف نصي");
             }
         }
+
+        // تحديث القيمة المعروضة للسرعة عند تغيير المنزلق
+        document.getElementById("speedControl").addEventListener("input", function() {
+            document.getElementById("speedValue").textContent = this.value;
+        });
     </script>
 </body>
 </html>
