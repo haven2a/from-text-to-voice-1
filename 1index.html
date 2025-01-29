@@ -22,7 +22,6 @@
             position: relative;
         }
 
-        /* إضافة تأثير لامع على الخلفية */
         body::before {
             content: '';
             position: absolute;
@@ -30,7 +29,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* نصيحة: استخدام صورة خلفية مميزة */
+            background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); 
             opacity: 0.5;
             z-index: -1;
         }
@@ -40,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.7); /* خلفية شفافة */
+            background-color: rgba(0, 0, 0, 0.7); 
             position: fixed;
             top: 0;
             left: 0;
@@ -58,12 +57,13 @@
             font-size: 18px;
             cursor: pointer;
             padding: 10px;
+            text-align: right;  /* تحريك اللغة لليمين */
         }
 
         .container {
             width: 90%;
             max-width: 800px;
-            background: rgba(0, 0, 0, 0.7); /* خلفية شفافة */
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
@@ -132,186 +132,120 @@
             transform: scale(1.1);
             background-color: #0056b3;
         }
-
-        /* إضافة نافذة لطلب كلمة المرور */
-        .modal-password {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-        }
-
-        .modal-password-content {
-            background: #333;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-        }
-
-        .modal-password input {
-            padding: 10px;
-            margin-bottom: 10px;
-            width: 100%;
-            border-radius: 5px;
-            border: none;
-            background-color: #444;
-            color: white;
-            font-size: 18px;
-        }
-
-        .modal-password button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            font-size: 16px;
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- نافذة المطالبة بكلمة المرور -->
-    <div id="passwordModal" class="modal-password">
-        <div class="modal-password-content">
-            <h2>أدخل كلمة المرور لفتح التطبيق</h2>
-            <input type="text" id="passwordInput" placeholder="أدخل الكود هنا">
-            <button onclick="validatePassword()">إدخال</button>
+    <!-- محتوى التطبيق -->
+    <div class="header">
+        <div class="logo">
+            <img src="logo.png" alt="شعار التطبيق">
+        </div>
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
         </div>
     </div>
 
-    <!-- محتوى التطبيق -->
-    <div id="appContent" style="display:none;">
-        <div class="header">
-            <div class="logo">
-                <img src="logo.png" alt="شعار التطبيق">
-            </div>
-            <div class="language-selector" onclick="toggleLanguageModal()">
-                <span>اللغة: العربية</span>
-            </div>
+    <div class="container">
+        <h1 id="title">تحويل النص إلى صوت</h1>
+        
+        <div class="window">
+            <h2 id="textInputTitle">أدخل النص هنا</h2>
+            <textarea id="textInput" placeholder="أدخل النص"></textarea>
+            <button onclick="playVoice()">تشغيل الصوت</button>
+            <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
 
-        <div class="container">
-            <h1>تحويل النص إلى صوت</h1>
-            
-            <div class="window">
-                <h2>أدخل النص هنا</h2>
-                <textarea id="textInput" placeholder="أدخل النص"></textarea>
-                <button onclick="playVoice()">تشغيل الصوت</button>
-                <button onclick="stopVoice()">إيقاف الصوت</button>
-            </div>
+        <div class="window">
+            <h2 id="recordTitle">تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+        </div>
 
-            <div class="window">
-                <h2>تسجيل الصوت</h2>
-                <button onclick="startRecording()">بدء التسجيل</button>
-                <button onclick="stopRecording()">إيقاف التسجيل</button>
-            </div>
-
-            <div class="window">
-                <h2>تحميل ملف نصي</h2>
-                <input type="file" id="textFileInput" accept=".txt">
-                <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
-            </div>
-
-            <!-- نافذة لاختيار لغة القارئ -->
-            <div class="window">
-                <h3>اختيار لغة القارئ</h3>
-                <select id="languageSelect" onchange="updateVoice()">
-                    <option value="ar-SA">العربية</option>
-                    <option value="en-US">الإنجليزية</option>
-                    <option value="fr-FR">الفرنسية</option>
-                    <!-- أضف لغات إضافية حسب الحاجة -->
-                </select>
-            </div>
-
-            <!-- نافذة لاختيار جنس القارئ -->
-            <div class="window">
-                <h3>اختيار جنس القارئ</h3>
-                <select id="voiceGenderSelect" onchange="updateVoice()">
-                    <option value="male">ذكر</option>
-                    <option value="female">أنثى</option>
-                </select>
-            </div>
-
-            <!-- نافذة لتحميل الصوت المسجل -->
-            <div class="window">
-                <h3>تحميل الصوت المسجل</h3>
-                <button onclick="downloadRecordedAudio()">تحميل الصوت</button>
-            </div>
+        <div class="window">
+            <h2 id="fileTitle">تحميل ملف نصي</h2>
+            <input type="file" id="textFileInput" accept=".txt">
+            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
     </div>
 
     <script>
-        let currentVoice = null;
-        let recordedAudioBlob = null; // تخزين الملف الصوتي المسجل
+        let currentLanguage = 'ar'; // اللغة الافتراضية
+        let mediaRecorder;
+        let recordedChunks = [];
+        let recordedAudioBlob;
 
-        function validatePassword() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === "123") {
-                // إخفاء نافذة كلمة المرور
-                document.getElementById('passwordModal').style.display = 'none';
-                // إظهار محتوى التطبيق
-                document.getElementById('appContent').style.display = 'block';
-            } else {
-                alert("كلمة المرور غير صحيحة!");
-                window.close(); // إغلاق التطبيق في حالة كلمة مرور خاطئة
+        // تغيير لغة التطبيق
+        function changeLanguage() {
+            const language = document.getElementById("languageSelect").value;
+            currentLanguage = language;
+            updateTextContent();
+        }
+
+        // تحديث النصوص حسب اللغة المختارة
+        function updateTextContent() {
+            if (currentLanguage === 'ar') {
+                document.getElementById('title').innerText = "تحويل النص إلى صوت";
+                document.getElementById('textInputTitle').innerText = "أدخل النص هنا";
+                document.getElementById('recordTitle').innerText = "تسجيل الصوت";
+                document.getElementById('fileTitle').innerText = "تحميل ملف نصي";
+            } else if (currentLanguage === 'en') {
+                document.getElementById('title').innerText = "Text to Speech Conversion";
+                document.getElementById('textInputTitle').innerText = "Enter text here";
+                document.getElementById('recordTitle').innerText = "Record Audio";
+                document.getElementById('fileTitle').innerText = "Upload Text File";
             }
         }
 
+        // تشغيل الصوت وعرض النص الذي يُقرأ في نافذة النص
         function playVoice() {
             const text = document.getElementById("textInput").value;
             const speech = new SpeechSynthesisUtterance(text);
-            speech.voice = currentVoice;
+
+            // تحديث النص المعروض في نافذة النص أثناء القراءة
+            speech.onboundary = function(event) {
+                const spokenText = text.substring(0, event.charIndex);
+                document.getElementById("textInput").value = spokenText;
+            };
+
             speechSynthesis.speak(speech);
         }
 
+        // إيقاف الصوت
         function stopVoice() {
             speechSynthesis.cancel();
         }
 
+        // بدء التسجيل الصوتي
         function startRecording() {
-            console.log("بدء التسجيل");
-            // هنا يجب إضافة الكود الخاص بتسجيل الصوت
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        recordedChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        recordedAudioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(error => {
+                    console.error("Error accessing media devices.", error);
+                });
         }
 
+        // إيقاف التسجيل الصوتي
         function stopRecording() {
-            console.log("إيقاف التسجيل");
-            // بعد التوقف عن التسجيل، حفظ الملف الصوتي
-        }
-
-        function convertFileToVoice() {
-            const fileInput = document.getElementById("textFileInput");
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    const speech = new SpeechSynthesisUtterance(text);
-                    speech.voice = currentVoice;
-                    speechSynthesis.speak(speech);
-                };
-                reader.readAsText(file);
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
             }
         }
 
-        function updateVoice() {
-            const language = document.getElementById('languageSelect').value;
-            const gender = document.getElementById('voiceGenderSelect').value;
-
-            // تحديد الصوت بناءً على اللغة والجنس
-            const voices = speechSynthesis.getVoices();
-            currentVoice = voices.find(voice => voice.lang === language && voice.name.includes(gender));
-        }
-
+        // تحميل الصوت المسجل
         function downloadRecordedAudio() {
             if (recordedAudioBlob) {
                 const audioUrl = URL.createObjectURL(recordedAudioBlob);
@@ -321,6 +255,22 @@
                 link.click();
             }
         }
+
+        // تحويل النص من ملف إلى صوت
+        function convertFileToVoice() {
+            const fileInput = document.getElementById("textFileInput");
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    const speech = new SpeechSynthesisUtterance(text);
+                    speechSynthesis.speak(speech);
+                };
+                reader.readAsText(file);
+            }
+        }
     </script>
+
 </body>
 </html>
