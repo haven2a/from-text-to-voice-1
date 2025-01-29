@@ -38,6 +38,8 @@ if (!fs.existsSync(dbPath)) {
             console.error('❌ خطأ في إنشاء قاعدة البيانات:', err.message);
         } else {
             console.log('✅ تم إنشاء قاعدة البيانات بنجاح');
+
+            // إنشاء جدول الرسائل
             db.run(`
                 CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,11 +48,22 @@ if (!fs.existsSync(dbPath)) {
                     message TEXT NOT NULL,
                     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
+            `);
+
+            // إنشاء جدول المستخدمين
+            db.run(`
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
             `, (err) => {
                 if (err) {
-                    console.error('❌ خطأ في إنشاء الجدول:', err.message);
+                    console.error('❌ خطأ في إنشاء جدول المستخدمين:', err.message);
                 } else {
-                    console.log('✅ تم إنشاء الجدول بنجاح');
+                    console.log('✅ تم إنشاء جدول المستخدمين بنجاح');
                 }
             });
         }
@@ -63,19 +76,19 @@ if (!fs.existsSync(dbPath)) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// إعدادات nodemailer
+// إعدادات nodemailer (استخدام المتغيرات البيئية للأمان)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'hacenatek9@gmail.com', // البريد الإلكتروني للمُرسل
-        pass: 'hmhi fvrk nghr gdxd', // كلمة مرور البريد الإلكتروني
+        user: process.env.EMAIL_USER, // البريد الإلكتروني من المتغيرات البيئية
+        pass: process.env.EMAIL_PASS, // كلمة المرور من المتغيرات البيئية
     }
 });
 
 // دالة لإرسال البريد الإلكتروني الترحيبي
 const sendWelcomeEmail = (to, username) => {
     const subject = 'مرحبًا بك في تطبيقنا!';
-    
+
     // الرسالة بتنسيق HTML مع الخصائص المطلوبة
     const htmlContent = `
         <div style="border: 10px solid #4CAF50; padding: 40px; font-family: 'Cairo', sans-serif; font-size: 28px; text-align: center; background-color: #f0f8ff;">
@@ -88,7 +101,7 @@ const sendWelcomeEmail = (to, username) => {
     `;
 
     const mailOptions = {
-        from: 'hacenatek9@gmail.com', // بريد المرسل
+        from: process.env.EMAIL_USER, // بريد المرسل من المتغيرات البيئية
         to, // بريد المستلم
         subject, // عنوان الرسالة
         html: htmlContent, // محتوى الرسالة بتنسيق HTML
@@ -102,39 +115,51 @@ const sendWelcomeEmail = (to, username) => {
     });
 };
 
-// نقطة لتحويل النص إلى صوت وحفظه
-app.post('/api/convert', (req, res) => {
-    const { text, language } = req.body;
+// نقطة للاشتراك (التسجيل) للمستخدمين الجدد
+app.post('/subscribe', (req, res) => {
+    const { name, email, password } = req.body;
 
-    if (!text || !language) {
-        return res.status(400).json({ message: '⚠️ النص واللغة مطلوبان!' });
+    // التحقق من وجود البيانات المدخلة
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: '⚠️ الاسم، البريد الإلكتروني، وكلمة المرور مطلوبة!' });
     }
 
-    const fileName = `audio_${Date.now()}.mp3`;
-    const filePath = path.join(__dirname, 'public', 'audio', fileName);
-
-    const lang = language === 'ar' ? 'ar-SA' : 'en-US';
-
-    // أمر لإنشاء الصوت باستخدام gTTS أو أي مكتبة مشابهة
-    const command = `gtts-cli "${text}" --lang ${lang} --output "${filePath}"`;
-    exec(command, (error) => {
-        if (error) {
-            console.error('❌ خطأ أثناء إنشاء الصوت:', error.message);
-            return res.status(500).json({ message: '❌ حدث خطأ أثناء إنشاء الصوت.' });
+    // التحقق من وجود المستخدم بالفعل في قاعدة البيانات
+    const db = new sqlite3.Database(dbPath);
+    const stmt = db.prepare("SELECT * FROM users WHERE email = ?");
+    stmt.get(email, (err, row) => {
+        if (err) {
+            console.error('❌ خطأ أثناء التحقق من وجود المستخدم:', err.message);
+            return res.status(500).json({ message: '❌ حدث خطأ أثناء التحقق من المستخدم.' });
         }
 
-        console.log('✅ تم إنشاء ملف الصوت:', fileName);
-        res.status(200).json({ message: '✅ تم إنشاء الصوت بنجاح!', url: `/audio/${fileName}` });
+        if (row) {
+            return res.status(400).json({ message: '⚠️ هذا البريد الإلكتروني مسجل بالفعل.' });
+        }
+
+        // إذا لم يكن المستخدم موجودًا، نبدأ عملية الاشتراك
+        const hashedPassword = bcrypt.hashSync(password, 10);  // تشفير كلمة المرور
+
+        // إدخال البيانات في قاعدة البيانات
+        const insertStmt = db.prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+        insertStmt.run(name, email, hashedPassword, function(err) {
+            if (err) {
+                console.error('❌ خطأ أثناء إدخال بيانات المستخدم في قاعدة البيانات:', err.message);
+                return res.status(500).json({ message: '❌ حدث خطأ أثناء الاشتراك.' });
+            }
+            res.status(201).json({ message: '✅ تم الاشتراك بنجاح!' });
+
+            // إرسال البريد الإلكتروني الترحيبي بعد الاشتراك
+            sendWelcomeEmail(email, name);
+        });
+        insertStmt.finalize();
     });
+
+    stmt.finalize();
+    db.close();
 });
 
-// نقطة لعرض الصفحة الرئيسية
-app.get('/', (req, res) => {
-    console.log('تم الوصول إلى الصفحة الرئيسية');
-    res.sendFile(path.join(__dirname, '1index.html'));
-});
-
-// نقطة إرسال رسائل الدعم الفني
+// نقطة استقبال رسائل الدعم الفني
 app.post('/support', (req, res) => {
     const { name, email, message } = req.body;
 
