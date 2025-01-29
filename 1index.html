@@ -19,124 +19,52 @@
             min-height: 100vh;
         }
 
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: #222;
+        .lock-screen {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 100;
-        }
-
-        .logo img {
-            max-width: 100px;
-        }
-
-        .language-selector {
-            color: white;
-            font-size: 18px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideIn 0.5s ease-in-out forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .window {
-            margin-bottom: 20px;
-            background-color: #333;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideUp 0.7s ease-in-out forwards;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        textarea {
             width: 100%;
-            height: 250px;
-            font-size: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            background: black;
-            color: white;
-            border: 2px solid yellow;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
         }
 
-        button {
+        .lock-screen input {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .lock-screen button {
             background-color: #007bff;
             color: white;
             font-size: 16px;
             border: none;
             padding: 10px 15px;
-            margin-top: 10px;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
         }
 
-        button:hover {
-            transform: scale(1.1);
-        }
-
-        select, input[type="file"] {
-            width: 100%;
-            padding: 10px;
+        .error-message {
+            color: red;
             margin-top: 10px;
-            border-radius: 10px;
-            background-color: black;
-            color: white;
-            border: 2px solid yellow;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <img src="logo.png" alt="شعار التطبيق">
-        </div>
-        <div class="language-selector">
-            <span>اللغة: العربية</span>
-        </div>
+    <div class="lock-screen" id="lockScreen">
+        <h2>أدخل المفتاح لفتح التطبيق</h2>
+        <input type="password" id="appKey" placeholder="أدخل المفتاح">
+        <button onclick="unlockApp()">دخول</button>
+        <p class="error-message" id="errorMessage" style="display:none;">المفتاح خاطئ!</p>
     </div>
 
     <div class="container">
@@ -148,22 +76,6 @@
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
             <button onclick="playVoice()">تشغيل الصوت</button>
             <button onclick="stopVoice()">إيقاف الصوت</button>
-        </div>
-
-        <!-- نافذة التسجيل الصوتي -->
-        <div class="window">
-            <h2>تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
-            <audio id="audioPlayer" controls style="display:none;"></audio>
-        </div>
-
-        <!-- نافذة تحميل الملف النصي -->
-        <div class="window">
-            <h2>تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
 
         <!-- نافذة تغيير لغة القارئ -->
@@ -183,121 +95,27 @@
                 <option value="female">أنثى</option>
             </select>
         </div>
-
-        <!-- نافذة التحكم في سرعة الصوت -->
-        <div class="window">
-            <h2>تسريع/تبطيء الصوت</h2>
-            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
-            <span id="speedLabel">1x</span>
-        </div>
-
-        <!-- نافذة تغيير لغة واجهة التطبيق -->
-        <div class="window">
-            <h2>اختيار لغة واجهة التطبيق</h2>
-            <select id="interfaceLanguage">
-                <option value="ar">عربي</option>
-                <option value="en">إنجليزي</option>
-            </select>
-        </div>
-
     </div>
 
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
-    
     <script>
-        let currentVoice = "ar";
-        let currentGender = "male";
-        let currentSpeed = 1;
-        let recorder;
-        let audioBlob;
-        let audioUrl;
-        let audioPlayer = document.getElementById("audioPlayer");
+        function unlockApp() {
+            const key = document.getElementById("appKey").value;
+            if (key === "123") {
+                document.getElementById("lockScreen").style.display = "none";
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+            }
+        }
 
         function playVoice() {
             const text = document.getElementById("textInput").value;
-            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
+            responsiveVoice.speak(text, "Arabic Male");
         }
 
         function stopVoice() {
             responsiveVoice.cancel();
         }
-
-        function startRecording() {
-            console.log("بدء التسجيل");
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(function(stream) {
-                    recorder = new MediaRecorder(stream);
-                    recorder.ondataavailable = function(event) {
-                        audioBlob = event.data;
-                        audioUrl = URL.createObjectURL(audioBlob);
-                        audioPlayer.src = audioUrl;
-                        audioPlayer.style.display = 'block';
-                    };
-                    recorder.start();
-                })
-                .catch(function(err) {
-                    console.log("خطأ في الحصول على إذن التسجيل:", err);
-                });
-        }
-
-        function stopRecording() {
-            if (recorder) {
-                recorder.stop();
-            }
-            console.log("إيقاف التسجيل");
-        }
-
-        function downloadRecordedAudio() {
-            if (audioBlob) {
-                const link = document.createElement('a');
-                link.href = audioUrl;
-                link.download = 'recorded-audio.wav';
-                link.click();
-            } else {
-                alert("لا يوجد صوت مسجل لتحميله.");
-            }
-        }
-
-        function convertFileToVoice() {
-            const fileInput = document.getElementById("textFileInput");
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
-                };
-                reader.readAsText(file);
-            }
-        }
-
-        // تغيير لغة القارئ
-        document.getElementById("voiceSelect").addEventListener("change", function() {
-            currentVoice = this.value;
-            responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
-        });
-
-        // تغيير جنس القارئ
-        document.getElementById("genderSelect").addEventListener("change", function() {
-            currentGender = this.value;
-        });
-
-        // التحكم في سرعة الصوت
-        function adjustSpeed() {
-            const speed = document.getElementById("speedControl").value;
-            currentSpeed = speed;
-            document.getElementById("speedLabel").textContent = `${speed}x`;
-        }
-
-        // تغيير لغة واجهة التطبيق
-        document.getElementById("interfaceLanguage").addEventListener("change", function() {
-            const selectedLanguage = this.value;
-            if (selectedLanguage === "ar") {
-                document.documentElement.lang = "ar";
-            } else {
-                document.documentElement.lang = "en";
-            }
-        });
     </script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
 </body>
 </html>
