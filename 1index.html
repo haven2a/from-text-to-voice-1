@@ -121,30 +121,11 @@
             border: 1px solid yellow;
         }
 
-        /* نافذة كلمة المرور */
-        .password-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background-color: #444;
-            border-radius: 10px;
-            display: none;
-        }
-
     </style>
 </head>
 <body>
-    <!-- نافذة كلمة المرور -->
-    <div class="password-container" id="passwordContainer">
-        <h2>أدخل كلمة المرور</h2>
-        <input type="password" id="passwordInput" placeholder="أدخل الكود" />
-        <button onclick="checkPassword()">تأكيد</button>
-    </div>
-
     <!-- المحتوى الأساسي للتطبيق -->
-    <div class="header" id="appHeader" style="display: none;">
+    <div class="header" id="appHeader" style="display: flex;">
         <div class="logo">
             <img src="logo.png" alt="شعار التطبيق">
         </div>
@@ -153,7 +134,7 @@
         </div>
     </div>
 
-    <div class="container" id="appContainer" style="display: none;">
+    <div class="container" id="appContainer">
         <h1>تحويل النص إلى صوت</h1>
         
         <div class="window">
@@ -193,23 +174,6 @@
     </div>
 
     <script>
-        const correctPassword = '123';
-
-        // التحقق من كلمة المرور
-        function checkPassword() {
-            const enteredPassword = document.getElementById("passwordInput").value;
-
-            if (enteredPassword === correctPassword) {
-                // إخفاء نافذة كلمة المرور
-                document.getElementById("passwordContainer").style.display = 'none';
-                // إظهار التطبيق
-                document.getElementById("appHeader").style.display = 'flex';
-                document.getElementById("appContainer").style.display = 'block';
-            } else {
-                alert('كلمة المرور غير صحيحة');
-            }
-        }
-
         // تشغيل الصوت من النص
         function playVoice() {
             const text = document.getElementById("textInput").value;
@@ -260,11 +224,6 @@
         // إيقاف التسجيل
         function stopRecording() {
             console.log("إيقاف التسجيل");
-        }
-
-        // إظهار نافذة كلمة المرور عند فتح التطبيق
-        window.onload = function() {
-            document.getElementById("passwordContainer").style.display = 'block';
         }
     </script>
 </body>
