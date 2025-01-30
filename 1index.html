@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل النص إلى صوت</title>
+    <title>Text to Speech Converter</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
@@ -128,58 +128,48 @@
             margin-top: 10px;
         }
 
-        .code-container {
-            margin-top: 20px;
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">
-            <img src="logo.png" alt="شعار التطبيق">
+            <img src="logo.png" alt="App Logo">
         </div>
         <div class="language-selector">
-            <span>اللغة: العربية</span>
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="ar">عربي</option>
+                <option value="en">English</option>
+            </select>
         </div>
     </div>
 
-    <!-- حقل إدخال الكود -->
-    <div class="code-container">
-        <h2>أدخل الكود لعرض المحتوى:</h2>
-        <input type="text" id="codeInput" placeholder="أدخل الكود" />
-        <button onclick="checkCode()">إدخال</button>
-    </div>
-
-    <!-- المحتوى الذي سيظهر بعد إدخال الكود -->
-    <div class="container" id="contentContainer" style="display:none;">
-        <h1>تحويل النص إلى صوت</h1>
+    <div class="container" id="contentContainer">
+        <!-- Language-Specific Content Will Be Updated Dynamically -->
+        <h1 id="title">تحويل النص إلى صوت</h1>
         
         <div class="window">
-            <h2>أدخل النص هنا</h2>
+            <h2 id="textInputTitle">أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()">تشغيل الصوت</button>
-            <button onclick="stopVoice()">إيقاف الصوت</button>
+            <button onclick="playVoice()" id="playBtn">تشغيل الصوت</button>
+            <button onclick="stopVoice()" id="stopBtn">إيقاف الصوت</button>
         </div>
 
         <div class="window">
-            <h2>تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+            <h2 id="recordingTitle">تسجيل الصوت</h2>
+            <button onclick="startRecording()" id="startRecordingBtn">بدء التسجيل</button>
+            <button onclick="stopRecording()" id="stopRecordingBtn">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()" id="downloadRecordingBtn">تحميل الصوت المسجل</button>
             <audio id="audioPlayer" controls style="display:none;"></audio>
         </div>
 
         <div class="window">
-            <h2>تحميل ملف نصي</h2>
+            <h2 id="uploadFileTitle">تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+            <button onclick="convertFileToVoice()" id="convertFileBtn">تحويل إلى صوت</button>
         </div>
 
         <div class="window">
-            <h2>اختيار لغة القارئ</h2>
+            <h2 id="chooseVoiceTitle">اختيار لغة القارئ</h2>
             <select id="voiceSelect">
                 <option value="ar">عربي</option>
                 <option value="en">إنجليزي</option>
@@ -187,7 +177,7 @@
         </div>
 
         <div class="window">
-            <h2>اختيار جنس القارئ</h2>
+            <h2 id="chooseGenderTitle">اختيار جنس القارئ</h2>
             <select id="genderSelect">
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
@@ -195,7 +185,7 @@
         </div>
 
         <div class="window">
-            <h2>تسريع/تبطيء الصوت</h2>
+            <h2 id="speedControlTitle">تسريع/تبطيء الصوت</h2>
             <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
             <span id="speedLabel">1x</span>
         </div>
@@ -211,16 +201,6 @@
         let audioBlob;
         let audioUrl;
         let audioPlayer = document.getElementById("audioPlayer");
-
-        function checkCode() {
-            const codeInput = document.getElementById("codeInput").value;
-            if (codeInput === "2502") {
-                document.getElementById("contentContainer").style.display = "block";
-                document.querySelector(".code-container").style.display = "none";
-            } else {
-                alert("الكود غير صحيح. يرجى المحاولة مرة أخرى.");
-            }
-        }
 
         function playVoice() {
             const text = document.getElementById("textInput").value;
@@ -293,6 +273,41 @@
             const speed = document.getElementById("speedControl").value;
             currentSpeed = speed;
             document.getElementById("speedLabel").textContent = `${speed}x`;
+        }
+
+        // Function to change language dynamically
+        function changeLanguage() {
+            const language = document.getElementById("languageSelect").value;
+
+            if (language === "ar") {
+                document.getElementById("title").textContent = "تحويل النص إلى صوت";
+                document.getElementById("textInputTitle").textContent = "أدخل النص هنا";
+                document.getElementById("playBtn").textContent = "تشغيل الصوت";
+                document.getElementById("stopBtn").textContent = "إيقاف الصوت";
+                document.getElementById("recordingTitle").textContent = "تسجيل الصوت";
+                document.getElementById("startRecordingBtn").textContent = "بدء التسجيل";
+                document.getElementById("stopRecordingBtn").textContent = "إيقاف التسجيل";
+                document.getElementById("downloadRecordingBtn").textContent = "تحميل الصوت المسجل";
+                document.getElementById("uploadFileTitle").textContent = "تحميل ملف نصي";
+                document.getElementById("convertFileBtn").textContent = "تحويل إلى صوت";
+                document.getElementById("chooseVoiceTitle").textContent = "اختيار لغة القارئ";
+                document.getElementById("chooseGenderTitle").textContent = "اختيار جنس القارئ";
+                document.getElementById("speedControlTitle").textContent = "تسريع/تبطيء الصوت";
+            } else {
+                document.getElementById("title").textContent = "Text to Speech Converter";
+                document.getElementById("textInputTitle").textContent = "Enter Text Here";
+                document.getElementById("playBtn").textContent = "Play Voice";
+                document.getElementById("stopBtn").textContent = "Stop Voice";
+                document.getElementById("recordingTitle").textContent = "Recording Audio";
+                document.getElementById("startRecordingBtn").textContent = "Start Recording";
+                document.getElementById("stopRecordingBtn").textContent = "Stop Recording";
+                document.getElementById("downloadRecordingBtn").textContent = "Download Recorded Audio";
+                document.getElementById("uploadFileTitle").textContent = "Upload Text File";
+                document.getElementById("convertFileBtn").textContent = "Convert to Speech";
+                document.getElementById("chooseVoiceTitle").textContent = "Choose Reader's Language";
+                document.getElementById("chooseGenderTitle").textContent = "Choose Reader's Gender";
+                document.getElementById("speedControlTitle").textContent = "Adjust Speed";
+            }
         }
     </script>
 </body>
