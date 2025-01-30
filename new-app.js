@@ -14,8 +14,6 @@ app.use(cors());
 
 // إعداد المسارات الثابتة
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'support')));
-app.use(express.static(path.join(__dirname, 'public', 'audio')));
 
 // ملف المستخدمين
 const usersFile = path.join(__dirname, 'users.json');
@@ -88,7 +86,7 @@ app.post('/api/subscribe', (req, res) => {
                     from: 'hacenatek9@gmail.com', // البريد الإلكتروني
                     to: email,  // البريد الإلكتروني للمستقبل
                     subject: 'تسجيل جديد',
-                    text: `مرحباً ${name}!\nتم تسجيلك بنجاح في تطبيقنا.\n\nتفاصيل التسجيل:\nالبريد الإلكتروني: ${email}\nكلمة المرور: ${password}\n\nمبروك على انضمامك!`
+                    text: `مرحباً ${name}!\nتم تسجيلك بنجاح في تطبيقنا.\n\nتفاصيل التسجيل:\nالبريد الإلكتروني: ${email}\n\nمبروك على انضمامك!`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
