@@ -99,7 +99,7 @@
 
         <h2>تسجيل جديد</h2>
         
-        <form id="registerForm">
+        <form id="registerForm" onsubmit="registerUser(event)">
             <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
             <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
             
@@ -113,7 +113,7 @@
                 <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
             </div>
 
-            <button id="registerButton" disabled onclick="subscribe()">تسجيل</button>
+            <button id="registerButton" disabled type="submit">تسجيل</button>
         </form>
     </div>
 
