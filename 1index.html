@@ -127,6 +127,13 @@
             width: 100%;
             margin-top: 10px;
         }
+
+        .code-container {
+            margin-top: 20px;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -139,10 +146,17 @@
         </div>
     </div>
 
-    <div class="container">
+    <!-- حقل إدخال الكود -->
+    <div class="code-container">
+        <h2>أدخل الكود لعرض المحتوى:</h2>
+        <input type="text" id="codeInput" placeholder="أدخل الكود" />
+        <button onclick="checkCode()">إدخال</button>
+    </div>
+
+    <!-- المحتوى الذي سيظهر بعد إدخال الكود -->
+    <div class="container" id="contentContainer" style="display:none;">
         <h1>تحويل النص إلى صوت</h1>
         
-        <!-- نافذة النص -->
         <div class="window">
             <h2>أدخل النص هنا</h2>
             <textarea id="textInput" placeholder="أدخل النص"></textarea>
@@ -150,7 +164,6 @@
             <button onclick="stopVoice()">إيقاف الصوت</button>
         </div>
 
-        <!-- نافذة التسجيل الصوتي -->
         <div class="window">
             <h2>تسجيل الصوت</h2>
             <button onclick="startRecording()">بدء التسجيل</button>
@@ -159,14 +172,12 @@
             <audio id="audioPlayer" controls style="display:none;"></audio>
         </div>
 
-        <!-- نافذة تحميل الملف النصي -->
         <div class="window">
             <h2>تحميل ملف نصي</h2>
             <input type="file" id="textFileInput" accept=".txt">
             <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
         </div>
 
-        <!-- نافذة تغيير لغة القارئ -->
         <div class="window">
             <h2>اختيار لغة القارئ</h2>
             <select id="voiceSelect">
@@ -175,7 +186,6 @@
             </select>
         </div>
 
-        <!-- نافذة تغيير جنس القارئ -->
         <div class="window">
             <h2>اختيار جنس القارئ</h2>
             <select id="genderSelect">
@@ -184,13 +194,11 @@
             </select>
         </div>
 
-        <!-- نافذة التحكم في سرعة الصوت -->
         <div class="window">
             <h2>تسريع/تبطيء الصوت</h2>
             <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
             <span id="speedLabel">1x</span>
         </div>
-
     </div>
 
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
@@ -203,6 +211,16 @@
         let audioBlob;
         let audioUrl;
         let audioPlayer = document.getElementById("audioPlayer");
+
+        function checkCode() {
+            const codeInput = document.getElementById("codeInput").value;
+            if (codeInput === "2502") {
+                document.getElementById("contentContainer").style.display = "block";
+                document.querySelector(".code-container").style.display = "none";
+            } else {
+                alert("الكود غير صحيح. يرجى المحاولة مرة أخرى.");
+            }
+        }
 
         function playVoice() {
             const text = document.getElementById("textInput").value;
@@ -262,18 +280,15 @@
             }
         }
 
-        // تغيير لغة القارئ
         document.getElementById("voiceSelect").addEventListener("change", function() {
             currentVoice = this.value;
             responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
         });
 
-        // تغيير جنس القارئ
         document.getElementById("genderSelect").addEventListener("change", function() {
             currentGender = this.value;
         });
 
-        // التحكم في سرعة الصوت
         function adjustSpeed() {
             const speed = document.getElementById("speedControl").value;
             currentSpeed = speed;
