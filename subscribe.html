@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدعم الفني</title>
+    <title>التسجيل في التطبيق</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -108,16 +108,89 @@
             color: #5bc0de;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .links {
+            text-align: center;
+            margin-top: 20px;
         }
+
+        .links a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 1em;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        /* نافذة منبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            overflow: auto;
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            text-align: right;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .modal-body {
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .accept-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+        }
+
+        .accept-btn:hover {
+            background-color: #45a049;
+        }
+
     </style>
 </head>
 <body>
@@ -126,34 +199,79 @@
     <img src="logo.png" alt="Logo" id="logo">
 
     <div class="container">
-        <h1>الدعم الفني</h1>
-        <p>إذا كانت لديك أي استفسارات أو تحتاج إلى مساعدة، يمكنك إرسال استفسارك عبر النموذج أدناه:</p>
+        <h1>التسجيل في التطبيق</h1>
+        <p>إذا كنت ترغب في استخدام التطبيق، يرجى تعبئة النموذج أدناه للتسجيل:</p>
 
         <!-- رسالة إشعار -->
         <div id="alertMessage" class="alert"></div>
 
-        <form id="supportForm" action="/send-support-query" method="POST">
-            <label for="name">اسمك:</label>
+        <!-- نموذج التسجيل -->
+        <form id="registerForm" method="POST" action="/api/subscribe">
+            <label for="name">الاسم:</label>
             <input type="text" id="name" name="name" placeholder="أدخل اسمك" required>
 
             <label for="email">البريد الإلكتروني:</label>
             <input type="email" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" required>
 
-            <label for="message">رسالتك:</label>
-            <textarea id="message" name="message" rows="5" placeholder="اكتب استفسارك هنا" required></textarea>
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" name="password" placeholder="أدخل كلمة المرور" required>
 
-            <button type="submit">إرسال</button>
+            <button type="button" id="openModalBtn">تسجيل</button>
         </form>
+
+        <!-- روابط سياسة الخصوصية والشروط -->
+        <div class="links">
+            <p>
+                <a href="privacy-policy.html">سياسة الخصوصية</a> | 
+                <a href="terms.html">الشروط والأحكام</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة للموافقة على الشروط -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <p>الشروط والأحكام وسياسة الخصوصية</p>
+            </div>
+            <div class="modal-body">
+                <p>من فضلك اقرأ وتقبل سياسة الخصوصية والشروط والأحكام قبل التسجيل.</p>
+            </div>
+            <button class="accept-btn" id="acceptBtn">موافق</button>
+        </div>
     </div>
 
     <script>
-        document.getElementById('supportForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        // فتح النافذة المنبثقة
+        var modal = document.getElementById("termsModal");
+        var btn = document.getElementById("openModalBtn");
+        var span = document.getElementsByClassName("close")[0];
+        var acceptBtn = document.getElementById("acceptBtn");
 
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            const alertMessage = document.getElementById('alertMessage');
+        // عند النقر على زر التسجيل، فتح النافذة
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
 
-            alertMessage.innerHTML = "";
+        // عند النقر على إغلاق النافذة
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
 
-            const emailRegex = /^[a
+        // عند قبول الشروط
+        acceptBtn.onclick = function() {
+            modal.style.display = "none";
+            document.getElementById("registerForm").submit();
+        }
+
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
