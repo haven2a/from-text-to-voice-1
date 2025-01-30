@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,15 @@ if (!fs.existsSync(usersFile)) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// إعداد إعدادات البريد الإلكتروني باستخدام تفاصيل حسابك
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'hacenatek9@gmail.com', // البريد الإلكتروني
+        pass: 'hmhi fvrk nghr gdxd'  // كلمة المرور
+    }
+});
+
 // تسجيل المستخدمين الجدد
 app.post('/api/subscribe', (req, res) => {
     const { name, email, password } = req.body;
@@ -41,7 +51,6 @@ app.post('/api/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ البريد الإلكتروني غير صحيح.' });
     }
 
-    // قراءة المستخدمين الحاليين
     fs.readFile(usersFile, (err, data) => {
         if (err) {
             console.error('❌ خطأ في قراءة ملف المستخدمين:', err.message);
@@ -49,19 +58,17 @@ app.post('/api/subscribe', (req, res) => {
         }
 
         let users = JSON.parse(data);
-        
+
         // التحقق مما إذا كان البريد الإلكتروني مسجلاً مسبقًا
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
-        // تشفير كلمة المرور
         bcrypt.hash(password, 10, (err, hashedPassword) => {
             if (err) {
                 return res.status(500).json({ message: '❌ خطأ أثناء تشفير كلمة المرور.' });
             }
 
-            // إضافة المستخدم الجديد
             const newUser = { 
                 name, 
                 email, 
@@ -70,12 +77,28 @@ app.post('/api/subscribe', (req, res) => {
             };
             users.push(newUser);
 
-            // حفظ المستخدم الجديد في users.json
             fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
                 if (err) {
                     console.error('❌ خطأ أثناء حفظ المستخدم:', err.message);
                     return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
                 }
+
+                // إرسال بريد إلكتروني للمستخدم
+                const mailOptions = {
+                    from: 'hacenatek9@gmail.com', // البريد الإلكتروني
+                    to: email,  // البريد الإلكتروني للمستقبل
+                    subject: 'تسجيل جديد',
+                    text: `مرحباً ${name}!\nتم تسجيلك بنجاح في تطبيقنا.\n\nتفاصيل التسجيل:\nالبريد الإلكتروني: ${email}\nكلمة المرور: ${password}\n\nمبروك على انضمامك!`
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('❌ خطأ في إرسال البريد الإلكتروني:', error);
+                    } else {
+                        console.log('✅ تم إرسال البريد الإلكتروني بنجاح: ' + info.response);
+                    }
+                });
+
                 res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
             });
         });
