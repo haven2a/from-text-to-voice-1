@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // تسجيل المستخدمين الجدد
-app.post('/subscribe', (req, res) => {
+app.post('/api/subscribe', (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
