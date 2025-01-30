@@ -3,272 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التسجيل في التطبيق</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>تسجيل جديد</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
+
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
             margin: 0;
-            padding: 20px;
-            direction: rtl;
+            font-family: 'Cairo', sans-serif;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            background: #fff;
-            padding: 20px;
+        .register-box {
+            background: white;
+            padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border: 3px solid #4CAF50;
-            position: relative;
-        }
-
-        h1 {
-            color: #4CAF50;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             text-align: center;
+            width: 400px;
+            border: 5px solid #007bff;
         }
 
-        p {
-            font-size: 1.2em;
-            color: #555;
-            line-height: 1.8;
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        form {
-            text-align: right;
-        }
-
-        label {
-            display: block;
-            margin: 12px 0 5px;
-            font-size: 1.1em;
+        .register-box h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
             color: #333;
         }
 
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0 18px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-
-        input:focus, textarea:focus {
-            border-color: #4CAF50;
+        .register-box input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
             outline: none;
         }
 
-        button {
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-container input {
             width: 100%;
-            padding: 14px;
-            font-size: 1.2em;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
         }
 
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.03);
-        }
-
-        #logo {
-            width: 100px;
-            display: block;
-            margin: 0 auto 20px;
-        }
-
-        .alert {
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 20px;
-            font-size: 1em;
-        }
-
-        .message {
-            color: #d9534f;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-
-        .success {
-            color: #5bc0de;
-        }
-
-        .links {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .links a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 1em;
-            margin: 0 10px;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-
-        /* نافذة منبثقة */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            overflow: auto;
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 10px;
-            text-align: right;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
+        .password-container span {
             position: absolute;
-            top: 10px;
-            right: 25px;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+            right: 10px;
             cursor: pointer;
+            font-size: 18px;
+            color: #007bff;
         }
 
-        .modal-header {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #4CAF50;
+        .terms {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
         }
 
-        .modal-body {
-            font-size: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+        .terms input {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
         }
 
-        .accept-btn {
-            background-color: #4CAF50;
+        .register-box button {
+            background: #007bff;
             color: white;
             padding: 12px;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
             width: 100%;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
         }
 
-        .accept-btn:hover {
-            background-color: #45a049;
+        .register-box button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
         }
 
+        .register-box button:hover:not(:disabled) {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
+ <!-- Header (اللوغو) -->
+    <header>
+        <img src="logo.png" alt="Logo" id="logo">
+    </header>
 
-    <!-- الشعار -->
-    <img src="logo.png" alt="Logo" id="logo">
-
-    <div class="container">
-        <h1>التسجيل في التطبيق</h1>
-        <p>إذا كنت ترغب في استخدام التطبيق، يرجى تعبئة النموذج أدناه للتسجيل:</p>
-
-        <!-- رسالة إشعار -->
-        <div id="alertMessage" class="alert"></div>
-
-        <!-- نموذج التسجيل -->
-        <form id="registerForm" method="POST" action="/api/subscribe">
-            <label for="name">الاسم:</label>
-            <input type="text" id="name" name="name" placeholder="أدخل اسمك" required>
-
-            <label for="email">البريد الإلكتروني:</label>
-            <input type="email" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" required>
-
-            <label for="password">كلمة المرور:</label>
-            <input type="password" id="password" name="password" placeholder="أدخل كلمة المرور" required>
-
-            <button type="button" id="openModalBtn">تسجيل</button>
-        </form>
-
-        <!-- روابط سياسة الخصوصية والشروط -->
-        <div class="links">
-            <p>
-                <a href="privacy-policy.html">سياسة الخصوصية</a> | 
-                <a href="terms.html">الشروط والأحكام</a>
-            </p>
+    <div class="register-box">
+        <h2>تسجيل جديد</h2>
+        <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
+        <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
+        
+        <div class="password-container">
+            <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
+            <span onclick="togglePassword()">👁️</span>
         </div>
-    </div>
 
-    <!-- نافذة منبثقة للموافقة على الشروط -->
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="modal-header">
-                <p>الشروط والأحكام وسياسة الخصوصية</p>
-            </div>
-            <div class="modal-body">
-                <p>من فضلك اقرأ وتقبل سياسة الخصوصية والشروط والأحكام قبل التسجيل.</p>
-            </div>
-            <button class="accept-btn" id="acceptBtn">موافق</button>
+        <div class="terms">
+            <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
+            <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
         </div>
+
+        <button id="registerButton" disabled onclick="registerUser()">تسجيل</button>
     </div>
 
     <script>
-        // فتح النافذة المنبثقة
-        var modal = document.getElementById("termsModal");
-        var btn = document.getElementById("openModalBtn");
-        var span = document.getElementsByClassName("close")[0];
-        var acceptBtn = document.getElementById("acceptBtn");
-
-        // عند النقر على زر التسجيل، فتح النافذة
-        btn.onclick = function() {
-            modal.style.display = "block";
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
         }
 
-        // عند النقر على إغلاق النافذة
-        span.onclick = function() {
-            modal.style.display = "none";
+        function toggleRegisterButton() {
+            var checkbox = document.getElementById("termsCheckbox");
+            var button = document.getElementById("registerButton");
+            button.disabled = !checkbox.checked;
         }
 
-        // عند قبول الشروط
-        acceptBtn.onclick = function() {
-            modal.style.display = "none";
-            document.getElementById("registerForm").submit();
-        }
+        async function registerUser() {
+            const username = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-        // إغلاق النافذة عند النقر خارجها
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (!username || !email || !password) {
+                alert('الرجاء ملء جميع الحقول!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
+                    // توجيه المستخدم إلى صفحة "تم التسجيل بنجاح"
+                    window.location.href = '/activate-info.html'; // هذه الصفحة هي التي تشرح للمستخدم أنه يجب التحقق من بريده الإلكتروني
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('خطأ أثناء محاولة التسجيل:', error);
+                alert('حدث خطأ، يرجى المحاولة لاحقًا.');
             }
         }
     </script>
