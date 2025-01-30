@@ -130,7 +130,7 @@
             }
 
             try {
-                const response = await fetch('/subscribe', {
+                const response = await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: username, email, password })
