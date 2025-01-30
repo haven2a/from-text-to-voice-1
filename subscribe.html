@@ -86,25 +86,35 @@
         .register-box button:hover:not(:disabled) {
             background: #0056b3;
         }
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="register-box">
-        <h2>تسجيل جديد</h2>
-        <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
-        <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
-        
-        <div class="password-container">
-            <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
-            <span onclick="togglePassword()">👁️</span>
-        </div>
-        
-        <div class="terms">
-            <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
-            <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
-        </div>
+        <!-- الشعار -->
+        <img src="logo.png" alt="Logo" class="logo">
 
-        <button id="registerButton" disabled onclick="registerUser()">تسجيل</button>
+        <h2>تسجيل جديد</h2>
+        
+        <form id="registerForm">
+            <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
+            <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
+            
+            <div class="password-container">
+                <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
+                <span onclick="togglePassword()">👁️</span>
+            </div>
+            
+            <div class="terms">
+                <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
+                <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
+            </div>
+
+            <button id="registerButton" disabled onclick="subscribe()">تسجيل</button>
+        </form>
     </div>
 
     <script>
@@ -119,7 +129,9 @@
             button.disabled = !checkbox.checked;
         }
 
-        async function registerUser() {
+        async function registerUser(event) {
+            event.preventDefault();  // Prevent the default form submission
+
             const username = document.getElementById("name").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
