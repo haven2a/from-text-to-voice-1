@@ -142,7 +142,7 @@
             }
 
             try {
-                const response = await fetch('/api/subscribe.html', {
+                const response = await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: username, email, password })
@@ -152,7 +152,7 @@
 
                 if (response.ok) {
                     alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتأكد من التفعيل.');
-                    window.location.href = '/activate-info.html';
+                    window.location.href = '/activation-info.html';
                 } else {
                     alert(result.message);
                 }
