@@ -7,19 +7,25 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const usersFilePath = path.join(__dirname, 'users.json');
 
 // السماح بالطلبات من أي مكان (Vercel)
 app.use(cors());
 
-// إعداد JSON Middleware
+// إعداد المسارات الثابتة
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'support')));
+app.use(express.static(path.join(__dirname, 'public', 'audio')));
+
+// ملف المستخدمين
+const usersFile = path.join(__dirname, 'users.json');
+
+// التأكد من وجود ملف users.json
+if (!fs.existsSync(usersFile)) {
+    fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-// التأكد من وجود ملف المستخدمين
-if (!fs.existsSync(usersFilePath)) {
-    fs.writeFileSync(usersFilePath, '[]', 'utf8');
-}
 
 // تسجيل المستخدمين الجدد
 app.post('/subscribe', (req, res) => {
@@ -29,34 +35,39 @@ app.post('/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
 
-    fs.readFile(usersFilePath, 'utf8', (err, data) => {
+    // قراءة المستخدمين الحاليين
+    fs.readFile(usersFile, (err, data) => {
         if (err) {
             console.error('❌ خطأ في قراءة ملف المستخدمين:', err.message);
-            return res.status(500).json({ message: '❌ خطأ في الخادم. الرجاء المحاولة لاحقًا.' });
+            return res.status(500).json({ message: '❌ خطأ في الخادم.' });
         }
 
-        let users = data ? JSON.parse(data) : [];
-
-        if (users.find(user => user.email === email)) {
+        let users = JSON.parse(data);
+        
+        // التحقق مما إذا كان البريد الإلكتروني مسجلاً مسبقًا
+        if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
+        // تشفير كلمة المرور
         const hashedPassword = bcrypt.hashSync(password, 10);
-        const newUser = { username: name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
+        
+        // إضافة المستخدم الجديد
+        const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
         users.push(newUser);
 
-        fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
+        // حفظ المستخدم الجديد في users.json
+        fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
             if (err) {
-                console.error('❌ خطأ أثناء حفظ البيانات:', err.message);
-                return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل. الرجاء المحاولة لاحقًا.' });
+                console.error('❌ خطأ أثناء حفظ المستخدم:', err.message);
+                return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
             }
-
             res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
         });
     });
 });
 
-// تشغيل السيرفر على Vercel
+// تشغيل السيرفر
 app.listen(PORT, () => {
-    console.log(`🚀 السيرفر يعمل على http://localhost:${PORT} أو على Vercel`);
+    console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
 });
