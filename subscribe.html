@@ -99,7 +99,7 @@
 
         <h2>تسجيل جديد</h2>
         
-        <form id="registerForm">
+        <form id="registerForm" onsubmit="registerUser(event)">
             <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
             <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
             
@@ -113,7 +113,7 @@
                 <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
             </div>
 
-            <button id="registerButton" disabled onclick="subscribe(event)">تسجيل</button>
+            <button id="registerButton" disabled>تسجيل</button>
         </form>
     </div>
 
@@ -129,7 +129,7 @@
             button.disabled = !checkbox.checked;
         }
 
-        async function subscribe(event) {
+        async function registerUser(event) {
             event.preventDefault();  // Prevent the default form submission
 
             const username = document.getElementById("name").value;
@@ -148,18 +148,7 @@
                     body: JSON.stringify({ name: username, email, password })
                 });
 
-                // طباعة الاستجابة للنظر في محتواها
-                const text = await response.text(); // قراءة النص بدل JSON
-                console.log('Response text:', text);
-
-                // إذا كانت الاستجابة لا تحتوي على JSON، التعامل مع الخطأ
-                if (!response.ok) {
-                    alert('حدث خطأ: ' + text);
-                    return;
-                }
-
-                // محاولة تحويل النص إلى JSON فقط إذا كان هناك استجابة صحيحة
-                const result = JSON.parse(text);
+                const result = await response.json();
 
                 if (response.ok) {
                     alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتأكد من التفعيل.');
