@@ -10,31 +10,16 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// السماح بالطلبات من أي مكان (Vercel)
+// السماح بالطلبات من أي مكان (Vercel أو أي بيئة أخرى)
 app.use(cors());
 
 // إعداد المسارات الثابتة
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'support')));
-app.use(express.static(path.join(__dirname, 'public', 'audio')));
 
-// إعداد قاعدة البيانات
-const dbPath = path.join(__dirname, 'support_messages.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('❌ خطأ في إنشاء قاعدة البيانات:', err.message);
-    } else {
-        console.log('✅ قاعدة البيانات جاهزة');
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )`);
-    }
-});
+// إعداد المسارات للملفات التي نحتاجها (مثل users.json)
+const usersFilePath = path.join(__dirname, 'users.json');
 
+// إعداد `body-parser`
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -46,27 +31,50 @@ app.post('/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
 
-    db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
+    // قراءة البيانات من users.json
+    fs.readFile(usersFilePath, 'utf8', (err, data) => {
         if (err) {
-            console.error('❌ خطأ أثناء التحقق من المستخدم:', err.message);
+            console.error('❌ خطأ في قراءة ملف المستخدمين:', err.message);
             return res.status(500).json({ message: '❌ خطأ في الخادم.' });
         }
-        if (row) {
+
+        // تحويل البيانات من JSON إلى كائن JavaScript
+        let users = [];
+        if (data) {
+            users = JSON.parse(data);
+        }
+
+        // التحقق إذا كان البريد الإلكتروني موجوداً مسبقاً
+        const userExists = users.find(user => user.email === email);
+        if (userExists) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
+        // تشفير كلمة المرور
         const hashedPassword = bcrypt.hashSync(password, 10);
-        db.run("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hashedPassword], function(err) {
+
+        // إضافة المستخدم الجديد
+        const newUser = {
+            username: name,
+            email: email,
+            password: hashedPassword,
+            registeredAt: new Date().toISOString()
+        };
+        users.push(newUser);
+
+        // كتابة البيانات الجديدة إلى users.json
+        fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
             if (err) {
-                console.error('❌ خطأ أثناء التسجيل:', err.message);
+                console.error('❌ خطأ في كتابة بيانات المستخدمين:', err.message);
                 return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
             }
+
             res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
         });
     });
 });
 
-// تشغيل السيرفر على Replit
+// تشغيل السيرفر على Vercel أو الخادم المحلي
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 السيرفر يعمل على http://localhost:${PORT} أو على Replit`);
+    console.log(`🚀 السيرفر يعمل على http://localhost:${PORT}`);
 });
