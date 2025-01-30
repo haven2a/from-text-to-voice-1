@@ -147,7 +147,7 @@
             }
 
             try {
-                const response = await fetch('/subscribe', {
+                const response = await fetch("http://localhost:3000/subscribe", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password })
@@ -157,8 +157,7 @@
 
                 if (response.ok) {
                     alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
-                    // توجيه المستخدم إلى صفحة "تم التسجيل بنجاح"
-                    window.location.href = '/activation-info.html'; // هذه الصفحة هي التي تشرح للمستخدم أنه يجب التحقق من بريده الإلكتروني
+                    window.location.href = '/activation-info.html'; // صفحة تفعيل التسجيل
                 } else {
                     alert(result.message);
                 }
