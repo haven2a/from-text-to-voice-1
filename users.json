@@ -1,8 +1,8 @@
 [
   {
-    "name": "hacen",
+    "username": "hacen",
     "email": "abouhoussem41a@gmail.com",
-    "password": "$2b$10$z6sftXJwgyg9p3pWnFZcQek1mSOrGp.KUw6cQXbx7RLgHlkOIj5iS",  // كلمة مرور مشفرة
+    "password": "$2b$10$z6sftXJwgyg9p3pWnFZcQek1mSOrGp.KUw6cQXbx7RLgHlkOIj5iS",
     "registeredAt": "2025-01-24T16:16:14.459Z"
   }
 ]
