@@ -147,7 +147,7 @@
             }
 
             try {
-                const response = await fetch("http://localhost:3000/subscribe", {
+                const response = await fetch("https://your-project-name.vercel.app/subscribe", { // هنا ضع الرابط الخاص بمشروعك على Vercel
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password })
