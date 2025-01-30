@@ -35,6 +35,12 @@ app.post('/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
 
+    // التحقق من صحة البريد الإلكتروني
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: '⚠️ البريد الإلكتروني غير صحيح.' });
+    }
+
     // قراءة المستخدمين الحاليين
     fs.readFile(usersFile, (err, data) => {
         if (err) {
@@ -50,19 +56,28 @@ app.post('/subscribe', (req, res) => {
         }
 
         // تشفير كلمة المرور
-        const hashedPassword = bcrypt.hashSync(password, 10);
-        
-        // إضافة المستخدم الجديد
-        const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
-        users.push(newUser);
-
-        // حفظ المستخدم الجديد في users.json
-        fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
             if (err) {
-                console.error('❌ خطأ أثناء حفظ المستخدم:', err.message);
-                return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
+                return res.status(500).json({ message: '❌ خطأ أثناء تشفير كلمة المرور.' });
             }
-            res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
+
+            // إضافة المستخدم الجديد
+            const newUser = { 
+                name, 
+                email, 
+                password: hashedPassword, 
+                registeredAt: new Date().toISOString() 
+            };
+            users.push(newUser);
+
+            // حفظ المستخدم الجديد في users.json
+            fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
+                if (err) {
+                    console.error('❌ خطأ أثناء حفظ المستخدم:', err.message);
+                    return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
+                }
+                res.status(201).json({ message: '✅ تم التسجيل بنجاح!' });
+            });
         });
     });
 });
