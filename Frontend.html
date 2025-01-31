@@ -1,0 +1,21 @@
+fetch('/api/subscribe', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ name, email, password })
+})
+.then(response => {
+  if (!response.ok) {
+    return response.json().then(data => {
+      throw new Error(data.message || 'حدث خطأ');
+    });
+  }
+  return response.json();
+})
+.then(data => {
+  console.log('تم التسجيل بنجاح:', data);
+})
+.catch(error => {
+  console.error('حدث خطأ أثناء التسجيل:', error);
+});
