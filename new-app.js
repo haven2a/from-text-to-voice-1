@@ -24,15 +24,17 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        EMAIL_USER=hacenatek9@gmail.com
-EMAIL_PASS=hmhi fvrk nghr gdxd
-}
+        user: process.env.hacenatek9@gmail.com,
+        pass: process.env.hmhi fvrk nghr gdxd
+
+    }
+});
 
 // مسار تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
+    console.log('بيانات التسجيل:', req.body); // تسجيل البيانات المستلمة من العميل
     const { name, email, password } = req.body;
 
-    // التحقق من الحقول المدخلة
     if (!name || !email || !password) {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
@@ -45,24 +47,19 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
 
-        // التحقق إذا كان البريد الإلكتروني مسجلًا مسبقًا
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
-        // تجزئة كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // إضافة المستخدم الجديد
         const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
         users.push(newUser);
 
-        // حفظ البيانات في الملف
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
-        // إرسال بريد تأكيد التسجيل
         const mailOptions = {
-            from: 'your-email@gmail.com',  // بريد المرسل
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'تم التسجيل بنجاح',
             text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
@@ -76,11 +73,9 @@ app.post('/api/subscribe', async (req, res) => {
             }
         });
 
-        // رد على العميل بأن التسجيل تم بنجاح
         res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
 
     } catch (error) {
-        // التعامل مع الأخطاء
         console.error('❌ خطأ في تسجيل المستخدم:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
     }
