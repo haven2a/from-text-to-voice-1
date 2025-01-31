@@ -101,10 +101,13 @@
     </style>
 </head>
 <body>
-  
+    <header>
+        <img src="logo.png" alt="Logo" id="logo">
+    </header>
+
     <div class="register-box">
         <h2>تسجيل جديد</h2>
-        <form id="registerForm">
+        <form id="registerForm" action="/subscribe" method="POST">
             <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
             <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
             
@@ -146,8 +149,10 @@
                 return;
             }
 
+            console.log('البيانات المرسلة:', { name: username, email, password }); // إضافة سجل لعرض البيانات المرسلة
+
             try {
-                const response = await fetch('/api/subscribe', {  // التأكد من المسار الصحيح في الخادم
+                const response = await fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: username, email, password })
@@ -157,7 +162,6 @@
 
                 if (response.ok) {
                     alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
-                    // توجيه المستخدم إلى صفحة "تم التسجيل بنجاح"
                     window.location.href = '/activate-info.html';
                 } else {
                     alert(result.message);
