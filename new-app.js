@@ -24,10 +24,9 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+        EMAIL_USER=hacenatek9@gmail.com
+EMAIL_PASS=hmhi fvrk nghr gdxd
+}
 
 // مسار تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
@@ -63,7 +62,7 @@ app.post('/api/subscribe', async (req, res) => {
 
         // إرسال بريد تأكيد التسجيل
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: 'your-email@gmail.com',  // بريد المرسل
             to: email,
             subject: 'تم التسجيل بنجاح',
             text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
