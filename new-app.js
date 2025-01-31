@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcryptjs'); // استبدال bcrypt بـ bcryptjs
+const bcrypt = require('bcryptjs'); // استخدام bcryptjs
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 
