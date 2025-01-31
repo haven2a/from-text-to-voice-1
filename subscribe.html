@@ -101,27 +101,29 @@
     </style>
 </head>
 <body>
- <!-- Header (اللوغو) -->
+    <!-- Header (اللوغو) -->
     <header>
         <img src="logo.png" alt="Logo" id="logo">
     </header>
 
     <div class="register-box">
         <h2>تسجيل جديد</h2>
-        <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
-        <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
-        
-        <div class="password-container">
-            <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
-            <span onclick="togglePassword()">👁️</span>
-        </div>
+        <form id="registerForm" action="/subscribe" method="POST">
+            <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
+            <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
+            
+            <div class="password-container">
+                <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
+                <span onclick="togglePassword()">👁️</span>
+            </div>
 
-        <div class="terms">
-            <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
-            <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
-        </div>
+            <div class="terms">
+                <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
+                <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
+            </div>
 
-        <button id="registerButton" disabled onclick="registerUser()">تسجيل</button>
+            <button id="registerButton" type="submit" disabled>تسجيل</button>
+        </form>
     </div>
 
     <script>
@@ -136,7 +138,9 @@
             button.disabled = !checkbox.checked;
         }
 
-        async function registerUser() {
+        async function registerUser(event) {
+            event.preventDefault();  // منع إرسال النموذج الافتراضي
+
             const username = document.getElementById("name").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
@@ -158,7 +162,7 @@
                 if (response.ok) {
                     alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
                     // توجيه المستخدم إلى صفحة "تم التسجيل بنجاح"
-                    window.location.href = '/activate-info.html'; // هذه الصفحة هي التي تشرح للمستخدم أنه يجب التحقق من بريده الإلكتروني
+                    window.location.href = '/activate-info.html';
                 } else {
                     alert(result.message);
                 }
@@ -167,6 +171,9 @@
                 alert('حدث خطأ، يرجى المحاولة لاحقًا.');
             }
         }
+
+        // ربط دالة التسجيل بالنموذج
+        document.getElementById("registerForm").addEventListener("submit", registerUser);
     </script>
 
 </body>
