@@ -1,10 +1,10 @@
-require('dotenv').config(); // تحميل المتغيرات من ملف .env
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // استبدال bcrypt بـ bcryptjs
 const cors = require('cors');
-const nodemailer = require('nodemailer'); // مكتبة إرسال البريد
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const usersFile = path.join(__dirname, 'users.json');
 
+// التأكد من أن ملف المستخدمين موجود
 if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
@@ -23,13 +24,13 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,  // بريد المرسل
-        pass: process.env.EMAIL_PASS   // كلمة مرور البريد
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
 // ✅ مسار تسجيل المستخدمين
-app.post('/api/subscribe', (req, res) => {
+app.post('/api/subscribe', async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -41,51 +42,42 @@ app.post('/api/subscribe', (req, res) => {
         return res.status(400).json({ message: '⚠️ البريد الإلكتروني غير صحيح.' });
     }
 
-    fs.readFile(usersFile, (err, data) => {
-        if (err) {
-            console.error('❌ خطأ في قراءة ملف المستخدمين:', err.message);
-            return res.status(500).json({ message: '❌ خطأ في الخادم.' });
-        }
+    try {
+        let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
 
-        let users = JSON.parse(data);
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
-            if (err) {
-                return res.status(500).json({ message: '❌ خطأ أثناء تشفير كلمة المرور.' });
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
+        users.push(newUser);
+
+        fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
+
+        // ✅ إرسال بريد تأكيد التسجيل
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'تم التسجيل بنجاح',
+            text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ خطأ في إرسال البريد:', error);
+            } else {
+                console.log('✅ تم إرسال البريد:', info.response);
             }
-
-            const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
-            users.push(newUser);
-
-            fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
-                if (err) {
-                    console.error('❌ خطأ أثناء حفظ المستخدم:', err.message);
-                    return res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
-                }
-
-                // ✅ إرسال بريد تأكيد التسجيل
-                const mailOptions = {
-                    from: process.env.EMAIL_USER,
-                    to: email,
-                    subject: 'تم التسجيل بنجاح',
-                    text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
-                };
-
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.error('❌ خطأ في إرسال البريد:', error);
-                    } else {
-                        console.log('✅ تم إرسال البريد:', info.response);
-                    }
-                });
-
-                res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
-            });
         });
-    });
+
+        res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
+
+    } catch (error) {
+        console.error('❌ خطأ في تسجيل المستخدم:', error);
+        res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
+    }
 });
 
 // ✅ تشغيل السيرفر
