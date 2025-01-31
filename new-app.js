@@ -24,9 +24,8 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.hacenatek9@gmail.com,
-        pass: process.env.hmhi fvrk nghr gdxd
-
+        user: 'your-email@gmail.com',  // ضع البريد هنا مباشرة
+        pass: 'your-email-password'    // ضع كلمة المرور هنا مباشرة
     }
 });
 
@@ -59,7 +58,7 @@ app.post('/api/subscribe', async (req, res) => {
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: 'your-email@gmail.com', // البريد الخاص بك
             to: email,
             subject: 'تم التسجيل بنجاح',
             text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
