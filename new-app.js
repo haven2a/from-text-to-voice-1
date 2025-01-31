@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcryptjs'); // استخدام bcryptjs
+const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 
@@ -20,7 +20,7 @@ if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
 
-// ✅ إعداد خدمة البريد الإلكتروني
+// إعداد خدمة البريد الإلكتروني
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -29,10 +29,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// ✅ مسار تسجيل المستخدمين
+// مسار تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
     const { name, email, password } = req.body;
 
+    // التحقق من الحقول المدخلة
     if (!name || !email || !password) {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
@@ -45,18 +46,22 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
 
+        // التحقق إذا كان البريد الإلكتروني مسجلًا مسبقًا
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
+        // تجزئة كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // إضافة المستخدم الجديد
         const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
         users.push(newUser);
 
+        // حفظ البيانات في الملف
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
-        // ✅ إرسال بريد تأكيد التسجيل
+        // إرسال بريد تأكيد التسجيل
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
@@ -72,15 +77,17 @@ app.post('/api/subscribe', async (req, res) => {
             }
         });
 
+        // رد على العميل بأن التسجيل تم بنجاح
         res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
 
     } catch (error) {
+        // التعامل مع الأخطاء
         console.error('❌ خطأ في تسجيل المستخدم:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
     }
 });
 
-// ✅ تشغيل السيرفر
+// تشغيل السيرفر
 app.listen(PORT, () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
 });
