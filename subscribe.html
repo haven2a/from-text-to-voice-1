@@ -101,14 +101,10 @@
     </style>
 </head>
 <body>
-    <!-- Header (اللوغو) -->
-    <header>
-        <img src="logo.png" alt="Logo" id="logo">
-    </header>
-
+  
     <div class="register-box">
         <h2>تسجيل جديد</h2>
-        <form id="registerForm" action="/subscribe" method="POST">
+        <form id="registerForm">
             <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
             <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
             
@@ -151,10 +147,10 @@
             }
 
             try {
-                const response = await fetch('/subscribe', {
+                const response = await fetch('/api/subscribe', {  // التأكد من المسار الصحيح في الخادم
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password })
+                    body: JSON.stringify({ name: username, email, password })
                 });
 
                 const result = await response.json();
