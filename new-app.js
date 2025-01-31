@@ -24,8 +24,8 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'your-email@gmail.com',  // ضع البريد هنا مباشرة
-        pass: 'your-email-password'    // ضع كلمة المرور هنا مباشرة
+        user: process.env.EMAIL_USER, // تأكد من إضافة البريد الإلكتروني في .env
+        pass: process.env.EMAIL_PASS  // تأكد من إضافة كلمة المرور في .env
     }
 });
 
@@ -57,11 +57,42 @@ app.post('/api/subscribe', async (req, res) => {
 
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
+        // إرسال البريد الإلكتروني
         const mailOptions = {
-            from: 'your-email@gmail.com', // البريد الخاص بك
+            from: process.env.EMAIL_USER,
             to: email,
-            subject: 'تم التسجيل بنجاح',
-            text: `مرحبًا ${name}،\n\nلقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!`
+            subject: 'تم التسجيل بنجاح في النظام',
+            html: `
+            <div style="font-family: 'Cairo', sans-serif; background-color: #f7f7f7; padding: 20px; border-radius: 10px; border: 2px solid #dedede;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="cid:logo" alt="Logo" style="width: 150px; height: auto;" />
+                </div>
+                <h2 style="color: #333; text-align: center; font-size: 28px;">مرحبًا ${name}!</h2>
+                <p style="font-size: 18px; color: #555; text-align: center;">
+                    تم تسجيلك بنجاح في النظام. <br>
+                    شكرًا لاستخدامك خدمتنا.
+                </p>
+                <p style="font-size: 16px; color: #555; text-align: center;">
+                    يمكنك الآن تسجيل الدخول إلى حسابك من خلال الرابط التالي:
+                </p>
+                <p style="text-align: center;">
+                    <a href="http://localhost:3000/login.html" style="font-size: 18px; color: #007bff; text-decoration: none;">رابط تسجيل الدخول</a>
+                </p>
+                <p style="font-size: 16px; color: #555; text-align: center;">
+                    إذا كنت بحاجة إلى دعم، يمكنك التواصل معنا من خلال الرابط التالي:
+                </p>
+                <p style="text-align: center;">
+                    <a href="http://localhost:3000/support.html" style="font-size: 18px; color: #007bff; text-decoration: none;">رابط الدعم</a>
+                </p>
+            </div>
+            `,
+            attachments: [
+                {
+                    filename: 'logo.png', // تأكد من أن الصورة موجودة في المجلد
+                    path: path.join(__dirname, 'logo.png'), // تأكد من مسار الصورة
+                    cid: 'logo' // هذا المرجع لاستخدامه في HTML
+                }
+            ]
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
