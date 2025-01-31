@@ -24,8 +24,8 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // تأكد من إضافة البريد الإلكتروني في .env
-        pass: process.env.EMAIL_PASS  // تأكد من إضافة كلمة المرور في .env
+        user: process.env.EMAIL_USER,  // البريد الإلكتروني
+        pass: process.env.EMAIL_PASS   // كلمة المرور
     }
 });
 
@@ -56,6 +56,7 @@ app.post('/api/subscribe', async (req, res) => {
         users.push(newUser);
 
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
+        console.log('✅ تم حفظ البيانات بنجاح في users.json');
 
         // إرسال البريد الإلكتروني
         const mailOptions = {
@@ -98,6 +99,7 @@ app.post('/api/subscribe', async (req, res) => {
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error('❌ خطأ في إرسال البريد:', error);
+                res.status(500).json({ message: '❌ فشل إرسال البريد الإلكتروني.' });
             } else {
                 console.log('✅ تم إرسال البريد:', info.response);
             }
