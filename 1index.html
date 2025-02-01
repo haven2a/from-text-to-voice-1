@@ -19,88 +19,41 @@
             min-height: 100vh;
         }
 
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: #222;
+        .lock-screen {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 100;
-        }
-
-        .logo img {
-            max-width: 100px;
-        }
-
-        .language-selector {
-            color: white;
-            font-size: 18px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideIn 0.5s ease-in-out forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .window {
-            margin-bottom: 20px;
-            background-color: #333;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideUp 0.7s ease-in-out forwards;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        textarea {
             width: 100%;
-            height: 250px;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            transition: transform 1s ease-in-out;
+            transform: translateY(0);
+            z-index: 9999;
+        }
+
+        .hidden {
+            transform: translateY(-100%);
+        }
+
+        .lock-screen input {
             font-size: 20px;
             padding: 10px;
-            border-radius: 10px;
-            background: black;
-            color: white;
-            border: 2px solid yellow;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+            margin-top: 15px;
         }
 
-        button {
+        .lock-screen button {
             background-color: #007bff;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             border: none;
             padding: 10px 15px;
             margin-top: 10px;
@@ -109,175 +62,37 @@
             transition: transform 0.3s ease-in-out;
         }
 
-        button:hover {
+        .lock-screen button:hover {
             transform: scale(1.1);
         }
-
-        select, input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 10px;
-            background-color: black;
-            color: white;
-            border: 2px solid yellow;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 10px;
-        }
-
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <img src="logo.png" alt="App Logo">
-        </div>
-        <div class="language-selector">
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="ar">عربي</option>
-                <option value="en">English</option>
-            </select>
-        </div>
+    <div class="lock-screen" id="lockScreen">
+        <p>أدخل الكود لفتح الصفحة:</p>
+        <input type="password" id="unlockCode" placeholder="••••">
+        <button onclick="unlockPage()">فتح</button>
     </div>
 
-    <div class="container" id="contentContainer">
-        <!-- Language-Specific Content Will Be Updated Dynamically -->
-        <h1 id="title">تحويل النص إلى صوت</h1>
-        
-        <div class="window">
-            <h2 id="textInputTitle">أدخل النص هنا</h2>
-            <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()" id="playBtn">تشغيل الصوت</button>
-            <button onclick="stopVoice()" id="stopBtn">إيقاف الصوت</button>
-        </div>
-
-        <div class="window">
-            <h2 id="recordingTitle">تسجيل الصوت</h2>
-            <button onclick="startRecording()" id="startRecordingBtn">بدء التسجيل</button>
-            <button onclick="stopRecording()" id="stopRecordingBtn">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()" id="downloadRecordingBtn">تحميل الصوت المسجل</button>
-            <audio id="audioPlayer" controls style="display:none;"></audio>
-        </div>
-
-        <div class="window">
-            <h2 id="uploadFileTitle">تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()" id="convertFileBtn">تحويل إلى صوت</button>
-        </div>
-
-        <div class="window">
-            <h2 id="chooseVoiceTitle">اختيار لغة القارئ</h2>
-            <select id="voiceSelect">
-                <option value="ar">عربي</option>
-                <option value="en">إنجليزي</option>
-            </select>
-        </div>
-
-        <div class="window">
-            <h2 id="chooseGenderTitle">اختيار جنس القارئ</h2>
-            <select id="genderSelect">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-            </select>
-        </div>
-
-        <div class="window">
-            <h2 id="speedControlTitle">تسريع/تبطيء الصوت</h2>
-            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
-            <span id="speedLabel">1x</span>
-        </div>
+    <div class="container" id="contentContainer" style="display: none;">
+        <h1>تحويل النص إلى صوت</h1>
+        <p>تم فتح الصفحة بنجاح!</p>
     </div>
 
-    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
-    
     <script>
-        let currentVoice = "ar";
-        let currentGender = "male";
-        let currentSpeed = 1;
-        let recorder;
-        let audioBlob;
-        let audioUrl;
-        let audioPlayer = document.getElementById("audioPlayer");
-
-        function playVoice() {
-            const text = document.getElementById("textInput").value;
-            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
-        }
-
-        function stopVoice() {
-            responsiveVoice.cancel();
-        }
-
-        function startRecording() {
-            console.log("بدء التسجيل");
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(function(stream) {
-                    recorder = new MediaRecorder(stream);
-                    recorder.ondataavailable = function(event) {
-                        audioBlob = event.data;
-                        audioUrl = URL.createObjectURL(audioBlob);
-                        audioPlayer.src = audioUrl;
-                        audioPlayer.style.display = 'block';
-                    };
-                    recorder.start();
-                })
-                .catch(function(err) {
-                    console.log("خطأ في الحصول على إذن التسجيل:", err);
-                });
-        }
-
-        function stopRecording() {
-            if (recorder) {
-                recorder.stop();
-            }
-            console.log("إيقاف التسجيل");
-        }
-
-        function downloadRecordedAudio() {
-            if (audioBlob) {
-                const link = document.createElement('a');
-                link.href = audioUrl;
-                link.download = 'recorded-audio.wav';
-                link.click();
+        function unlockPage() {
+            const code = document.getElementById("unlockCode").value;
+            if (code === "2502") {
+                document.getElementById("lockScreen").style.transition = "transform 1s ease-in-out";
+                document.getElementById("lockScreen").classList.add("hidden");
+                setTimeout(() => {
+                    document.getElementById("lockScreen").style.display = "none";
+                    document.getElementById("contentContainer").style.display = "block";
+                }, 1000);
             } else {
-                alert("لا يوجد صوت مسجل لتحميله.");
+                alert("الكود غير صحيح!");
             }
         }
-
-        function convertFileToVoice() {
-            const fileInput = document.getElementById("textFileInput");
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
-                };
-                reader.readAsText(file);
-            }
-        }
-
-        document.getElementById("voiceSelect").addEventListener("change", function() {
-            currentVoice = this.value;
-            responsiveVoice.setDefaultVoice(currentVoice === "ar" ? "Arabic Male" : "UK English Male");
-        });
-
-        document.getElementById("genderSelect").addEventListener("change", function() {
-            currentGender = this.value;
-        });
-
-        function adjustSpeed() {
-            const speed = document.getElementById("speedControl").value;
-            currentSpeed = speed;
-            document.getElementById("speedLabel").textContent = `${speed}x`;
-        }
-
-        // Function to change language dynamically
-        function changeLanguage() {
-            const language = document.getElementById("languageSelect").value;
-
-            if (language === "ar") {
-                document.get
+    </script>
+</body>
+</html>
