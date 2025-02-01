@@ -15,23 +15,21 @@ app.use(express.urlencoded({ extended: true }));
 
 const usersFile = path.join(__dirname, 'users.json');
 
-// التأكد من أن ملف المستخدمين موجود
 if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
 
-// إعداد خدمة البريد الإلكتروني
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,  // البريد الإلكتروني
-        pass: process.env.EMAIL_PASS   // كلمة المرور
+        
+EMAIL_USER=hacenatek9@gmail.com
+EMAIL_PASS=hmhi fvrk nghr gdxd
     }
 });
 
-// مسار تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
-    console.log('بيانات التسجيل:', req.body); // تسجيل البيانات المستلمة من العميل
+    console.log('بيانات التسجيل:', req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -56,64 +54,43 @@ app.post('/api/subscribe', async (req, res) => {
         users.push(newUser);
 
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
-        console.log('✅ تم حفظ البيانات بنجاح في users.json');
 
-        // إرسال البريد الإلكتروني
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: 'تم التسجيل بنجاح في النظام',
+            subject: 'تم التسجيل بنجاح',
             html: `
-            <div style="font-family: 'Cairo', sans-serif; background-color: #f7f7f7; padding: 20px; border-radius: 10px; border: 2px solid #dedede;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="cid:logo" alt="Logo" style="width: 150px; height: auto;" />
-                </div>
-                <h2 style="color: #333; text-align: center; font-size: 28px;">مرحبًا ${name}!</h2>
-                <p style="font-size: 18px; color: #555; text-align: center;">
-                    تم تسجيلك بنجاح في النظام. <br>
-                    شكرًا لاستخدامك خدمتنا.
-                </p>
-                <p style="font-size: 16px; color: #555; text-align: center;">
-                    يمكنك الآن تسجيل الدخول إلى حسابك من خلال الرابط التالي:
-                </p>
-                <p style="text-align: center;">
-                    <a href="http://localhost:3000/login.html" style="font-size: 18px; color: #007bff; text-decoration: none;">رابط تسجيل الدخول</a>
-                </p>
-                <p style="font-size: 16px; color: #555; text-align: center;">
-                    إذا كنت بحاجة إلى دعم، يمكنك التواصل معنا من خلال الرابط التالي:
-                </p>
-                <p style="text-align: center;">
-                    <a href="http://localhost:3000/support.html" style="font-size: 18px; color: #007bff; text-decoration: none;">رابط الدعم</a>
-                </p>
-            </div>
-            `,
-            attachments: [
-                {
-                    filename: 'logo.png', // تأكد من أن الصورة موجودة في المجلد
-                    path: path.join(__dirname, 'logo.png'), // تأكد من مسار الصورة
-                    cid: 'logo' // هذا المرجع لاستخدامه في HTML
-                }
-            ]
+            <div style="font-family: 'Cairo', sans-serif; text-align: center; border: 2px solid #4CAF50; padding: 20px; max-width: 600px; margin: auto;">
+                <img src="cid:logo" alt="Logo" style="width: 100px; display: block; margin: auto;">
+                <h2 style="color: #4CAF50;">مرحبًا ${name}،</h2>
+                <p style="font-size: 18px;">لقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!</p>
+                <p style="font-size: 18px;">يمكنك تسجيل الدخول عبر الرابط التالي:</p>
+                <a href="https://from-text-to-voice-6nye.vercel.app/login.html" style="font-size: 18px; color: #FFFFFF; background-color: #4CAF50; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
+                <p style="font-size: 18px; margin-top: 20px;">للدعم، يمكنك زيارة:</p>
+                <a href="https://from-text-to-voice-6nye.vercel.app/suport.html" style="font-size: 18px; color: #FFFFFF; background-color: #FF9800; padding: 10px 20px; text-decoration: none; border-radius: 5px;">الدعم الفني</a>
+            </div>`,
+            attachments: [{
+                filename: 'logo.png',
+                path: path.join(__dirname, 'logo.png'),
+                cid: 'logo'
+            }]
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error('❌ خطأ في إرسال البريد:', error);
-                res.status(500).json({ message: '❌ فشل إرسال البريد الإلكتروني.' });
             } else {
                 console.log('✅ تم إرسال البريد:', info.response);
             }
         });
 
         res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
-
     } catch (error) {
         console.error('❌ خطأ في تسجيل المستخدم:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
     }
 });
 
-// تشغيل السيرفر
 app.listen(PORT, () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
 });
