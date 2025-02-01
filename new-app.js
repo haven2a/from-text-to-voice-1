@@ -24,8 +24,8 @@ if (!fs.existsSync(usersFile)) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'hacenatek9@gmail.com', // ✅ بريدك
-        pass: 'hmhi fvrk nghr gdxd' // ✅ كلمة المرور الخاصة بالبريد (استخدم App Password)
+        user: 'process.env.EMAIL_USER,', // ✅ بريدك
+        pass: 'process.env.EMAIL_PASS,' // ✅ كلمة المرور الخاصة بالبريد (استخدم App Password)
     }
 });
 
