@@ -1,179 +1,58 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل جديد</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
+app.post('/api/subscribe', async (req, res) => {
+    const { name, email, password } = req.body;
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            margin: 0;
-            font-family: 'Cairo', sans-serif;
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: '⚠️ البريد الإلكتروني غير صحيح.' });
+    }
+
+    try {
+        let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
+
+        // التحقق من وجود البريد الإلكتروني مسبقًا
+        if (users.some(user => user.email === email)) {
+            return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
-        .register-box {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 400px;
-            border: 5px solid #007bff;
-        }
+        // تشفير كلمة المرور
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        .register-box h2 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #333;
-        }
+        // إضافة المستخدم الجديد
+        const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
+        users.push(newUser);
 
-        .register-box input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            font-size: 18px;
-            text-align: center;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            outline: none;
-        }
+        // تحديث ملف المستخدمين
+        fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        // إرسال البريد الإلكتروني
+        const mailOptions = {
+            from: '"منصة الصوت إلى نص" <hacenatek9@gmail.com>',
+            to: email,
+            subject: '🎉 تم التسجيل بنجاح - منصة تحويل النص إلى صوت',
+            html: `
+                <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Cairo', sans-serif; text-align: center;">
+                    <h2 style="color: #007bff;">🎉 مرحبًا ${name}، تم تسجيلك بنجاح!</h2>
+                    <a href="https://from-text-to-voice-6nye.vercel.app/login.html" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: #fff; text-decoration: none; border-radius: 5px;">🔑 تسجيل الدخول</a>
+                </div>
+            `
+        };
 
-        .password-container input {
-            width: 100%;
-        }
-
-        .password-container span {
-            position: absolute;
-            right: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #007bff;
-        }
-
-        .terms {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .terms input {
-            margin-right: 10px;
-            width: 20px;
-            height: 20px;
-        }
-
-        .register-box button {
-            background: #007bff;
-            color: white;
-            padding: 12px;
-            border: none;
-            width: 100%;
-            font-size: 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .register-box button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .register-box button:hover:not(:disabled) {
-            background: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <img src="logo.png" alt="Logo" id="logo">
-    </header>
-
-    <div class="register-box">
-        <h2>تسجيل جديد</h2>
-        <form id="registerForm" action="/subscribe" method="POST">
-            <input type="text" placeholder="الاسم الكامل" id="name" required autocomplete="off">
-            <input type="email" placeholder="البريد الإلكتروني" id="email" required autocomplete="off">
-            
-            <div class="password-container">
-                <input type="password" placeholder="كلمة المرور" id="password" required autocomplete="off">
-                <span onclick="togglePassword()">👁️</span>
-            </div>
-
-            <div class="terms">
-                <input type="checkbox" id="termsCheckbox" onchange="toggleRegisterButton()">
-                <label for="termsCheckbox">أوافق على <a href="privacy.html">سياسة الخصوصية</a> و <a href="terms.html">شروط الاستخدام</a></label>
-            </div>
-
-            <button id="registerButton" type="submit" disabled>تسجيل</button>
-        </form>
-    </div>
-
-    <script>
-        function togglePassword() {
-            var passwordField = document.getElementById("password");
-            passwordField.type = passwordField.type === "password" ? "text" : "password";
-        }
-
-        function toggleRegisterButton() {
-            var checkbox = document.getElementById("termsCheckbox");
-            var button = document.getElementById("registerButton");
-            button.disabled = !checkbox.checked;
-        }
-
-        async function registerUser(event) {
-            event.preventDefault();  // منع إرسال النموذج الافتراضي
-
-            const username = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            if (!username || !email || !password) {
-                alert('الرجاء ملء جميع الحقول!');
-                return;
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('❌ خطأ في إرسال البريد:', error);
+            } else {
+                console.log('✅ تم إرسال البريد:', info.response);
             }
+        });
 
-            console.log('البيانات المرسلة:', { name: username, email, password }); // إضافة سجل لعرض البيانات المرسلة
+        res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
 
-            try {
-                const response = await fetch('/api/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: username, email, password })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    window.location.href = 'https://from-text-to-voice-6nye.vercel.app/verify.html'; // إعادة التوجيه إلى صفحة التفعيل
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                console.error('خطأ أثناء محاولة التسجيل:', error);
-                alert('حدث خطأ، يرجى المحاولة لاحقًا.');
-            }
-        }
-
-        // ربط دالة التسجيل بالنموذج
-        document.getElementById("registerForm").addEventListener("submit", registerUser);
-    </script>
-
-</body>
-</html>
+    } catch (error) {
+        console.error('❌ خطأ في تسجيل المستخدم:', error);
+        res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
+    }
+});
