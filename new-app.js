@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const usersFile = path.join(__dirname, 'users.json');
 
-// التأكد من وجود ملف المستخدمين
+// التأكد من وجود ملف المستخدمين في بيئة التطوير
 if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
@@ -27,13 +27,14 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,  // استخدام المتغير من البيئة
         pass: process.env.EMAIL_PASS   // استخدام المتغير من البيئة
     }
-})
+});
 
 // 📌 تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
-    console.log('📥 بيانات التسجيل:', req.body);
+    console.log('📥 بيانات التسجيل:', req.body);  // سجل البيانات المستلمة من العميل
     const { name, email, password } = req.body;
 
+    // التأكد من أن الحقول المطلوبة موجودة
     if (!name || !email || !password) {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
@@ -46,18 +47,21 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
 
+        // التأكد من عدم وجود بريد مسجل مسبقًا
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
 
+        // تشفير كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // إضافة المستخدم الجديد
         const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
         users.push(newUser);
 
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
-        // ✉️ **إرسال البريد الاحترافي**
+        // ✉️ إرسال البريد الإلكتروني للمستخدم
         const mailOptions = {
             from: '"منصة الصوت إلى نص" <hacenatek9@gmail.com>',
             to: email,
@@ -91,7 +95,7 @@ app.post('/api/subscribe', async (req, res) => {
     }
 });
 
-// 🔑 **تسجيل الدخول**
+// 🔑 تسجيل الدخول
 app.post('/api/login', async (req, res) => {
     console.log('🔐 محاولة تسجيل الدخول:', req.body);
     const { email, password } = req.body;
