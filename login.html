@@ -1,22 +1,37 @@
-const bcrypt = require('bcrypt');
-const fs = require('fs');
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+</head>
+<body>
+    <h2>تسجيل الدخول</h2>
+    <form id="loginForm">
+        <label for="email">البريد الإلكتروني:</label>
+        <input type="email" id="email" required>
+        <br>
+        <label for="password">كلمة المرور:</label>
+        <input type="password" id="password" required>
+        <br>
+        <button type="submit">تسجيل الدخول</button>
+    </form>
 
-async function createTestUser() {
-    try {
-        const passwordHash = await bcrypt.hash('123456', 10);
-        const users = [{ email: 'test@example.com', password: passwordHash }];
-        
-        fs.writeFile('./users.json', JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                console.error('خطأ أثناء كتابة الملف:', err);
-            } else {
-                console.log('تم إنشاء مستخدم تجريبي بنجاح!');
-            }
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const result = await response.json();
+            alert(result.message);
         });
-
-    } catch (error) {
-        console.error('حدث خطأ:', error);
-    }
-}
-
-createTestUser();
+    </script>
+</body>
+</html>
