@@ -1,3 +1,21 @@
+const express = require('express');
+const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const cors = require('cors');
+
+const app = express();
+const usersFile = 'users.json';
+
+// تمكين CORS للسماح بجميع الطلبات
+app.use(cors({
+    origin: '*', // السماح لجميع النطاقات
+    methods: ['GET', 'POST'], // السماح بـ GET و POST
+    allowedHeaders: ['Content-Type']
+}));
+
+app.use(express.json());
+
+// تسجيل الدخول
 app.post('/api/login', async (req, res) => {
     console.log('🔐 محاولة تسجيل الدخول:', req.body);
     const { email, password } = req.body;
@@ -30,4 +48,9 @@ app.post('/api/login', async (req, res) => {
         console.error('❌ خطأ في تسجيل الدخول:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء تسجيل الدخول.' });
     }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 الخادم يعمل على المنفذ ${PORT}`);
 });
