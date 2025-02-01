@@ -1,8 +1,14 @@
 [
-  {
-    "username": "hacen",
-    "email": "abouhoussem41a@gmail.com",
-    "password": "$2b$10$z6sftXJwgyg9p3pWnFZcQek1mSOrGp.KUw6cQXbx7RLgHlkOIj5iS",
-    "registeredAt": "2025-01-24T16:16:14.459Z"
-  }
+    {
+        "name": "أحمد علي",
+        "email": "ahmed@example.com",
+        "password": "$2a$10$wPoxseNYeA84L8wOZsdueE6tLxLPJ/5g2qlYo4kbeGex1VtT3B7vG",
+        "registeredAt": "2025-02-01T10:15:30.000Z"
+    },
+    {
+        "name": "مريم سعيد",
+        "email": "mariam@example.com",
+        "password": "$2a$10$yYwFhL7gyEblgzDLH1l/uWejll7O./j2iyL/lwPjBBwmDBNJtq5rW",
+        "registeredAt": "2025-01-28T08:45:21.000Z"
+    }
 ]
