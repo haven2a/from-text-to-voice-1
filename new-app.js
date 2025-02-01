@@ -23,10 +23,12 @@ if (!fs.existsSync(usersFile)) {
 // إعداد خدمة البريد الإلكتروني
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+     service: 'gmail',
     auth: {
-        user: 'process.env.EMAIL_USER,', // ✅ بريدك
-        pass: 'process.env.EMAIL_PASS,' // ✅ كلمة المرور الخاصة بالبريد (استخدم App Password)
+        user: process.env.EMAIL_USER,  // استخدام المتغير من البيئة
+        pass: process.env.EMAIL_PASS   // استخدام المتغير من البيئة
     }
+
 });
 
 // 📌 تسجيل المستخدمين
