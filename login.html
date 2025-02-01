@@ -1,179 +1,83 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap');
-
-    body {
-      font-family: 'Cairo', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(to right, #4facfe, #00f2fe);
-      margin: 0;
-    }
-
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      width: 400px;
-      border: 5px solid #007bff;
-    }
-
-    .login-box h2 {
-      font-size: 36px;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .login-box input {
-      width: calc(100% - 22px);
-      padding: 12px;
-      margin: 12px 0;
-      border: 2px solid #007bff;
-      border-radius: 5px;
-      font-size: 20px;
-      text-align: center;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .password-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .password-container input {
-      width: 100%;
-    }
-
-    .password-container span {
-      position: absolute;
-      right: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      color: #007bff;
-    }
-
-    .login-box button {
-      background: #007bff;
-      color: white;
-      padding: 12px;
-      border: none;
-      width: 100%;
-      font-size: 22px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-
-    .login-box button:hover {
-      background: #0056b3;
-    }
-
-    .login-box a {
-      display: block;
-      margin-top: 15px;
-      font-size: 18px;
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    .login-box a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            margin: 50px auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
 </head>
 <body>
-  <!-- Header (اللوغو) -->
-  <header>
-    <img src="logo.png" alt="Logo" id="logo">
-  </header>
 
-  <div class="login-box">
-    <h2>تسجيل الدخول</h2>
-    <input type="email" placeholder="البريد الإلكتروني" id="email" required>
-
-    <div class="password-container">
-      <input type="password" placeholder="كلمة المرور" id="password" required>
-      <span onclick="togglePassword()">👁️</span>
+    <div class="container">
+        <h2>تسجيل الدخول</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="password" placeholder="كلمة المرور" required>
+            <button type="submit">تسجيل الدخول</button>
+        </form>
     </div>
 
-    <button onclick="loginUser()">تسجيل الدخول</button>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-    <a href="subscribe.html">هل أنت جديد؟ سجل الآن</a>
-    <a href="forgot-password.html">هل نسيت كلمة المرور؟</a>
-  </div>
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-  <script>
-    // دالة لإظهار وإخفاء كلمة المرور
-    function togglePassword() {
-      var passwordField = document.getElementById("password");
-      if (passwordField.type === "password") {
-        passwordField.type = "text";
-      } else {
-        passwordField.type = "password";
-      }
-    }
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-    // دالة لتسجيل الدخول مع سجلات تصحيح
-    async function loginUser() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+                const data = await response.json();
 
-      if (!email || !password) {
-        alert("⚠️ البريد الإلكتروني وكلمة المرور مطلوبة!");
-        return;
-      }
+                if (!response.ok) {
+                    throw new Error(data.message);
+                }
 
-      // طباعة بيانات الإدخال في Console للتصحيح
-      console.log("📧 بيانات الإدخال:", { email, password });
+                alert(data.message);
+                window.location.href = "/activate.html"; // توجيه بعد نجاح تسجيل الدخول
 
-      try {
-        const response = await fetch('https://from-text-to-voice-6nye.vercel.app/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
+            } catch (error) {
+                alert("❌ " + error.message);
+            }
         });
-
-        // طباعة استجابة الخادم كاملة في Console
-        const responseText = await response.text();
-        console.log("📝 استجابة الخادم النصية:", responseText);
-
-        let result;
-        try {
-          result = JSON.parse(responseText);
-          console.log("🔍 استجابة الخادم المحللة:", result);
-        } catch (e) {
-          console.error('❌ خطأ في تحليل JSON:', e);
-          alert("⚠️ استجابة غير صحيحة من الخادم.");
-          return;
-        }
-
-        if (response.ok) {
-          alert(result.message); // رسالة نجاح
-          window.location.href = '/activate.html'; // توجه إلى صفحة التفعيل
-        } else {
-          alert(result.message); // رسالة خطأ
-        }
-      } catch (error) {
-        console.error('❌ حدث خطأ أثناء الاتصال بالخادم:', error);
-        alert("⚠️ حدث خطأ أثناء الاتصال بالخادم.");
-      }
-    }
-  </script>
+    </script>
 
 </body>
 </html>
