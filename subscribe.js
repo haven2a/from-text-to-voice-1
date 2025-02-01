@@ -52,11 +52,22 @@ module.exports = async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'تم التسجيل بنجاح',
-            text: `مرحبًا ${name}،\n\nتم تسجيلك بنجاح في النظام.`
+            text: `مرحبًا ${name}،\n\nتم تسجيلك بنجاح في النظام. يمكنك الآن تسجيل الدخول.`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error('❌ خطأ في إرسال البريد:', error);
+                return res.status(500).json({ message: '❌ حدث خطأ أثناء إرسال البريد الإلكتروني.' });
             } else {
-                console
+                console.log('✅ تم إرسال البريد:', info.response);
+            }
+        });
+
+        res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
+
+    } catch (error) {
+        console.error('❌ خطأ في تسجيل المستخدم:', error);
+        res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
+    }
+};
