@@ -161,8 +161,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('تم التسجيل بنجاح! تابع بريدك الإلكتروني للتعرف على صفحة تفعيل التسجيل.');
-                    window.location.href = '/login.html';
+                    window.location.href = 'https://from-text-to-voice-6nye.vercel.app/verify.html'; // إعادة التوجيه إلى صفحة التفعيل
                 } else {
                     alert(result.message);
                 }
