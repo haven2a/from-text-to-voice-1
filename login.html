@@ -1,88 +1,33 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: #fff;
-            padding: 20px;
-            margin: 50px auto;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
-        }
-    </style>
-</head>
-<body>
+document.getElementById("loginForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-    <div class="container">
-        <h2>تسجيل الدخول</h2>
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="password" placeholder="كلمة المرور" required>
-            <button type="submit">تسجيل الدخول</button>
-        </form>
-    </div>
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    <script>
-        document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    throw new Error("❌ استجابة غير متوقعة من الخادم.");
-                }
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message);
-                }
-
-                alert(data.message);
-                window.location.href = "/dashboard.html";
-
-            } catch (error) {
-                alert(error.message);
-            }
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
-    </script>
 
-</body>
-</html>
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType || !contentType.includes("application/json")) {
+            const textResponse = await response.text();
+            throw new Error(`❌ استجابة غير متوقعة من الخادم: ${textResponse}`);
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        alert(data.message);
+        window.location.href = "/dashboard.html";
+
+    } catch (error) {
+        alert(error.message);
+    }
+});
