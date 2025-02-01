@@ -2,15 +2,15 @@ const express = require('express');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
 const app = express();
+const PORT = process.env.PORT || 3000;
 const usersFile = 'users.json';
 
-// تفعيل CORS للسماح بالطلبات من جميع النطاقات
+// ✅ تمكين CORS
 app.use(cors());
 app.use(express.json());
 
-// تسجيل الدخول
+// ✅ نقطة نهاية تسجيل الدخول
 app.post('/api/login', async (req, res) => {
     console.log('🔐 محاولة تسجيل الدخول:', req.body);
     const { email, password } = req.body;
@@ -38,14 +38,14 @@ app.post('/api/login', async (req, res) => {
         }
 
         res.status(200).json({ message: '✅ تسجيل الدخول ناجح!' });
+
     } catch (error) {
         console.error('❌ خطأ في تسجيل الدخول:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء تسجيل الدخول.' });
     }
 });
 
-// تشغيل الخادم
-const PORT = process.env.PORT || 3000;
+// ✅ تشغيل الخادم
 app.listen(PORT, () => {
     console.log(`🚀 الخادم يعمل على المنفذ ${PORT}`);
 });
