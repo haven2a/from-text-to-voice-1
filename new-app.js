@@ -6,13 +6,8 @@ const cors = require('cors');
 const app = express();
 const usersFile = 'users.json';
 
-// تمكين CORS للسماح بجميع الطلبات
-app.use(cors({
-    origin: '*', // السماح لجميع النطاقات
-    methods: ['GET', 'POST'], // السماح بـ GET و POST
-    allowedHeaders: ['Content-Type']
-}));
-
+// تفعيل CORS للسماح بالطلبات من جميع النطاقات
+app.use(cors());
 app.use(express.json());
 
 // تسجيل الدخول
@@ -43,13 +38,13 @@ app.post('/api/login', async (req, res) => {
         }
 
         res.status(200).json({ message: '✅ تسجيل الدخول ناجح!' });
-
     } catch (error) {
         console.error('❌ خطأ في تسجيل الدخول:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء تسجيل الدخول.' });
     }
 });
 
+// تشغيل الخادم
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 الخادم يعمل على المنفذ ${PORT}`);
