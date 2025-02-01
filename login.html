@@ -64,6 +64,11 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("❌ استجابة غير متوقعة من الخادم.");
+                }
+
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -71,10 +76,10 @@
                 }
 
                 alert(data.message);
-                window.location.href = "/activate.html"; // توجيه بعد نجاح تسجيل الدخول
+                window.location.href = "/dashboard.html";
 
             } catch (error) {
-                alert("❌ " + error.message);
+                alert(error.message);
             }
         });
     </script>
