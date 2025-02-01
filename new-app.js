@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const usersFile = path.join(__dirname, 'users.json');
 
-// التأكد من وجود ملف المستخدمين في بيئة التطوير
+// التأكد من أن ملف المستخدمين موجود
 if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
@@ -31,10 +31,9 @@ const transporter = nodemailer.createTransport({
 
 // 📌 تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
-    console.log('📥 بيانات التسجيل:', req.body);  // سجل البيانات المستلمة من العميل
+    console.log('📥 بيانات التسجيل:', req.body);
     const { name, email, password } = req.body;
 
-    // التأكد من أن الحقول المطلوبة موجودة
     if (!name || !email || !password) {
         return res.status(400).json({ message: '⚠️ جميع الحقول مطلوبة!' });
     }
@@ -47,7 +46,7 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
 
-        // التأكد من عدم وجود بريد مسجل مسبقًا
+        // التحقق من وجود البريد الإلكتروني مسبقًا
         if (users.some(user => user.email === email)) {
             return res.status(400).json({ message: '⚠️ البريد الإلكتروني مسجل مسبقًا.' });
         }
@@ -59,9 +58,10 @@ app.post('/api/subscribe', async (req, res) => {
         const newUser = { name, email, password: hashedPassword, registeredAt: new Date().toISOString() };
         users.push(newUser);
 
+        // تحديث ملف المستخدمين
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
-        // ✉️ إرسال البريد الإلكتروني للمستخدم
+        // ✉️ إرسال البريد الإلكتروني
         const mailOptions = {
             from: '"منصة الصوت إلى نص" <hacenatek9@gmail.com>',
             to: email,
@@ -95,7 +95,7 @@ app.post('/api/subscribe', async (req, res) => {
     }
 });
 
-// 🔑 تسجيل الدخول
+// 🔑 **تسجيل الدخول**
 app.post('/api/login', async (req, res) => {
     console.log('🔐 محاولة تسجيل الدخول:', req.body);
     const { email, password } = req.body;
