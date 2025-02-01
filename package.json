@@ -1,0 +1,32 @@
+{
+  "scripts": {
+    "start": "node new-app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie": "^1.0.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "gtts": "^0.2.1",
+    "nodemailer": "^6.10.0",
+    "sqlite3": "^5.1.7"
+  },
+  "name": "new-app",
+  "version": "1.0.0",
+  "main": "new-app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abouhousseme/Text-to-speech.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/abouhousseme/Text-to-speech/issues"
+  },
+  "homepage": "https://github.com/abouhousseme/Text-to-speech#readme",
+  "description": ""
+}
