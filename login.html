@@ -1,33 +1,11 @@
-document.getElementById("loginForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
+const bcrypt = require('bcrypt');
+const fs = require('fs').promises;
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+async function createTestUser() {
+    const passwordHash = await bcrypt.hash('123456', 10);
+    const users = [{ email: 'test@example.com', password: passwordHash }];
+    await fs.writeFile('./users.json', JSON.stringify(users, null, 2));
+    console.log('تم إنشاء مستخدم تجريبي!');
+}
 
-    try {
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-
-        const contentType = response.headers.get("content-type");
-
-        if (!contentType || !contentType.includes("application/json")) {
-            const textResponse = await response.text();
-            throw new Error(`❌ استجابة غير متوقعة من الخادم: ${textResponse}`);
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
-
-        alert(data.message);
-        window.location.href = "/dashboard.html";
-
-    } catch (error) {
-        alert(error.message);
-    }
-});
+createTestUser();
