@@ -15,21 +15,23 @@ app.use(express.urlencoded({ extended: true }));
 
 const usersFile = path.join(__dirname, 'users.json');
 
+// التأكد من وجود ملف المستخدمين
 if (!fs.existsSync(usersFile)) {
     fs.writeFileSync(usersFile, JSON.stringify([], null, 2));
 }
 
+// إعداد خدمة البريد الإلكتروني
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        
-EMAIL_USER=hacenatek9@gmail.com
-EMAIL_PASS=hmhi fvrk nghr gdxd
+        user: 'hacenatek9@gmail.com', // ✅ بريدك
+        pass: 'hmhi fvrk nghr gdxd' // ✅ كلمة المرور الخاصة بالبريد (استخدم App Password)
     }
 });
 
+// 📌 تسجيل المستخدمين
 app.post('/api/subscribe', async (req, res) => {
-    console.log('بيانات التسجيل:', req.body);
+    console.log('📥 بيانات التسجيل:', req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -55,25 +57,22 @@ app.post('/api/subscribe', async (req, res) => {
 
         fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 
+        // ✉️ **إرسال البريد الاحترافي**
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: '"منصة الصوت إلى نص" <hacenatek9@gmail.com>',
             to: email,
-            subject: 'تم التسجيل بنجاح',
+            subject: '🎉 تم التسجيل بنجاح - منصة تحويل النص إلى صوت',
             html: `
-            <div style="font-family: 'Cairo', sans-serif; text-align: center; border: 2px solid #4CAF50; padding: 20px; max-width: 600px; margin: auto;">
-                <img src="cid:logo" alt="Logo" style="width: 100px; display: block; margin: auto;">
-                <h2 style="color: #4CAF50;">مرحبًا ${name}،</h2>
-                <p style="font-size: 18px;">لقد تم تسجيلك بنجاح في النظام. شكرًا لاستخدامك خدمتنا!</p>
-                <p style="font-size: 18px;">يمكنك تسجيل الدخول عبر الرابط التالي:</p>
-                <a href="https://from-text-to-voice-6nye.vercel.app/login.html" style="font-size: 18px; color: #FFFFFF; background-color: #4CAF50; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
-                <p style="font-size: 18px; margin-top: 20px;">للدعم، يمكنك زيارة:</p>
-                <a href="https://from-text-to-voice-6nye.vercel.app/suport.html" style="font-size: 18px; color: #FFFFFF; background-color: #FF9800; padding: 10px 20px; text-decoration: none; border-radius: 5px;">الدعم الفني</a>
-            </div>`,
-            attachments: [{
-                filename: 'logo.png',
-                path: path.join(__dirname, 'logo.png'),
-                cid: 'logo'
-            }]
+                <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Cairo', sans-serif; text-align: center;">
+                    <img src="https://from-text-to-voice-6nye.vercel.app/logo.png" alt="شعار الموقع" style="width: 100px; margin-bottom: 20px;">
+                    <h2 style="color: #007bff;">🎉 مرحبًا ${name}، تم تسجيلك بنجاح!</h2>
+                    <p style="font-size: 18px; color: #333;">يمكنك الآن تسجيل الدخول إلى حسابك من خلال الرابط أدناه:</p>
+                    <a href="https://from-text-to-voice-6nye.vercel.app/login.html" style="display: inline-block; padding: 10px 20px; margin-top: 10px; background-color: #28a745; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">🔑 تسجيل الدخول</a>
+                    <p style="margin-top: 20px; font-size: 16px;">إذا واجهت أي مشكلة، يمكنك زيارة صفحة الدعم:</p>
+                    <a href="https://from-text-to-voice-6nye.vercel.app/suport.html" style="display: inline-block; padding: 10px 20px; margin-top: 10px; background-color: #ff9800; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">🔧 صفحة الدعم</a>
+                    <p style="margin-top: 20px; font-size: 14px; color: #888;">شكرًا لاستخدام منصتنا! 🎶</p>
+                </div>
+            `
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -85,12 +84,44 @@ app.post('/api/subscribe', async (req, res) => {
         });
 
         res.status(201).json({ message: '✅ تم التسجيل بنجاح وتم إرسال بريد التأكيد!' });
+
     } catch (error) {
         console.error('❌ خطأ في تسجيل المستخدم:', error);
         res.status(500).json({ message: '❌ حدث خطأ أثناء التسجيل.' });
     }
 });
 
+// 🔑 **تسجيل الدخول**
+app.post('/api/login', async (req, res) => {
+    console.log('🔐 محاولة تسجيل الدخول:', req.body);
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: '⚠️ البريد وكلمة المرور مطلوبان!' });
+    }
+
+    try {
+        let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
+        const user = users.find(user => user.email === email);
+
+        if (!user) {
+            return res.status(400).json({ message: '⚠️ البريد الإلكتروني غير مسجل.' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: '⚠️ كلمة المرور غير صحيحة.' });
+        }
+
+        res.status(200).json({ message: '✅ تسجيل الدخول ناجح!' });
+
+    } catch (error) {
+        console.error('❌ خطأ في تسجيل الدخول:', error);
+        res.status(500).json({ message: '❌ حدث خطأ أثناء تسجيل الدخول.' });
+    }
+});
+
+// 🚀 تشغيل الخادم
 app.listen(PORT, () => {
     console.log(`🚀 السيرفر يعمل على المنفذ ${PORT}`);
 });
