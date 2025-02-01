@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
             return res.status(400).json({ message: '⚠️ كلمة المرور غير صحيحة.' });
         }
 
-        res.status(200).json({ message: '✅ تسجيل الدخول ناجح!' });
+        return res.status(200).json({ message: '✅ تسجيل الدخول ناجح!' });
 
     } catch (error) {
         console.error('❌ خطأ في تسجيل الدخول:', error);
