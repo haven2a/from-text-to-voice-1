@@ -1,4 +1,3 @@
-
 const nodemailer = require('nodemailer');
 
 // إعدادات النقل باستخدام SMTP من Gmail
@@ -20,12 +19,3 @@ transporter.verify((error, success) => {
         console.log('Mail server is ready to take messages:', success);
     }
 });
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('Error connecting to mail server:', error);
-    } else {
-        console.log('Mail server is ready to take messages:', success);
-    }
-});
->>>>>>> ccd0338 (رسالة التغيير)
