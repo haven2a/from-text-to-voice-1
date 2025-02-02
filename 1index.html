@@ -70,14 +70,43 @@
         }
 
         .container {
-            opacity: 0;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            width: 100%;
-            transition: opacity 1s ease-in-out;
+        }
+
+        textarea {
+            width: 80%;
+            height: 150px;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 20px;
+            resize: none;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            border: none;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .additional-content {
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -91,6 +120,14 @@
     <div class="container" id="contentContainer">
         <h1>تحويل النص إلى صوت</h1>
         <p>تم فتح الصفحة بنجاح!</p>
+        <textarea id="textInput" placeholder="أدخل النص هنا..."></textarea>
+        <button onclick="convertToSpeech()">تحويل</button>
+
+        <!-- Additional Content -->
+        <div class="additional-content" id="extraContent">
+            <p>محتوى إضافي آخر يظهر بعد فتح الصفحة.</p>
+            <button onclick="showMoreContent()">عرض المزيد</button>
+        </div>
     </div>
 
     <script>
@@ -100,11 +137,25 @@
                 document.getElementById("lockScreen").classList.add("hidden");
                 setTimeout(() => {
                     document.getElementById("lockScreen").style.display = "none";
-                    document.getElementById("contentContainer").style.opacity = "1";
+                    document.getElementById("contentContainer").style.display = "flex";
                 }, 1000);
             } else {
                 alert("الكود غير صحيح!");
             }
+        }
+
+        function convertToSpeech() {
+            const text = document.getElementById("textInput").value;
+            if (text) {
+                const speech = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(speech);
+            } else {
+                alert("يرجى إدخال نص للتحويل!");
+            }
+        }
+
+        function showMoreContent() {
+            document.getElementById("extraContent").style.display = "block";
         }
     </script>
 </body>
