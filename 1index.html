@@ -298,7 +298,7 @@
       }
     }
 
-    // دالة تشغيل الصوت مع تحسين عملية اختيار الصوت للذكر أو الأنثى
+    // دالة تشغيل الصوت مع محاولة تحسين اختيار الصوت للذكر أو الأنثى دون الإخلال بالمحتوى
     function playVoice() {
       var text = document.getElementById("textInput").value.trim();
       var language = document.getElementById("voiceSelect").value;
@@ -315,14 +315,12 @@
       msg.rate = speed;
 
       var voices = speechSynthesis.getVoices();
-      var selectedVoice = null;
-
-      // البحث في قائمة الأصوات للغة المطلوبة
       var filteredVoices = voices.filter(v => v.lang.startsWith(msg.lang));
+      var selectedVoice = null;
 
       if (filteredVoices.length > 0) {
         if (gender === "male") {
-          // البحث عن مؤشرات صوتية تدل على الذكر
+          // البحث عن مؤشرات تدل على صوت ذكر
           for (var i = 0; i < filteredVoices.length; i++) {
             var name = filteredVoices[i].name.toLowerCase();
             if (name.includes("male") || name.includes("man") || name.includes("ben") || name.includes("alex")) {
@@ -331,16 +329,15 @@
             }
           }
         } else {
-          // البحث عن مؤشرات صوتية تدل على الأنثى
+          // البحث عن مؤشرات تدل على صوت أنثى
           for (var i = 0; i < filteredVoices.length; i++) {
             var name = filteredVoices[i].name.toLowerCase();
-            if (name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("eva")) {
+            if (name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("eva") || name.includes("anna")) {
               selectedVoice = filteredVoices[i];
               break;
             }
           }
         }
-        // إذا لم يتم العثور على صوت مطابق للجنس المطلوب، يتم اختيار الصوت الأول المتاح
         if (!selectedVoice) {
           selectedVoice = filteredVoices[0];
         }
