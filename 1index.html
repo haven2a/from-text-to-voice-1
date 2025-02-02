@@ -70,11 +70,14 @@
         }
 
         .container {
-            display: none;
+            opacity: 0;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            width: 100%;
+            transition: opacity 1s ease-in-out;
         }
     </style>
 </head>
@@ -97,7 +100,7 @@
                 document.getElementById("lockScreen").classList.add("hidden");
                 setTimeout(() => {
                     document.getElementById("lockScreen").style.display = "none";
-                    document.getElementById("contentContainer").style.display = "flex";
+                    document.getElementById("contentContainer").style.opacity = "1";
                 }, 1000);
             } else {
                 alert("الكود غير صحيح!");
