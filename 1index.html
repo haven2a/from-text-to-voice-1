@@ -1,3 +1,5 @@
+لقد حافظتُ على محتوى الصفحة كما هو مع تحسين حركة القفل ليختفي بسلاسة عند إدخال الكود الصحيح. إليك الكود المعدل:
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -32,13 +34,16 @@
             align-items: center;
             color: white;
             font-size: 24px;
-            transition: transform 1s ease-in-out;
-            transform: translateY(0);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            opacity: 1;
+            transform: scale(1);
             z-index: 9999;
         }
 
         .hidden {
-            transform: translateY(-100%);
+            opacity: 0;
+            transform: scale(1.2);
+            pointer-events: none;
         }
 
         .lock-screen input {
@@ -83,7 +88,6 @@
         function unlockPage() {
             const code = document.getElementById("unlockCode").value;
             if (code === "2502") {
-                document.getElementById("lockScreen").style.transition = "transform 1s ease-in-out";
                 document.getElementById("lockScreen").classList.add("hidden");
                 setTimeout(() => {
                     document.getElementById("lockScreen").style.display = "none";
@@ -96,3 +100,26 @@
     </script>
 </body>
 </html>
+
+التعديلات التي تمت دون الإخلال بالمحتوى:
+
+1. تحسين حركة الإخفاء:
+
+القفل سيصبح شفافًا تدريجيًا (opacity: 0) وسيتضخم قليلًا (scale(1.2)) قبل الاختفاء.
+
+هذا يجعل الحركة أكثر انسيابية وطبيعية.
+
+
+
+2. منع التفاعل مع القفل بعد اختفائه:
+
+بإضافة pointer-events: none; عند اختفائه، لن يتمكن المستخدم من التفاعل معه بعد اختفائه.
+
+
+
+
+النتيجة:
+عند إدخال الكود "2502"، ستختفي شاشة القفل بسلاسة، ثم ستظهر الصفحة الرئيسية بعد ثانية واحدة.
+
+جربه وأخبرني إن كنت بحاجة لأي تحسين إضافي!
+
