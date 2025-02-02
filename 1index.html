@@ -1,227 +1,36 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل النص إلى صوت</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #1e2a47;
-            color: white;
-            text-align: center;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #1e2a47;
+    color: white;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
 
-        /* نافذة الحماية */
-        #passwordWindow {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 100;
-        }
+/* توسيط نافذة كلمة المرور */
+#passwordWindow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
-        #passwordWindow.hidden {
-            visibility: hidden;
-            opacity: 0;
-        }
-
-        .password-container {
-            background-color: #2c3e50;
-            border-radius: 10px;
-            padding: 30px;
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
-            color: #ecf0f1;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .password-container input {
-            padding: 10px;
-            font-size: 18px;
-            width: 80%;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            border: 2px solid #f39c12;
-            background-color: #34495e;
-            color: white;
-        }
-
-        .password-container button {
-            background-color: #f39c12;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .hidden-content {
-            display: none;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-        }
-
-        textarea, select, input[type="file"], button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 10px;
-            border: 2px solid yellow;
-            background: black;
-            color: white;
-        }
-
-        button {
-            background-color: #007bff;
-            cursor: pointer;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- نافذة الحماية -->
-    <div id="passwordWindow">
-        <div class="password-container">
-            <h2>يرجى إدخال كلمة المرور</h2>
-            <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
-            <button onclick="checkPassword()">دخول</button>
-        </div>
-    </div>
-
-    <!-- المحتوى المخفي -->
-    <div class="hidden-content" id="content">
-        <div class="container">
-            <h1>تحويل النص إلى صوت</h1>
-
-            <div class="window">
-                <h2>أدخل النص هنا</h2>
-                <textarea id="textInput" placeholder="أدخل النص"></textarea>
-                <button onclick="playVoice()">تشغيل الصوت</button>
-                <button onclick="stopVoice()">إيقاف الصوت</button>
-            </div>
-
-            <div class="window">
-                <h2>تحميل ملف نصي</h2>
-                <input type="file" id="textFileInput" accept=".txt">
-                <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
-            </div>
-
-            <div class="window">
-                <h2>اختيار لغة القارئ</h2>
-                <select id="voiceSelect">
-                    <option value="ar">عربي</option>
-                    <option value="en">إنجليزي</option>
-                </select>
-            </div>
-
-            <div class="window">
-                <h2>اختيار جنس القارئ</h2>
-                <select id="genderSelect">
-                    <option value="male">ذكر</option>
-                    <option value="female">أنثى</option>
-                </select>
-            </div>
-
-            <div class="window">
-                <h2>تسريع/تبطيء الصوت</h2>
-                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (localStorage.getItem("authenticated") === "true") {
-                document.getElementById("passwordWindow").classList.add("hidden");
-                document.getElementById("content").style.display = "block";
-            }
-        });
-
-        function checkPassword() {
-            var password = document.getElementById("passwordInput").value;
-            if (password === "2502") {
-                localStorage.setItem("authenticated", "true");
-                document.getElementById("passwordWindow").classList.add("hidden");
-                document.getElementById("content").style.display = "block";
-            } else {
-                alert("كلمة المرور غير صحيحة!");
-            }
-        }
-
-        function playVoice() {
-            var text = document.getElementById("textInput").value.trim();
-            var language = document.getElementById("voiceSelect").value;
-            var gender = document.getElementById("genderSelect").value;
-            var speed = parseFloat(document.getElementById("speedControl").value);
-
-            if (text === "") {
-                alert("يرجى إدخال النص قبل تشغيل الصوت!");
-                return;
-            }
-
-            var msg = new SpeechSynthesisUtterance(text);
-            msg.lang = language === "ar" ? "ar-SA" : "en-US";
-            msg.rate = speed;
-
-            var voices = speechSynthesis.getVoices();
-            var filteredVoices = voices.filter(v => v.lang.startsWith(msg.lang));
-
-            if (filteredVoices.length > 0) {
-                msg.voice = filteredVoices.find(v => v.name.includes(gender === "male" ? "Male" : "Female")) || filteredVoices[0];
-            }
-
-            speechSynthesis.speak(msg);
-        }
-
-        function stopVoice() {
-            speechSynthesis.cancel();
-        }
-
-        function convertFileToVoice() {
-            var fileInput = document.getElementById("textFileInput");
-            var reader = new FileReader();
-            reader.onload = function () {
-                document.getElementById("textInput").value = reader.result;
-                playVoice();
-            };
-            if (fileInput.files.length > 0) {
-                reader.readAsText(fileInput.files[0]);
-            } else {
-                alert("يرجى اختيار ملف نصي أولاً!");
-            }
-        }
-
-        speechSynthesis.onvoiceschanged = function () {
-            speechSynthesis.getVoices();
-        };
-    </script>
-
-</body>
-</html>
+/* توسيط الحاوية الرئيسية */
+.container {
+    width: 90%;
+    max-width: 800px;
+    background: #222;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
