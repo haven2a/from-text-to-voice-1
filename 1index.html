@@ -19,6 +19,93 @@
             min-height: 100vh;
         }
 
+        /* نافذة الحماية */
+        #passwordWindow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        #passwordWindow.hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .password-container {
+            background-color: #2c3e50;
+            border-radius: 10px;
+            padding: 30px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            color: #ecf0f1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease-in-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .password-container h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .password-container input {
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 2px solid #f39c12;
+            background-color: #34495e;
+            color: white;
+        }
+
+        .password-container button {
+            background-color: #f39c12;
+            color: white;
+            font-size: 16px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .password-container button:hover {
+            transform: scale(1.1);
+        }
+
+        /* إخفاء محتوى الصفحة */
+        .hidden-content {
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* باقي التنسيقات */
         .header {
             width: 100%;
             display: flex;
@@ -130,73 +217,89 @@
     </style>
 </head>
 <body>
-    <script>
-        // كود الحماية بكلمة مرور
-        var password = prompt("يرجى إدخال كلمة المرور:");
-        if (password !== "2502") {
-            alert("كلمة المرور غير صحيحة. سيتم إغلاق الصفحة.");
-            window.close();
-        }
-    </script>
-
-    <div class="header">
-        <div class="logo">
-            <img src="logo.png" alt="شعار التطبيق">
-        </div>
-        <div class="language-selector">
-            <span>اللغة: العربية</span>
+    <!-- نافذة الحماية -->
+    <div id="passwordWindow">
+        <div class="password-container">
+            <h2>يرجى إدخال كلمة المرور</h2>
+            <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
+            <button onclick="checkPassword()">دخول</button>
         </div>
     </div>
 
-    <div class="container">
-        <h1>تحويل النص إلى صوت</h1>
-        
-        <!-- نافذة النص -->
-        <div class="window">
-            <h2>أدخل النص هنا</h2>
-            <textarea id="textInput" placeholder="أدخل النص"></textarea>
-            <button onclick="playVoice()">تشغيل الصوت</button>
-            <button onclick="stopVoice()">إيقاف الصوت</button>
+    <!-- المحتوى المخفي -->
+    <div class="hidden-content" id="content">
+        <div class="header">
+            <div class="logo">
+                <img src="logo.png" alt="شعار التطبيق">
+            </div>
+            <div class="language-selector">
+                <span>اللغة: العربية</span>
+            </div>
         </div>
 
-        <!-- نافذة التسجيل الصوتي -->
-        <div class="window">
-            <h2>تسجيل الصوت</h2>
-            <button onclick="startRecording()">بدء التسجيل</button>
-            <button onclick="stopRecording()">إيقاف التسجيل</button>
-            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
-            <audio id="audioPlayer" controls style="display:none;"></audio>
-        </div>
+        <div class="container">
+            <h1>تحويل النص إلى صوت</h1>
 
-        <!-- نافذة تحميل الملف النصي -->
-        <div class="window">
-            <h2>تحميل ملف نصي</h2>
-            <input type="file" id="textFileInput" accept=".txt">
-            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
-        </div>
+            <!-- نافذة النص -->
+            <div class="window">
+                <h2>أدخل النص هنا</h2>
+                <textarea id="textInput" placeholder="أدخل النص"></textarea>
+                <button onclick="playVoice()">تشغيل الصوت</button>
+                <button onclick="stopVoice()">إيقاف الصوت</button>
+            </div>
 
-        <!-- نافذة تغيير لغة القارئ -->
-        <div class="window">
-            <h2>اختيار لغة القارئ</h2>
-            <select id="voiceSelect">
-                <option value="ar">عربي</option>
-                <option value="en">إنجليزي</option>
-            </select>
-        </div>
+            <!-- نافذة التسجيل الصوتي -->
+            <div class="window">
+                <h2>تسجيل الصوت</h2>
+                <button onclick="startRecording()">بدء التسجيل</button>
+                <button onclick="stopRecording()">إيقاف التسجيل</button>
+                <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+                <audio id="audioPlayer" controls style="display:none;"></audio>
+            </div>
 
-        <!-- نافذة تغيير جنس القارئ -->
-        <div class="window">
-            <h2>اختيار جنس القارئ</h2>
-            <select id="genderSelect">
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-            </select>
-        </div>
+            <!-- نافذة تحميل الملف النصي -->
+            <div class="window">
+                <h2>تحميل ملف نصي</h2>
+                <input type="file" id="textFileInput" accept=".txt">
+                <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+            </div>
 
-        <!-- نافذة التحكم في سرعة الصوت -->
-        <div class="window">
-            <h2>تسريع/تبطيء الصوت</h2>
-            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
-            <
-::contentReference[oaicite:0]{index=0}
- 
+            <!-- نافذة تغيير لغة القارئ -->
+            <div class="window">
+                <h2>اختيار لغة القارئ</h2>
+                <select id="voiceSelect">
+                    <option value="ar">عربي</option>
+                    <option value="en">إنجليزي</option>
+                </select>
+            </div>
+
+            <!-- نافذة تغيير جنس القارئ -->
+            <div class="window">
+                <h2>اختيار جنس القارئ</h2>
+                <select id="genderSelect">
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+
+            <!-- نافذة التحكم في سرعة الصوت -->
+            <div class="window">
+                <h2>تسريع/تبطيء الصوت</h2>
+                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            var password = document.getElementById('passwordInput').value;
+            if (password === '2502') {
+                document.getElementById('passwordWindow').classList.add('hidden');
+                document.getElementById('content').style.visibility = 'visible';
+            } else {
+                alert('كلمة المرور غير صحيحة!');
+            }
+        }
+    </script>
+</body>
+</html>
