@@ -123,9 +123,9 @@
         }
 
         async function registerUser() {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
 
             if (!name || !email || !password) {
                 alert("⚠️ جميع الحقول مطلوبة!");
@@ -139,25 +139,25 @@
             }
 
             try {
-                const response = await fetch('/api/subscribe', {
+                const response = await fetch('https://your-app.vercel.app/api/subscribe', { // استخدم رابط Vercel الخاص بك
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password }),
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
                 const result = await response.json();
+                alert(result.message);
 
                 if (response.ok) {
-                    alert(result.message); // رسالة نجاح
-                    window.location.href = '/login.html'; // توجيه إلى صفحة تسجيل الدخول
-                } else {
-                    alert(result.message); // رسالة خطأ
+                    window.location.href = 'login.html';
                 }
             } catch (error) {
                 console.error('❌ حدث خطأ أثناء التسجيل:', error);
-                alert("⚠️ حدث خطأ أثناء الاتصال بالخادم.");
+                alert("⚠️ تأكد من أن الخادم يعمل بشكل صحيح.");
             }
         }
     </script>
