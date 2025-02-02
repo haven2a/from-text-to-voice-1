@@ -7,7 +7,6 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-    /* إعدادات أساسية للصفحة */
     body {
       font-family: 'Cairo', sans-serif;
       background-color: #1e2a47;
@@ -22,7 +21,7 @@
       overflow-x: hidden;
     }
 
-    /* شريط العنوان - يظهر في أعلى الصفحة */
+    /* شريط العنوان كما في الواجهة الأصلية */
     .header {
       width: 100%;
       display: flex;
@@ -43,8 +42,17 @@
       color: white;
       font-size: 18px;
     }
+    /* قائمة لتغيير لغة واجهة التطبيق */
+    .app-lang-select {
+      font-size: 16px;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #fff;
+      background-color: #222;
+      color: #fff;
+    }
 
-    /* نافذة الحماية المنسدلة */
+    /* نافذة الحماية المنسدلة كما في الواجهة الأصلية */
     #passwordWindow {
       position: fixed;
       top: -100%;
@@ -89,7 +97,7 @@
       cursor: pointer;
     }
 
-    /* المحتوى المخفي – لا يظهر إلا بعد إدخال كلمة المرور الصحيحة */
+    /* المحتوى المخفي كما في الواجهة الأصلية */
     .hidden-content {
       display: none;
       width: 100%;
@@ -140,45 +148,49 @@
 </head>
 <body>
 
-  <!-- شريط العنوان -->
+  <!-- شريط العنوان كما في الواجهة الأصلية -->
   <div class="header">
     <div class="logo">
       <img src="logo.png" alt="شعار التطبيق">
     </div>
     <div class="language-selector">
-      <span>اللغة: العربية</span>
+      <!-- قائمة لتحديد لغة واجهة التطبيق -->
+      <select id="appLangSelect" class="app-lang-select" onchange="updateInterfaceLanguage()">
+        <option value="ar" selected>العربية</option>
+        <option value="en">English</option>
+      </select>
     </div>
   </div>
 
-  <!-- نافذة الحماية المنسدلة -->
+  <!-- نافذة الحماية المنسدلة كما في الواجهة الأصلية -->
   <div id="passwordWindow" class="show">
     <div class="password-container">
-      <h2>يرجى إدخال كلمة المرور</h2>
+      <h2 id="passwordPrompt">يرجى إدخال كلمة المرور</h2>
       <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
-      <button onclick="checkPassword()">دخول</button>
+      <button onclick="checkPassword()" id="loginButton">دخول</button>
     </div>
   </div>
 
-  <!-- المحتوى المخفي -->
+  <!-- المحتوى المخفي كما في الواجهة الأصلية -->
   <div class="hidden-content" id="content">
     <div class="container">
-      <h1>تحويل النص إلى صوت</h1>
+      <h1 id="appTitle">تحويل النص إلى صوت</h1>
 
       <div class="window">
-        <h2>أدخل النص هنا</h2>
+        <h2 id="textInputTitle">أدخل النص هنا</h2>
         <textarea id="textInput" placeholder="أدخل النص"></textarea>
-        <button onclick="playVoice()">تشغيل الصوت</button>
-        <button onclick="stopVoice()">إيقاف الصوت</button>
+        <button onclick="playVoice()" id="playVoiceButton">تشغيل الصوت</button>
+        <button onclick="stopVoice()" id="stopVoiceButton">إيقاف الصوت</button>
       </div>
 
       <div class="window">
-        <h2>تحميل ملف نصي</h2>
+        <h2 id="loadTextFileTitle">تحميل ملف نصي</h2>
         <input type="file" id="textFileInput" accept=".txt">
-        <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+        <button onclick="convertFileToVoice()" id="convertToVoiceButton">تحويل إلى صوت</button>
       </div>
 
       <div class="window">
-        <h2>اختيار لغة القارئ</h2>
+        <h2 id="chooseVoiceLanguageTitle">اختيار لغة القارئ</h2>
         <select id="voiceSelect">
           <option value="ar">عربي</option>
           <option value="en">إنجليزي</option>
@@ -186,7 +198,7 @@
       </div>
 
       <div class="window">
-        <h2>اختيار جنس القارئ</h2>
+        <h2 id="chooseReaderGenderTitle">اختيار جنس القارئ</h2>
         <select id="genderSelect">
           <option value="male">ذكر</option>
           <option value="female">أنثى</option>
@@ -194,14 +206,74 @@
       </div>
 
       <div class="window">
-        <h2>تسريع/تبطيء الصوت</h2>
+        <h2 id="speedTitle">تسريع/تبطيء الصوت</h2>
         <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
       </div>
     </div>
   </div>
 
   <script>
-    // عند تحميل الصفحة، يتم التحقق من حالة المصادقة
+    // ترجمات الواجهة باللغتين العربية والإنجليزية
+    var translations = {
+      "ar": {
+        "appTitle": "تحويل النص إلى صوت",
+        "passwordPrompt": "يرجى إدخال كلمة المرور",
+        "passwordPlaceholder": "أدخل كلمة المرور",
+        "loginButton": "دخول",
+        "textInputTitle": "أدخل النص هنا",
+        "textInputPlaceholder": "أدخل النص",
+        "playVoiceButton": "تشغيل الصوت",
+        "stopVoiceButton": "إيقاف الصوت",
+        "loadTextFileTitle": "تحميل ملف نصي",
+        "convertToVoiceButton": "تحويل إلى صوت",
+        "chooseVoiceLanguageTitle": "اختيار لغة القارئ",
+        "chooseReaderGenderTitle": "اختيار جنس القارئ",
+        "speedTitle": "تسريع/تبطيء الصوت"
+      },
+      "en": {
+        "appTitle": "Text to Speech",
+        "passwordPrompt": "Please enter the password",
+        "passwordPlaceholder": "Enter password",
+        "loginButton": "Login",
+        "textInputTitle": "Enter text here",
+        "textInputPlaceholder": "Enter text",
+        "playVoiceButton": "Play Voice",
+        "stopVoiceButton": "Stop Voice",
+        "loadTextFileTitle": "Load Text File",
+        "convertToVoiceButton": "Convert to Voice",
+        "chooseVoiceLanguageTitle": "Choose Reader Language",
+        "chooseReaderGenderTitle": "Choose Reader Gender",
+        "speedTitle": "Adjust Speed"
+      }
+    };
+
+    // تحديث واجهة التطبيق عند تغيير لغة الواجهة
+    function updateInterfaceLanguage() {
+      var lang = document.getElementById("appLangSelect").value;
+      document.getElementById("appTitle").innerText = translations[lang].appTitle;
+      document.getElementById("passwordPrompt").innerText = translations[lang].passwordPrompt;
+      document.getElementById("passwordInput").placeholder = translations[lang].passwordPlaceholder;
+      document.getElementById("loginButton").innerText = translations[lang].loginButton;
+      document.getElementById("textInputTitle").innerText = translations[lang].textInputTitle;
+      document.getElementById("textInput").placeholder = translations[lang].textInputPlaceholder;
+      document.getElementById("playVoiceButton").innerText = translations[lang].playVoiceButton;
+      document.getElementById("stopVoiceButton").innerText = translations[lang].stopVoiceButton;
+      document.getElementById("loadTextFileTitle").innerText = translations[lang].loadTextFileTitle;
+      document.getElementById("convertToVoiceButton").innerText = translations[lang].convertToVoiceButton;
+      document.getElementById("chooseVoiceLanguageTitle").innerText = translations[lang].chooseVoiceLanguageTitle;
+      document.getElementById("chooseReaderGenderTitle").innerText = translations[lang].chooseReaderGenderTitle;
+      document.getElementById("speedTitle").innerText = translations[lang].speedTitle;
+      // تحديث نص الخيار في شريط العنوان (اللغة)
+      var headerLangText = lang === "ar" ? "العربية" : "English";
+      document.querySelector(".language-selector").innerHTML =
+        headerLangText + ' ' +
+        '<select id="appLangSelect" class="app-lang-select" onchange="updateInterfaceLanguage()">' +
+          '<option value="ar"' + (lang==="ar" ? " selected" : "") + '>العربية</option>' +
+          '<option value="en"' + (lang==="en" ? " selected" : "") + '>English</option>' +
+        '</select>';
+    }
+
+    // عند تحميل الصفحة يتم التحقق من حالة المصادقة
     document.addEventListener("DOMContentLoaded", function () {
       if (localStorage.getItem("authenticated") === "true") {
         document.getElementById("passwordWindow").style.display = "none";
@@ -226,7 +298,7 @@
       }
     }
 
-    // دالة تشغيل الصوت
+    // دالة تشغيل الصوت مع تحسين عملية اختيار الصوت للذكر أو الأنثى
     function playVoice() {
       var text = document.getElementById("textInput").value.trim();
       var language = document.getElementById("voiceSelect").value;
@@ -243,17 +315,37 @@
       msg.rate = speed;
 
       var voices = speechSynthesis.getVoices();
+      var selectedVoice = null;
+
+      // البحث في قائمة الأصوات للغة المطلوبة
       var filteredVoices = voices.filter(v => v.lang.startsWith(msg.lang));
 
-      // اختيار الصوت بناءً على الجنس؛ قد تحتاج بعض المتصفحات لضبط أسماء الأصوات
       if (filteredVoices.length > 0) {
         if (gender === "male") {
-          msg.voice = filteredVoices.find(v => v.name.toLowerCase().includes("male")) || filteredVoices[0];
+          // البحث عن مؤشرات صوتية تدل على الذكر
+          for (var i = 0; i < filteredVoices.length; i++) {
+            var name = filteredVoices[i].name.toLowerCase();
+            if (name.includes("male") || name.includes("man") || name.includes("ben") || name.includes("alex")) {
+              selectedVoice = filteredVoices[i];
+              break;
+            }
+          }
         } else {
-          msg.voice = filteredVoices.find(v => v.name.toLowerCase().includes("female")) || filteredVoices[0];
+          // البحث عن مؤشرات صوتية تدل على الأنثى
+          for (var i = 0; i < filteredVoices.length; i++) {
+            var name = filteredVoices[i].name.toLowerCase();
+            if (name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("eva")) {
+              selectedVoice = filteredVoices[i];
+              break;
+            }
+          }
+        }
+        // إذا لم يتم العثور على صوت مطابق للجنس المطلوب، يتم اختيار الصوت الأول المتاح
+        if (!selectedVoice) {
+          selectedVoice = filteredVoices[0];
         }
       }
-
+      msg.voice = selectedVoice;
       speechSynthesis.speak(msg);
     }
 
