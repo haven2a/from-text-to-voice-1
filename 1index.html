@@ -31,9 +31,6 @@
             bottom: 0;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 100;
-            visibility: visible;
-            opacity: 1;
-            transition: opacity 0.5s ease;
         }
 
         #passwordWindow.hidden {
@@ -50,23 +47,6 @@
             text-align: center;
             color: #ecf0f1;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.5s ease-in-out forwards;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .password-container h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
         }
 
         .password-container input {
@@ -88,44 +68,10 @@
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.3s ease;
         }
 
-        .password-container button:hover {
-            transform: scale(1.1);
-        }
-
-        /* إخفاء محتوى الصفحة */
         .hidden-content {
-            visibility: hidden;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        /* باقي التنسيقات */
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: #222;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-        }
-
-        .logo img {
-            max-width: 100px;
-        }
-
-        .language-selector {
-            color: white;
-            font-size: 18px;
+            display: none;
         }
 
         .container {
@@ -135,79 +81,21 @@
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideIn 0.5s ease-in-out forwards;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .window {
-            margin-bottom: 20px;
-            background-color: #333;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            animation: slideUp 0.7s ease-in-out forwards;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        textarea {
+        textarea, select, input[type="file"], button {
             width: 100%;
-            height: 250px;
-            font-size: 20px;
             padding: 10px;
+            margin-top: 10px;
             border-radius: 10px;
+            border: 2px solid yellow;
             background: black;
             color: white;
-            border: 2px solid yellow;
         }
 
         button {
             background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 10px 15px;
-            margin-top: 10px;
-            border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-        }
-
-        select, input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 10px;
-            background-color: black;
-            color: white;
-            border: 2px solid yellow;
         }
 
         audio {
@@ -217,6 +105,7 @@
     </style>
 </head>
 <body>
+
     <!-- نافذة الحماية -->
     <div id="passwordWindow">
         <div class="password-container">
@@ -228,19 +117,9 @@
 
     <!-- المحتوى المخفي -->
     <div class="hidden-content" id="content">
-        <div class="header">
-            <div class="logo">
-                <img src="logo.png" alt="شعار التطبيق">
-            </div>
-            <div class="language-selector">
-                <span>اللغة: العربية</span>
-            </div>
-        </div>
-
         <div class="container">
             <h1>تحويل النص إلى صوت</h1>
 
-            <!-- نافذة النص -->
             <div class="window">
                 <h2>أدخل النص هنا</h2>
                 <textarea id="textInput" placeholder="أدخل النص"></textarea>
@@ -248,23 +127,12 @@
                 <button onclick="stopVoice()">إيقاف الصوت</button>
             </div>
 
-            <!-- نافذة التسجيل الصوتي -->
-            <div class="window">
-                <h2>تسجيل الصوت</h2>
-                <button onclick="startRecording()">بدء التسجيل</button>
-                <button onclick="stopRecording()">إيقاف التسجيل</button>
-                <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
-                <audio id="audioPlayer" controls style="display:none;"></audio>
-            </div>
-
-            <!-- نافذة تحميل الملف النصي -->
             <div class="window">
                 <h2>تحميل ملف نصي</h2>
                 <input type="file" id="textFileInput" accept=".txt">
                 <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
             </div>
 
-            <!-- نافذة تغيير لغة القارئ -->
             <div class="window">
                 <h2>اختيار لغة القارئ</h2>
                 <select id="voiceSelect">
@@ -273,7 +141,6 @@
                 </select>
             </div>
 
-            <!-- نافذة تغيير جنس القارئ -->
             <div class="window">
                 <h2>اختيار جنس القارئ</h2>
                 <select id="genderSelect">
@@ -282,24 +149,79 @@
                 </select>
             </div>
 
-            <!-- نافذة التحكم في سرعة الصوت -->
             <div class="window">
                 <h2>تسريع/تبطيء الصوت</h2>
-                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
             </div>
         </div>
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (localStorage.getItem("authenticated") === "true") {
+                document.getElementById("passwordWindow").classList.add("hidden");
+                document.getElementById("content").style.display = "block";
+            }
+        });
+
         function checkPassword() {
-            var password = document.getElementById('passwordInput').value;
-            if (password === '2502') {
-                document.getElementById('passwordWindow').classList.add('hidden');
-                document.getElementById('content').style.visibility = 'visible';
+            var password = document.getElementById("passwordInput").value;
+            if (password === "2502") {
+                localStorage.setItem("authenticated", "true");
+                document.getElementById("passwordWindow").classList.add("hidden");
+                document.getElementById("content").style.display = "block";
             } else {
-                alert('كلمة المرور غير صحيحة!');
+                alert("كلمة المرور غير صحيحة!");
             }
         }
+
+        function playVoice() {
+            var text = document.getElementById("textInput").value.trim();
+            var language = document.getElementById("voiceSelect").value;
+            var gender = document.getElementById("genderSelect").value;
+            var speed = parseFloat(document.getElementById("speedControl").value);
+
+            if (text === "") {
+                alert("يرجى إدخال النص قبل تشغيل الصوت!");
+                return;
+            }
+
+            var msg = new SpeechSynthesisUtterance(text);
+            msg.lang = language === "ar" ? "ar-SA" : "en-US";
+            msg.rate = speed;
+
+            var voices = speechSynthesis.getVoices();
+            var filteredVoices = voices.filter(v => v.lang.startsWith(msg.lang));
+
+            if (filteredVoices.length > 0) {
+                msg.voice = filteredVoices.find(v => v.name.includes(gender === "male" ? "Male" : "Female")) || filteredVoices[0];
+            }
+
+            speechSynthesis.speak(msg);
+        }
+
+        function stopVoice() {
+            speechSynthesis.cancel();
+        }
+
+        function convertFileToVoice() {
+            var fileInput = document.getElementById("textFileInput");
+            var reader = new FileReader();
+            reader.onload = function () {
+                document.getElementById("textInput").value = reader.result;
+                playVoice();
+            };
+            if (fileInput.files.length > 0) {
+                reader.readAsText(fileInput.files[0]);
+            } else {
+                alert("يرجى اختيار ملف نصي أولاً!");
+            }
+        }
+
+        speechSynthesis.onvoiceschanged = function () {
+            speechSynthesis.getVoices();
+        };
     </script>
+
 </body>
 </html>
