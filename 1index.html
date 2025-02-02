@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+. <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -32,16 +32,13 @@
             align-items: center;
             color: white;
             font-size: 24px;
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-            opacity: 1;
-            transform: scale(1);
+            transition: transform 1s ease-in-out;
+            transform: translateY(0);
             z-index: 9999;
         }
 
         .hidden {
-            opacity: 0;
-            transform: scale(1.2);
-            pointer-events: none;
+            transform: translateY(-100%);
         }
 
         .lock-screen input {
@@ -68,83 +65,34 @@
         .lock-screen button:hover {
             transform: scale(1.1);
         }
-
-        .container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        textarea {
-            width: 80%;
-            height: 150px;
-            font-size: 18px;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            margin-top: 20px;
-            resize: none;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            font-size: 18px;
-            border: none;
-            padding: 10px 15px;
-            margin-top: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-        }
     </style>
 </head>
 <body>
-    <!-- شاشة القفل -->
     <div class="lock-screen" id="lockScreen">
         <p>أدخل الكود لفتح الصفحة:</p>
         <input type="password" id="unlockCode" placeholder="••••">
         <button onclick="unlockPage()">فتح</button>
     </div>
 
-    <!-- المحتوى الرئيسي بعد فك القفل -->
-    <div class="container" id="contentContainer">
+    <div class="container" id="contentContainer" style="display: none;">
         <h1>تحويل النص إلى صوت</h1>
         <p>تم فتح الصفحة بنجاح!</p>
-        <textarea id="textInput" placeholder="أدخل النص هنا..."></textarea>
-        <button onclick="convertToSpeech()">تحويل</button>
     </div>
 
     <script>
         function unlockPage() {
             const code = document.getElementById("unlockCode").value;
             if (code === "2502") {
-                // إضافة التأثير لإخفاء شاشة القفل
+                document.getElementById("lockScreen").style.transition = "transform 1s ease-in-out";
                 document.getElementById("lockScreen").classList.add("hidden");
                 setTimeout(() => {
                     document.getElementById("lockScreen").style.display = "none";
-                    document.getElementById("contentContainer").style.display = "flex";
+                    document.getElementById("contentContainer").style.display = "block";
                 }, 1000);
             } else {
                 alert("الكود غير صحيح!");
             }
         }
-
-        function convertToSpeech() {
-            const text = document.getElementById("textInput").value;
-            if (text) {
-                const speech = new SpeechSynthesisUtterance(text);
-                window.speechSynthesis.speak(speech);
-            } else {
-                alert("يرجى إدخال نص للتحويل!");
-            }
-        }
     </script>
 </body>
-</html>
+</html>        
