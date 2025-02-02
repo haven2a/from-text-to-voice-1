@@ -103,37 +103,29 @@
         button:hover {
             transform: scale(1.1);
         }
-
-        .additional-content {
-            display: none;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
+    <!-- شاشة القفل -->
     <div class="lock-screen" id="lockScreen">
         <p>أدخل الكود لفتح الصفحة:</p>
         <input type="password" id="unlockCode" placeholder="••••">
         <button onclick="unlockPage()">فتح</button>
     </div>
 
+    <!-- المحتوى الرئيسي بعد فك القفل -->
     <div class="container" id="contentContainer">
         <h1>تحويل النص إلى صوت</h1>
         <p>تم فتح الصفحة بنجاح!</p>
         <textarea id="textInput" placeholder="أدخل النص هنا..."></textarea>
         <button onclick="convertToSpeech()">تحويل</button>
-
-        <!-- Additional Content -->
-        <div class="additional-content" id="extraContent">
-            <p>محتوى إضافي آخر يظهر بعد فتح الصفحة.</p>
-            <button onclick="showMoreContent()">عرض المزيد</button>
-        </div>
     </div>
 
     <script>
         function unlockPage() {
             const code = document.getElementById("unlockCode").value;
             if (code === "2502") {
+                // إضافة التأثير لإخفاء شاشة القفل
                 document.getElementById("lockScreen").classList.add("hidden");
                 setTimeout(() => {
                     document.getElementById("lockScreen").style.display = "none";
@@ -152,10 +144,6 @@
             } else {
                 alert("يرجى إدخال نص للتحويل!");
             }
-        }
-
-        function showMoreContent() {
-            document.getElementById("extraContent").style.display = "block";
         }
     </script>
 </body>
