@@ -1,36 +1,287 @@
-body {
-    font-family: 'Cairo', sans-serif;
-    background-color: #1e2a47;
-    color: white;
-    text-align: center;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحويل النص إلى صوت</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-/* توسيط نافذة كلمة المرور */
-#passwordWindow {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.9);
-    padding: 20px;
-    text-align: center;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
+    /* إعدادات أساسية للصفحة */
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #1e2a47;
+      color: white;
+      text-align: center;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-/* توسيط الحاوية الرئيسية */
-.container {
-    width: 90%;
-    max-width: 800px;
-    background: #222;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    text-align: center;
-}
+    /* شريط العنوان - يظهر في أعلى الصفحة */
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #222;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+    }
+    .logo img {
+      max-width: 120px;
+    }
+    .language-selector {
+      color: white;
+      font-size: 18px;
+    }
+
+    /* نافذة الحماية المنسدلة */
+    #passwordWindow {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      text-align: center;
+      transition: top 0.5s ease-in-out;
+      z-index: 300;
+    }
+    #passwordWindow.show {
+      top: 0;
+    }
+    .password-container {
+      background-color: #2c3e50;
+      border-radius: 10px;
+      padding: 20px;
+      width: 80%;
+      max-width: 400px;
+      margin: auto;
+      color: #ecf0f1;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .password-container input {
+      padding: 10px;
+      font-size: 18px;
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 2px solid #f39c12;
+      background-color: #34495e;
+      color: white;
+    }
+    .password-container button {
+      background-color: #f39c12;
+      color: white;
+      font-size: 16px;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* المحتوى المخفي – لا يظهر إلا بعد إدخال كلمة المرور الصحيحة */
+    .hidden-content {
+      display: none;
+      width: 100%;
+      padding-top: 80px; /* لإفساح المجال لشريط العنوان */
+      box-sizing: border-box;
+    }
+    .container {
+      width: 95%;
+      max-width: 1000px;
+      background: #222;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      margin: auto;
+    }
+    .window {
+      background-color: #333;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    textarea, select, input[type="file"], button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 2px solid yellow;
+      background: black;
+      color: white;
+      font-size: 18px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شريط العنوان -->
+  <div class="header">
+    <div class="logo">
+      <img src="logo.png" alt="شعار التطبيق">
+    </div>
+    <div class="language-selector">
+      <span>اللغة: العربية</span>
+    </div>
+  </div>
+
+  <!-- نافذة الحماية المنسدلة -->
+  <div id="passwordWindow" class="show">
+    <div class="password-container">
+      <h2>يرجى إدخال كلمة المرور</h2>
+      <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
+      <button onclick="checkPassword()">دخول</button>
+    </div>
+  </div>
+
+  <!-- المحتوى المخفي -->
+  <div class="hidden-content" id="content">
+    <div class="container">
+      <h1>تحويل النص إلى صوت</h1>
+
+      <div class="window">
+        <h2>أدخل النص هنا</h2>
+        <textarea id="textInput" placeholder="أدخل النص"></textarea>
+        <button onclick="playVoice()">تشغيل الصوت</button>
+        <button onclick="stopVoice()">إيقاف الصوت</button>
+      </div>
+
+      <div class="window">
+        <h2>تحميل ملف نصي</h2>
+        <input type="file" id="textFileInput" accept=".txt">
+        <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+      </div>
+
+      <div class="window">
+        <h2>اختيار لغة القارئ</h2>
+        <select id="voiceSelect">
+          <option value="ar">عربي</option>
+          <option value="en">إنجليزي</option>
+        </select>
+      </div>
+
+      <div class="window">
+        <h2>اختيار جنس القارئ</h2>
+        <select id="genderSelect">
+          <option value="male">ذكر</option>
+          <option value="female">أنثى</option>
+        </select>
+      </div>
+
+      <div class="window">
+        <h2>تسريع/تبطيء الصوت</h2>
+        <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // عند تحميل الصفحة، يتم التحقق من حالة المصادقة
+    document.addEventListener("DOMContentLoaded", function () {
+      if (localStorage.getItem("authenticated") === "true") {
+        document.getElementById("passwordWindow").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      } else {
+        document.getElementById("passwordWindow").classList.add("show");
+      }
+    });
+
+    // التحقق من كلمة المرور
+    function checkPassword() {
+      var password = document.getElementById("passwordInput").value;
+      if (password === "2502") {
+        localStorage.setItem("authenticated", "true");
+        document.getElementById("passwordWindow").classList.remove("show");
+        setTimeout(function() {
+          document.getElementById("passwordWindow").style.display = "none";
+          document.getElementById("content").style.display = "block";
+        }, 500);
+      } else {
+        alert("كلمة المرور غير صحيحة!");
+      }
+    }
+
+    // دالة تشغيل الصوت
+    function playVoice() {
+      var text = document.getElementById("textInput").value.trim();
+      var language = document.getElementById("voiceSelect").value;
+      var gender = document.getElementById("genderSelect").value;
+      var speed = parseFloat(document.getElementById("speedControl").value);
+
+      if (text === "") {
+        alert("يرجى إدخال النص قبل تشغيل الصوت!");
+        return;
+      }
+
+      var msg = new SpeechSynthesisUtterance(text);
+      msg.lang = language === "ar" ? "ar-SA" : "en-US";
+      msg.rate = speed;
+
+      var voices = speechSynthesis.getVoices();
+      var filteredVoices = voices.filter(v => v.lang.startsWith(msg.lang));
+
+      // اختيار الصوت بناءً على الجنس؛ قد تحتاج بعض المتصفحات لضبط أسماء الأصوات
+      if (filteredVoices.length > 0) {
+        if (gender === "male") {
+          msg.voice = filteredVoices.find(v => v.name.toLowerCase().includes("male")) || filteredVoices[0];
+        } else {
+          msg.voice = filteredVoices.find(v => v.name.toLowerCase().includes("female")) || filteredVoices[0];
+        }
+      }
+
+      speechSynthesis.speak(msg);
+    }
+
+    // دالة إيقاف الصوت
+    function stopVoice() {
+      speechSynthesis.cancel();
+    }
+
+    // دالة لتحويل محتوى الملف النصي إلى صوت
+    function convertFileToVoice() {
+      var fileInput = document.getElementById("textFileInput");
+      var reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById("textInput").value = reader.result;
+        playVoice();
+      };
+      if (fileInput.files.length > 0) {
+        reader.readAsText(fileInput.files[0]);
+      } else {
+        alert("يرجى اختيار ملف نصي أولاً!");
+      }
+    }
+
+    // لضمان تحميل الأصوات في بعض المتصفحات
+    speechSynthesis.onvoiceschanged = function () {
+      speechSynthesis.getVoices();
+    };
+  </script>
+
+</body>
+</html>
