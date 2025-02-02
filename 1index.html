@@ -1,9 +1,9 @@
-. <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Converter</title>
+    <title>تحويل النص إلى صوت</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         body {
@@ -19,41 +19,88 @@
             min-height: 100vh;
         }
 
-        .lock-screen {
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #222;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            transition: transform 1s ease-in-out;
-            transform: translateY(0);
-            z-index: 9999;
+            right: 0;
+            z-index: 100;
         }
 
-        .hidden {
-            transform: translateY(-100%);
+        .logo img {
+            max-width: 100px;
         }
 
-        .lock-screen input {
-            font-size: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .lock-screen button {
-            background-color: #007bff;
+        .language-selector {
             color: white;
             font-size: 18px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .window {
+            margin-bottom: 20px;
+            background-color: #333;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 0.7s ease-in-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            background: black;
+            color: white;
+            border: 2px solid yellow;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
             border: none;
             padding: 10px 15px;
             margin-top: 10px;
@@ -62,37 +109,117 @@
             transition: transform 0.3s ease-in-out;
         }
 
-        .lock-screen button:hover {
+        button:hover {
             transform: scale(1.1);
+        }
+
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            background-color: black;
+            color: white;
+            border: 2px solid yellow;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="lock-screen" id="lockScreen">
-        <p>أدخل الكود لفتح الصفحة:</p>
-        <input type="password" id="unlockCode" placeholder="••••">
-        <button onclick="unlockPage()">فتح</button>
+    <div class="header">
+        <div class="logo">
+            <img src="logo.png" alt="شعار التطبيق">
+        </div>
+        <div class="language-selector">
+            <span>اللغة: العربية</span>
+        </div>
     </div>
 
-    <div class="container" id="contentContainer" style="display: none;">
+    <div class="container">
         <h1>تحويل النص إلى صوت</h1>
-        <p>تم فتح الصفحة بنجاح!</p>
+        
+        <!-- نافذة النص -->
+        <div class="window">
+            <h2>أدخل النص هنا</h2>
+            <textarea id="textInput" placeholder="أدخل النص"></textarea>
+            <button onclick="playVoice()">تشغيل الصوت</button>
+            <button onclick="stopVoice()">إيقاف الصوت</button>
+        </div>
+
+        <!-- نافذة التسجيل الصوتي -->
+        <div class="window">
+            <h2>تسجيل الصوت</h2>
+            <button onclick="startRecording()">بدء التسجيل</button>
+            <button onclick="stopRecording()">إيقاف التسجيل</button>
+            <button onclick="downloadRecordedAudio()">تحميل الصوت المسجل</button>
+            <audio id="audioPlayer" controls style="display:none;"></audio>
+        </div>
+
+        <!-- نافذة تحميل الملف النصي -->
+        <div class="window">
+            <h2>تحميل ملف نصي</h2>
+            <input type="file" id="textFileInput" accept=".txt">
+            <button onclick="convertFileToVoice()">تحويل إلى صوت</button>
+        </div>
+
+        <!-- نافذة تغيير لغة القارئ -->
+        <div class="window">
+            <h2>اختيار لغة القارئ</h2>
+            <select id="voiceSelect">
+                <option value="ar">عربي</option>
+                <option value="en">إنجليزي</option>
+            </select>
+        </div>
+
+        <!-- نافذة تغيير جنس القارئ -->
+        <div class="window">
+            <h2>اختيار جنس القارئ</h2>
+            <select id="genderSelect">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+        </div>
+
+        <!-- نافذة التحكم في سرعة الصوت -->
+        <div class="window">
+            <h2>تسريع/تبطيء الصوت</h2>
+            <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" onchange="adjustSpeed()">
+            <span id="speedLabel">1x</span>
+        </div>
+
     </div>
 
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+    
     <script>
-        function unlockPage() {
-            const code = document.getElementById("unlockCode").value;
-            if (code === "2502") {
-                document.getElementById("lockScreen").style.transition = "transform 1s ease-in-out";
-                document.getElementById("lockScreen").classList.add("hidden");
-                setTimeout(() => {
-                    document.getElementById("lockScreen").style.display = "none";
-                    document.getElementById("contentContainer").style.display = "block";
-                }, 1000);
-            } else {
-                alert("الكود غير صحيح!");
-            }
+        let currentVoice = "ar";
+        let currentGender = "male";
+        let currentSpeed = 1;
+        let recorder;
+        let audioBlob;
+        let audioUrl;
+        let audioPlayer = document.getElementById("audioPlayer");
+
+        function playVoice() {
+            const text = document.getElementById("textInput").value;
+            responsiveVoice.speak(text, currentGender === "male" ? "Arabic Male" : "Arabic Female", {rate: currentSpeed});
         }
-    </script>
-</body>
-</html>        
+
+        function stopVoice() {
+            responsiveVoice.cancel();
+        }
+
+        function startRecording
+::contentReference[oaicite:0]{index=0}
+ <script>
+    function playVoice() {
+        const text = document.getElementById("textInput").value;
+        // تحديد الصوت الأنثوي العربي
+        responsiveVoice.speak(text, "Arabic Female", {rate: currentSpeed});
+    }
+</script>
+
