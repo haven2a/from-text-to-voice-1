@@ -39,28 +39,8 @@
             margin-top: 20px;
         }
 
-        .iframe-container {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            border: 2px solid yellow;
-            background-color: #34495e;
-            border-radius: 10px;
-            transition: transform 0.5s ease;
-            transform-origin: left;
-            width: 80%;
-            margin: 20px auto;
-            text-align: center;
-        }
-
-        .iframe-container.open {
-            display: block;
-            transform: rotateY(0deg);
-        }
-
-        .iframe-container.close {
-            transform: rotateY(90deg);
-            display: none;
+        .button-container {
+            margin-bottom: 20px;
         }
 
         button {
@@ -86,21 +66,17 @@
             background-color: #3498db;
         }
 
-        .button-container {
-            margin-bottom: 20px;
-        }
-
-        /* تحسين حجم نافذة كتابة النص */
+        /* نافذة التبديل بين اللغات */
         #textToSpeech input {
-            width: 60%;
-            padding: 10px;
-            font-size: 1.2em;
+            width: 80%;
+            padding: 15px;
+            font-size: 1.5em;
             margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #bdc3c7;
         }
 
-        /* تنسيق النوافذ الأخرى */
+        /* إعداد النوافذ المتحركة */
         .window {
             display: none;
             margin-top: 20px;
@@ -108,7 +84,7 @@
             border: 2px solid yellow;
             background-color: #34495e;
             border-radius: 10px;
-            transition: transform 0.5s ease;
+            transition: all 0.5s ease;
             transform-origin: left;
             width: 80%;
             margin: 20px auto;
@@ -123,6 +99,64 @@
         .window.close {
             transform: rotateY(90deg);
             display: none;
+        }
+
+        .iframe-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid yellow;
+            background-color: #34495e;
+            border-radius: 10px;
+            transition: all 0.5s ease;
+            transform-origin: left;
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .iframe-container.open {
+            display: block;
+            transform: rotateY(0deg);
+        }
+
+        .iframe-container.close {
+            transform: rotateY(90deg);
+            display: none;
+        }
+
+        /* تنسيق واجهة الكتابة */
+        #textToSpeech input {
+            width: 80%;
+            padding: 15px;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+        }
+
+        /* نافذة تحميل الملف النصي */
+        #fileContent {
+            font-size: 1.5em;
+            color: white;
+            white-space: pre-wrap; /* لتنسيق النص بشكل مناسب */
+            word-wrap: break-word;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #34495e;
+            border: 2px solid yellow;
+            border-radius: 10px;
+            width: 80%;
+            margin: 20px auto;
+            text-align: left;
+            display: none;
+        }
+
+        /* تعديل الحجم في نافذة تحميل الملف */
+        #fileInput {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -140,22 +174,22 @@
     </div>
 
     <!-- نافذة لتحويل النص إلى صوت -->
-    <div class="iframe-container window" id="textToSpeech">
+    <div class="window" id="textToSpeech">
         <h2>إدخال النص لتحويله إلى صوت</h2>
         <input type="text" id="textInput" placeholder="أدخل النص هنا">
         <button onclick="convertTextToSpeech()">تحويل النص</button>
     </div>
 
     <!-- نافذة لتحميل الملف النصي -->
-    <div class="iframe-container window" id="textFile">
+    <div class="window" id="textFile">
         <h2>تحميل ملف نصي</h2>
         <input type="file" id="fileInput" accept=".txt">
         <button onclick="readTextFile()">قراءة الملف النصي</button>
-        <p id="fileContent"></p>
+        <div id="fileContent"></div> <!-- لعرض محتوى الملف النصي هنا -->
     </div>
 
     <!-- نافذة لتسجيل الصوت -->
-    <div class="iframe-container window" id="audioRecording">
+    <div class="window" id="audioRecording">
         <h2>تسجيل الصوت</h2>
         <button onclick="startRecording()">ابدأ التسجيل</button>
         <button onclick="stopRecording()">إيقاف التسجيل</button>
@@ -211,7 +245,10 @@
         const reader = new FileReader();
 
         reader.onload = function(e) {
-            document.getElementById('fileContent').innerText = e.target.result;
+            const fileContent = e.target.result;
+            const fileContentElement = document.getElementById('fileContent');
+            fileContentElement.innerText = fileContent;
+            fileContentElement.style.display = 'block'; // عرض محتوى الملف
         };
 
         reader.readAsText(file);
