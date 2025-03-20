@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل النص إلى صوت</title>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=gz5UPOSm"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background-color: #333;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-wrapper {
+            border: 5px solid #fbc02d;
+            border-radius: 15px;
+            margin: 20px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            background-color: #444;
+            position: relative;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #fff;
+            border-bottom: 2px solid #fbc02d;
+            padding-bottom: 10px;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .input-section, .controls, .settings, .record-section, .file-upload-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #fbc02d;
+            border-radius: 8px;
+        }
+
+        textarea, input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #555;
+            color: white;
+            resize: none;
+        }
+
+        button {
+            background-color: #fbc02d;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            color: black;
+        }
+
+        button:hover {
+            background-color: #f9a825;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .welcome-message {
+            font-size: 24px;
+            color: #ffeb3b;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: moveText 3s ease-in-out infinite;
+        }
+
+        @keyframes moveText {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+
+        .logo {
+            display: block;
+            margin: 20px auto;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <div class="container">
+            <header>
+                <h1 id="title">تحويل النص إلى صوت</h1>
+            </header>
+
+            <div class="welcome-message" id="welcomeMessage">أهلاً بكم في تطبيق تحويل النص إلى صوت</div>
+
+            <img src="logo.png" alt="Logo" class="logo">
+
+            <main>
+                <!-- نافذة النص للتحويل إلى صوت -->
+                <section class="input-section">
+                    <textarea id="textInput" placeholder="أدخل النص هنا..." rows="6"></textarea>
+                    <button onclick="convertTextToSpeech()" id="convertBtn">تحويل</button>
+                </section>
+                
+                <!-- نافذة التحكم -->
+                <section class="controls">
+                    <button onclick="playAudio()" id="playBtn">تشغيل الصوت</button>
+                    <button onclick="stopAudio()" id="stopBtn">إيقاف الصوت</button>
+                    <button onclick="adjustSpeed('slow')" id="slowBtn">تبطيء الصوت</button>
+                    <button onclick="adjustSpeed('fast')" id="fastBtn">تسريع الصوت</button>
+                </section>
+
+                <!-- نافذة اختيار اللغة والصوت -->
+                <section class="settings">
+                    <label for="voiceSelect" id="voiceLabel">اختيار الصوت:</label>
+                    <select id="voiceSelect">
+                        <!-- سيتم ملء هذا الخيار باستخدام الأصوات المتاحة -->
+                    </select>
+                </section>
+
+                <!-- نافذة تسجيل الصوت -->
+                <section class="record-section">
+                    <h2 id="recordTitle">تسجيل الصوت</h2>
+                    <button onclick="startRecording()" id="startRecordBtn">بدء التسجيل</button>
+                    <button onclick="stopRecording()" id="stopRecordBtn" disabled>إيقاف التسجيل</button>
+                    <h3 id="recordingText">التسجيل:</h3>
+                    <audio id="audioPlayback" controls></audio>
+                </section>
+
+                <!-- نافذة تحميل الملف النصي -->
+                <section class="file-upload-section">
+                    <h2 id="fileTitle">تحميل ملف نصي</h2>
+                    <input type="file" id="fileInput" accept=".txt" onchange="readFile()">
+                </section>
+            </main>
+
+            <footer>
+                <p id="footerText">حقوق الطبع والنشر &copy; 2025 تطبيق تحويل النص إلى صوت</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let currentVoice = "Arabic Male"; 
+        let speed = 1; 
+        let recorder;
+        let audioChunks = [];
+
+        // تحديث النصوص بناءً على اللغة المختارة
+        function changeLanguage() {
+            let language = document.getElementById("languageSelect").value;
+
+            if (language === "ar") {
+                document.body.style.direction = "rtl";
+                document.getElementById("title").innerText = "تحويل النص إلى صوت";
+                document.getElementById("convertBtn").innerText = "تحويل";
+                document.getElementById("playBtn").innerText = "تشغيل الصوت";
+                document.getElementById("stopBtn").innerText = "إيقاف الصوت";
+                document.getElementById("slowBtn").innerText = "تبطيء الصوت";
+                document.getElementById("fastBtn").innerText = "تسريع الصوت";
+                document.getElementById("voiceLabel").innerText = "اختيار الصوت:";
+                document.getElementById("recordTitle").innerText = "تسجيل الصوت";
+                document.getElementById("startRecordBtn").innerText = "بدء التسجيل";
+                document.getElementById("stopRecordBtn").innerText = "إيقاف التسجيل";
+                document.getElementById("recordingText").innerText = "التسجيل:";
+                document.getElementById("fileTitle").innerText = "تحميل ملف نصي";
+                document.getElementById("footerText").innerText = "حقوق الطبع والنشر &copy; 2025 تطبيق تحويل النص إلى صوت";
+                document.getElementById("welcomeMessage").innerText = "أهلاً بكم في تطبيق تحويل النص إلى صوت";
+            } else {
+                document.body.style.direction = "ltr";
+                document.getElementById("title").innerText = "Text to Speech Converter";
+                document.getElementById("convertBtn").innerText = "Convert";
+                document.getElementById("playBtn").innerText = "Play Audio";
+                document.getElementById("stopBtn").innerText = "Stop Audio";
+                document.getElementById("slowBtn").innerText = "Slow Down";
+                document.getElementById("fastBtn").innerText = "Speed Up";
+                document.getElementById("voiceLabel").innerText = "Select Voice:";
+                document.getElementById("recordTitle").innerText = "Record Audio";
+                document.getElementById("startRecordBtn").innerText = "Start Recording";
+                document.getElementById("stopRecordBtn").innerText = "Stop Recording";
+                document.getElementById("recordingText").innerText = "Recording:";
+                document.getElementById("fileTitle").innerText = "Upload Text File";
+                document.getElementById("footerText").innerText = "Copyright &copy; 2025 Text to Speech Converter";
+                document.getElementById("welcomeMessage").innerText = "Welcome to the Text to Speech App";
+            }
+
+            loadVoices();
+        }
+
+        // تحميل الأصوات المتاحة
+        function loadVoices() {
+            let voices = responsiveVoice.getVoices();
+            let voiceSelect = document.getElementById("voiceSelect");
+            voiceSelect.innerHTML = "";
+            voices.forEach((voice) => {
+                let option = document.createElement("option");
+                option.value = voice.name;
+                option.textContent = voice.name;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // تحويل النص إلى صوت
+        function convertTextToSpeech() {
+            let text = document.getElementById("textInput").value;
+            let selectedVoice = document.getElementById("voiceSelect").value;
+            responsiveVoice.speak(text, selectedVoice, { rate: speed });
+        }
+
+        // تشغيل الصوت
+        function playAudio() {
+            let text = document.getElementById("textInput").value;
+            responsiveVoice.speak(text, currentVoice, { rate: speed });
+        }
+
+        // إيقاف الصوت
+        function stopAudio() {
+            responsiveVoice.cancel();
+        }
+
+        // تعديل سرعة الصوت
+        function adjustSpeed(speedType) {
+            speed = (speedType === 'slow') ? 0.5 : 1.5;
+        }
+
+        // بدء التسجيل
+        function startRecording() {
+            audioChunks = [];
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                recorder = new MediaRecorder(stream);
+                recorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                recorder.onstop = () => {
+                    let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                    let audioUrl = URL.createObjectURL(audioBlob);
+                    let audio = document.getElementById("audioPlayback");
+                    audio.src = audioUrl;
+                };
+                recorder.start();
+                document.getElementById("stopRecordBtn").disabled = false;
+                document.getElementById("startRecordBtn").disabled = true;
+            });
+        }
+
+        // إيقاف التسجيل
+        function stopRecording() {
+            recorder.stop();
+            document.getElementById("stopRecordBtn").disabled = true;
+            document.getElementById("startRecordBtn").disabled = false;
+        }
+
+        // قراءة الملف النصي
+        function readFile() {
+            let file = document.getElementById("fileInput").files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("textInput").value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = function() {
+            loadVoices();
+            changeLanguage();
+        };
+    </script>
+</body>
+</html>
